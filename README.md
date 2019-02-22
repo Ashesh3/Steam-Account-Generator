@@ -1,6 +1,8 @@
 # Steam-Account-Creator
 Steam Account Generator
 
+![screenshot](https://i.imgur.com/zhp0wwW.png)
+
 Mass Steam Account generator,
 
 +Auto verify mail
