@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -6,7 +7,6 @@ using System.Windows.Forms;
 
 namespace SteamAccCreator.Gui
 {
-
     public partial class MainForm : Form
     {
         public bool RandomMail { get; private set; }
@@ -28,12 +28,13 @@ namespace SteamAccCreator.Gui
         public MainForm()
         {
             InitializeComponent();
+            comboBox1.SelectedIndex = 0;
         }
 
         public string proxyval = null;
         public int proxyport = 0;
         public bool proxy = false;
-            
+
         public void BtnCreateAccount_Click(object sender, EventArgs e)
         {
             //btnCreateAccount.Visible = false;
@@ -41,8 +42,8 @@ namespace SteamAccCreator.Gui
             {
                 nmbrAmountAccounts.Value = 100;
             }
-            
-            if(UseCaptchaService)
+
+            if (UseCaptchaService)
             {
                 if (!Use2Cap)
                 {
@@ -56,13 +57,15 @@ namespace SteamAccCreator.Gui
                         apixkey = apikey.Text;
                         secxkey = secretkey.Text;
                     }
-                }else
+                }
+                else
                 {
-                    if(captwoapikey.Text == "")
+                    if (captwoapikey.Text == "")
                     {
                         UseCaptchaService = false;
-                        autocap.Checked  = false;
-                    }else
+                        autocap.Checked = false;
+                    }
+                    else
                     {
                         twocapkey = captwoapikey.Text;
                     }
@@ -74,7 +77,8 @@ namespace SteamAccCreator.Gui
                 proxyval = textBox1.Text;
                 proxyport = Convert.ToInt32(textBox2.Text);
                 proxy = true;
-            } else
+            }
+            else
             {
                 proxy = false;
             }
@@ -85,29 +89,31 @@ namespace SteamAccCreator.Gui
                 {
                     for (var i = 0; i < nmbrAmountAccounts.Value; i++)
                     {
-                        var accCreator = new AccountCreator(this, txtEmail.Text, txtAlias.Text, txtPass.Text, _index,UseCaptchaService);
+                        var accCreator = new AccountCreator(this, txtEmail.Text, txtAlias.Text, txtPass.Text, _index, UseCaptchaService);
                         var thread = new Thread(accCreator.Run);
                         thread.Start();
                         _index++;
                     }
-                } else
+                }
+                else
                 {
                     MessageBox.Show("Please Select a File to Edit. :)");
                 }
-            } else
+            }
+            else
             {
                 for (var i = 0; i < nmbrAmountAccounts.Value; i++)
                 {
-                    var accCreator = new AccountCreator(this, txtEmail.Text, txtAlias.Text, txtPass.Text, _index,UseCaptchaService);
+                    var accCreator = new AccountCreator(this, txtEmail.Text, txtAlias.Text, txtPass.Text, _index, UseCaptchaService);
                     var thread = new Thread(accCreator.Run);
                     thread.Start();
                     _index++;
                 }
             }
-           
+
         }
 
-        public void AddToTable(string mail, string alias, string pass)
+        public void AddToTable(string mail, string alias, string pass, long steamId)
         {
             BeginInvoke(new Action(() =>
             {
@@ -118,20 +124,23 @@ namespace SteamAccCreator.Gui
                         new DataGridViewTextBoxCell {Value = mail},
                         new DataGridViewTextBoxCell {Value = alias},
                         new DataGridViewTextBoxCell {Value = pass},
+                        new DataGridViewTextBoxCell {Value = $"{steamId}"},
                         new DataGridViewTextBoxCell {Value = "Ready"}
                     }
                 });
             }));
         }
 
-        public void UpdateStatus(int i, string status)
+        public void UpdateStatus(int i, string status, long steamId)
         {
             BeginInvoke(new Action(() =>
             {
                 try
                 {
-                    dataAccounts.Rows[i].Cells[3].Value = status;
-                }catch(Exception)
+                    dataAccounts.Rows[i].Cells[3].Value = $"{steamId}";
+                    dataAccounts.Rows[i].Cells[4].Value = status;
+                }
+                catch (Exception)
                 {
 
                 }
@@ -161,7 +170,6 @@ namespace SteamAccCreator.Gui
             ToggleForceWriteIntoFile();
             chkWriteIntoFile.ForeColor = System.Drawing.Color.White;
             chkAutoVerifyMail.ForeColor = System.Drawing.Color.White;
-
         }
 
         private void ChkRandomPass_CheckedChanged(object sender, EventArgs e)
@@ -190,8 +198,7 @@ namespace SteamAccCreator.Gui
             chkWriteIntoFile.Checked = shouldForce;
             chkWriteIntoFile.AutoCheck = !shouldForce;
             chkWriteIntoFile.ForeColor = System.Drawing.Color.White;
-            chkAutoVerifyMail.ForeColor = System.Drawing.Color.White; ;
-
+            chkAutoVerifyMail.ForeColor = System.Drawing.Color.White;
         }
 
         public bool istrue = false;
@@ -203,7 +210,8 @@ namespace SteamAccCreator.Gui
             {
                 button1.Enabled = true;
                 Path = file;
-            } else
+            }
+            else
             {
                 button1.Enabled = false;
                 Path = @"accounts.txt";
@@ -214,12 +222,33 @@ namespace SteamAccCreator.Gui
 
         private void button1_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Text File|*.txt";
-            openFileDialog1.Title = "Save Files To";
+            saveFileDialog1.Filter = "Text File|*.txt|KeePass CSV|*.csv";
+            saveFileDialog1.Title = "Save Files To";
 
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            var isComboBox = sender == comboBox1;
+            if (isComboBox)
+                saveFileDialog1.FilterIndex = 2;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                file = openFileDialog1.FileName;
+                file = saveFileDialog1.FileName;
+                checkBox4.Checked = true;
+                if (saveFileDialog1.FilterIndex == 2)
+                {
+                    comboBox1.SelectedIndex = (int)(original = File.FileManager.FileWriteType.KeePassCSV);
+                    checkBox4.Enabled = comboBox1.Enabled = false;
+
+                    using (var fw = new StreamWriter(file, true))
+                    {
+                        fw.WriteLine("Title,User Name,Password,URL,Notes");
+                    }
+                }
+                else
+                    checkBox4.Enabled = comboBox1.Enabled = true;
+            }
+            else if (isComboBox)
+            {
+                comboBox1.SelectedIndex = 0;
             }
         }
 
@@ -228,10 +257,17 @@ namespace SteamAccCreator.Gui
             if (checkBox7.Checked == true)
             {
                 istrue = true;
-            } else
+            }
+            else
             {
                 istrue = false;
             }
+        }
+
+        private void saveFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Path = saveFileDialog1.FileName;
+            MessageBox.Show(Path);
         }
 
         private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
@@ -248,24 +284,7 @@ namespace SteamAccCreator.Gui
             }
         }
 
-        private void comboBox1_TextChanged(object sender, EventArgs e)
-        {
-            if (comboBox1.Text != "User:Pass Formatting" && comboBox1.Text != "Original Formatting")
-            {
-                comboBox1.Text = "User:Pass Formatting";
-            }
-
-            if (comboBox1.Text == "User:Pass Formatting")
-            {
-                original = true;
-            }
-            else if (comboBox1.Text == "Original Formatting")
-            {
-                original = false;
-            }
-        }
-
-        public bool original = true;
+        public File.FileManager.FileWriteType original = File.FileManager.FileWriteType.Original;
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
@@ -273,7 +292,8 @@ namespace SteamAccCreator.Gui
             {
                 textBox1.Enabled = true;
                 textBox2.Enabled = true;
-            } else
+            }
+            else
             {
                 textBox1.Enabled = false;
                 textBox2.Enabled = false;
@@ -335,13 +355,10 @@ namespace SteamAccCreator.Gui
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
-          
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
@@ -357,8 +374,6 @@ namespace SteamAccCreator.Gui
 
         private void checkBox2_CheckedChanged_1(object sender, EventArgs e)
         {
-            
-
         }
 
         private void autocap_CheckedChanged(object sender, EventArgs e)
@@ -368,11 +383,10 @@ namespace SteamAccCreator.Gui
             twocap.Checked = false;
             var state = autocap.Checked;
             UseCaptchaService = state;
-            if(UseCaptchaService)
+            if (UseCaptchaService)
             {
                 apikey.Enabled = true;
                 secretkey.Enabled = true;
-
             }
             else
             {
@@ -393,7 +407,7 @@ namespace SteamAccCreator.Gui
         {
             var state = twocap.Checked;
             Use2Cap = state;
-          
+
             if (state)
             {
                 apikey.Enabled = false;
@@ -417,15 +431,13 @@ namespace SteamAccCreator.Gui
 
         private void groupBox3_Enter(object sender, EventArgs e)
         {
-
         }
 
         private void captchasolutions_CheckedChanged(object sender, EventArgs e)
         {
-            
             var state = captchasolutions.Checked;
             Use2Cap = !state;
-            if(!state)
+            if (!state)
             {
                 apikey.Enabled = false;
                 secretkey.Enabled = false;
@@ -442,7 +454,6 @@ namespace SteamAccCreator.Gui
                 apikey.Enabled = false;
                 secretkey.Enabled = false;
                 captwoapikey.Enabled = false;
-
             }
         }
 
@@ -453,7 +464,13 @@ namespace SteamAccCreator.Gui
 
         private void dataAccounts_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+        }
 
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            original = (File.FileManager.FileWriteType)comboBox1.SelectedIndex;
+            if (original == File.FileManager.FileWriteType.KeePassCSV)
+                button1_Click(this, e);
         }
     }
 }

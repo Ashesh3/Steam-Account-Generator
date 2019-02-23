@@ -416,7 +416,7 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        public bool CompleteSignup(string alias, string password, ref string status,bool addcsgo)
+        public bool CompleteSignup(string alias, string password, ref string status, ref long steamId,bool addcsgo)
         {
             if (!CheckAlias(alias, ref status))
                 return false;
@@ -481,6 +481,9 @@ namespace SteamAccCreator.Web
                 var response11 = _client.Execute(_request);
                 _client.FollowRedirects = true;
 
+                var _steamRegex = Regex.Match(response11?.Content ?? "", @"\/profiles\/(\d+)", RegexOptions.IgnoreCase);
+                if (_steamRegex.Success)
+                    steamId = long.Parse(_steamRegex.Groups[1].Value);
 
                 _request.Parameters.Clear();
                 if (addcsgo)
@@ -494,11 +497,9 @@ namespace SteamAccCreator.Web
                     _request.AddParameter("action", "add_to_cart");
                     _request.AddParameter("subid", 303386);
                     _request.AddParameter("sessionid", sess);
-                    _client.Execute(_request);
+                    var responce111 = _client.Execute(_request);
                     _client.FollowRedirects = true;
                 }
-
-
 
                 return true;
             }
