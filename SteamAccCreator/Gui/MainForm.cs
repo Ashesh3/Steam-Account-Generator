@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SteamAccCreator.Gui
@@ -35,13 +36,13 @@ namespace SteamAccCreator.Gui
         public int proxyport = 0;
         public bool proxy = false;
 
-        public void BtnCreateAccount_Click(object sender, EventArgs e)
+        public async void BtnCreateAccount_Click(object sender, EventArgs e)
         {
             //btnCreateAccount.Visible = false;
             if (nmbrAmountAccounts.Value > 100)
-            {
                 nmbrAmountAccounts.Value = 100;
-            }
+            else if (nmbrAmountAccounts.Value < 1)
+                nmbrAmountAccounts.Value = 1;
 
             if (UseCaptchaService)
             {
@@ -83,17 +84,35 @@ namespace SteamAccCreator.Gui
                 proxy = false;
             }
 
-            if (checkBox4.Checked == true)
+            async Task makeSomeShitForValve()
             {
-                if (file != null)
+                var slowCaptchaMode = capHandMode.Checked;
+                if (slowCaptchaMode)
+                    capHandMode.Enabled = false;
+
+                for (var i = 0; i < nmbrAmountAccounts.Value; i++)
                 {
-                    for (var i = 0; i < nmbrAmountAccounts.Value; i++)
+                    var accCreator = new AccountCreator(this, txtEmail.Text, txtAlias.Text, txtPass.Text, _index, UseCaptchaService);
+                    if (slowCaptchaMode)
                     {
-                        var accCreator = new AccountCreator(this, txtEmail.Text, txtAlias.Text, txtPass.Text, _index, UseCaptchaService);
+                        await Task.Run(() => accCreator.Run());
+                    }
+                    else
+                    {
                         var thread = new Thread(accCreator.Run);
                         thread.Start();
-                        _index++;
                     }
+                    _index++;
+                }
+
+                capHandMode.Enabled = true;
+            }
+
+            if (checkBox4.Checked == true)
+            {
+                if (!string.IsNullOrEmpty(file))
+                {
+                    await makeSomeShitForValve();
                 }
                 else
                 {
@@ -102,13 +121,7 @@ namespace SteamAccCreator.Gui
             }
             else
             {
-                for (var i = 0; i < nmbrAmountAccounts.Value; i++)
-                {
-                    var accCreator = new AccountCreator(this, txtEmail.Text, txtAlias.Text, txtPass.Text, _index, UseCaptchaService);
-                    var thread = new Thread(accCreator.Run);
-                    thread.Start();
-                    _index++;
-                }
+                await makeSomeShitForValve();
             }
 
         }
@@ -225,6 +238,9 @@ namespace SteamAccCreator.Gui
             saveFileDialog1.Filter = "Text File|*.txt|KeePass CSV|*.csv";
             saveFileDialog1.Title = "Save Files To";
 
+            saveFileDialog1.CheckPathExists = true;
+            saveFileDialog1.OverwritePrompt = true;
+
             var isComboBox = sender == comboBox1;
             if (isComboBox)
                 saveFileDialog1.FilterIndex = 2;
@@ -238,7 +254,7 @@ namespace SteamAccCreator.Gui
                     comboBox1.SelectedIndex = (int)(original = File.FileManager.FileWriteType.KeePassCSV);
                     checkBox4.Enabled = comboBox1.Enabled = false;
 
-                    using (var fw = new StreamWriter(file, true))
+                    using (var fw = new StreamWriter(file))
                     {
                         fw.WriteLine("Title,User Name,Password,URL,Notes");
                     }
@@ -267,13 +283,7 @@ namespace SteamAccCreator.Gui
         private void saveFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Path = saveFileDialog1.FileName;
-            MessageBox.Show(Path);
-        }
-
-        private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Path = openFileDialog1.FileName;
-            MessageBox.Show(Path);
+            MessageBox.Show($"File \"{System.IO.Path.GetFileName(Path)}\" will be saved here: {System.IO.Path.GetDirectoryName(Path)}");
         }
 
         private void nmbrAmountAccounts_ValueChanged(object sender, EventArgs e)
@@ -469,8 +479,21 @@ namespace SteamAccCreator.Gui
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             original = (File.FileManager.FileWriteType)comboBox1.SelectedIndex;
-            if (original == File.FileManager.FileWriteType.KeePassCSV)
-                button1_Click(this, e);
+            if (original == File.FileManager.FileWriteType.KeePassCSV && sender == comboBox1)
+                button1_Click(sender, e);
+        }
+
+        private void capHandMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (capHandMode.Checked)
+                autocap.Checked = false;
+
+            captchasolutions.Enabled =
+                apikey.Enabled =
+                secretkey.Enabled =
+                twocap.Enabled =
+                captwoapikey.Enabled =
+                autocap.Enabled = !capHandMode.Checked;
         }
     }
 }

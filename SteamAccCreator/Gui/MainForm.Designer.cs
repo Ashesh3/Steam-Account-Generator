@@ -55,7 +55,6 @@ namespace SteamAccCreator.Gui
             this.button1 = new System.Windows.Forms.Button();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox7 = new System.Windows.Forms.CheckBox();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -82,6 +81,7 @@ namespace SteamAccCreator.Gui
             this.label2 = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.capHandMode = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.nmbrAmountAccounts)).BeginInit();
             this.pnlSettings.SuspendLayout();
             this.pnlCreation.SuspendLayout();
@@ -447,11 +447,6 @@ namespace SteamAccCreator.Gui
             this.checkBox7.UseVisualStyleBackColor = true;
             this.checkBox7.CheckedChanged += new System.EventHandler(this.checkBox7_CheckedChanged);
             // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
-            // 
             // groupBox2
             // 
             this.groupBox2.AutoSize = true;
@@ -526,6 +521,7 @@ namespace SteamAccCreator.Gui
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.capHandMode);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.captwoapikey);
             this.groupBox3.Controls.Add(this.captchasolutions);
@@ -543,7 +539,7 @@ namespace SteamAccCreator.Gui
             this.groupBox3.Size = new System.Drawing.Size(343, 145);
             this.groupBox3.TabIndex = 24;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Auto Captcha Solving";
+            this.groupBox3.Text = "Captcha Solving";
             this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
             // label6
@@ -758,6 +754,17 @@ namespace SteamAccCreator.Gui
             // 
             this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
             // 
+            // capHandMode
+            // 
+            this.capHandMode.AutoSize = true;
+            this.capHandMode.Location = new System.Drawing.Point(106, 21);
+            this.capHandMode.Name = "capHandMode";
+            this.capHandMode.Size = new System.Drawing.Size(81, 17);
+            this.capHandMode.TabIndex = 32;
+            this.capHandMode.Text = "Hand mode";
+            this.capHandMode.UseVisualStyleBackColor = true;
+            this.capHandMode.CheckedChanged += new System.EventHandler(this.capHandMode_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -817,7 +824,6 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.CheckBox checkBox7;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
         public System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox textBox2;
@@ -849,6 +855,7 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.LinkLabel linkLabel2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.CheckBox capHandMode;
     }
 }
 
