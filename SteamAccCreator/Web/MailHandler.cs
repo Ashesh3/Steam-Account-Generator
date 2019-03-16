@@ -20,9 +20,9 @@ namespace SteamAccCreator.Web
                 return Random.Next(min, max);
             }
         }
-     
-        
-        private static readonly Uri MailboxUri = new Uri("https://newdedsecmail.now.sh");
+
+
+        public static readonly Uri MailboxUri = new Uri("https://fapi.cloudaccess.host/mail.php");
         private static readonly Uri MailUri = new Uri("https://no.nope/");
         private static readonly Uri SteamUri = new Uri("https://store.steampowered.com/account/newaccountverification?");
 
@@ -83,26 +83,18 @@ namespace SteamAccCreator.Web
             System.Threading.Thread.Sleep(5000);
             _client.BaseUrl = MailboxUri;
 
-
             _request.Method = Method.GET;
-            dynamic jsonResponse;
-            string b1gdata = address;
-            _request.AddParameter("e", b1gdata);
+            _request.AddParameter("e", address);
 
-        
-        
-            //_request.AddOrUpdateParameter("maxTimestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             var response = _client.Execute(_request);
+            dynamic jsonResponse;
             try
             {
                 jsonResponse = JsonConvert.DeserializeObject(response.Content);
-            }catch(Exception)
+            }
+            catch (Exception)
             {
-              //  MessageBox.Show(e.ToString());
-                //bloody server...
                 jsonResponse = "";
-               // MessageBox.Show(response.Content);
-
             }
             _request.Parameters.Clear();
             try
@@ -114,14 +106,11 @@ namespace SteamAccCreator.Web
                 string[] words2 = Regex.Split(words1[1], " ");
                 var tokenUri = "stoken=" + words9[0] + "&creationid=" + words2[0];
                 ConfirmSteamAccount(new Uri(SteamUri + tokenUri));
-    
-
             }
             catch (Exception)
             {
-               // MessageBox.Show(e.ToString());
-               // MessageBox.Show(response.Content);
-
+                // MessageBox.Show(e.ToString());
+                // MessageBox.Show(response.Content);
             }
         }
 
@@ -145,7 +134,6 @@ namespace SteamAccCreator.Web
             _request.Method = Method.GET;
             _client.Execute(_request);
             _request.Parameters.Clear();
-           
         }
     }
 }

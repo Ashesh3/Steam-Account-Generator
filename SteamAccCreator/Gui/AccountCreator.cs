@@ -101,22 +101,36 @@ namespace SteamAccCreator.Gui
             if (_mainForm.RandomMail)
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                var _client21 = new RestSharp.RestClient("https://newdedsecmail.now.sh?alias=" + _alias);
-                var request21 = new RestSharp.RestRequest("", RestSharp.Method.GET);
-                var queryResult1 = _client21.Execute(request21);
 
-                if (queryResult1.Content == "dead")
+                var _cli = new RestSharp.RestClient(MailHandler.MailboxUri);
+
+                var _reqProvider = new RestSharp.RestRequest(RestSharp.Method.GET);
+                var providerResult = _cli.Execute(_reqProvider);
+
+                string Provider = providerResult.Content;
+                if (!Provider.StartsWith("@"))
                 {
-                    MessageBox.Show("Email is dead.. Steam blocked the domain.. wait for a new one");
+                    MessageBox.Show("No email service was returned...\n\nTry again...", "Something went wrong", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-                string Provider = queryResult1.Content; //provs[GetRandomNumber(0, provs.Length - 1)];
+
+                var mailCheck = new RestSharp.RestRequest(RestSharp.Method.GET);
+                mailCheck.AddParameter("alias", _alias);
+                var mailCheckResult = _cli.Execute(mailCheck);
+
+                if (mailCheckResult.Content != "ok")
+                {
+                    MessageBox.Show($"Something went wrong...\n\nHTTP Status-Code: {mailCheckResult.StatusCode}\nServer response:\n{mailCheckResult.Content}\n\nTry again...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 _mail = (_alias + Provider).ToLower();
             }
 
             _mainForm.AddToTable(_mail, _alias, _pass, _steamId);
             if (_auto)
             {
-                _status = " Solving Captcha...";
+                _status = "Solving Captcha...";
                 UpdateStatus();
             }
             else
