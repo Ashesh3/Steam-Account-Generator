@@ -3,19 +3,23 @@ Steam Account Generator
 
 Web generator: https://accgen.cathook.club/
 
-![screenshot](https://i.imgur.com/zhp0wwW.png)
+![screenshot](https://vgy.me/3kw4DY.png)
 
-Mass Steam Account generator,
+Mass Steam Account generator features:
+- [x] Auto verify mail
+- [x] Auto generate password
+- [x] Auto generate email
+- [x] Auto generate username
+- [x] Auto save to text file
+- [x] Resolve Steam ID
+- [x] CSV export for import in KeePass
+- [x] Manual and auto captcha services:
+  - Captchasolutions
+  - 2Captcha/RuCaptcha
+- [x] Proxy support
 
-+Auto verify mail
+# Download
+[Steam-Account-Generator/releases](https://github.com/EarsKilla/Steam-Account-Generator/releases)
 
-+Auto generate password
-
-+auto generate email
-
-+auto generate username
-
-+auto save to text file
-
-+Manual and auto captcha
-
+# Requirements
+[.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net472)
