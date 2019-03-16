@@ -23,7 +23,6 @@ namespace SteamAccCreator.Web
 
 
         public static readonly Uri MailboxUri = new Uri("https://fapi.cloudaccess.host/mail.php");
-        private static readonly Uri MailUri = new Uri("https://no.nope/");
         private static readonly Uri SteamUri = new Uri("https://store.steampowered.com/account/newaccountverification?");
 
 
@@ -112,20 +111,6 @@ namespace SteamAccCreator.Web
                 // MessageBox.Show(e.ToString());
                 // MessageBox.Show(response.Content);
             }
-        }
-
-        private string ReadMail(string mailId)
-        {
-            _client.BaseUrl = MailUri;
-            _request.Method = Method.GET;
-            _request.AddParameter("locale", "en");
-            _request.AddParameter("id", mailId);
-            var response = _client.Execute(_request);
-            _request.Parameters.Clear();
-
-            dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
-
-            return jsonResponse.bodyHtmlStrict;
         }
 
         private void ConfirmSteamAccount(Uri uri)
