@@ -1,14 +1,10 @@
-using System;
-using System.Windows.Forms;
 using SteamAccCreator.File;
 using SteamAccCreator.Web;
-using System.Threading.Tasks;
+using System;
 using System.Globalization;
 using System.Net;
-using System.Text;
-using System.Security.Cryptography;
-using System.IO;
-using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SteamAccCreator.Gui
 {
@@ -37,6 +33,7 @@ namespace SteamAccCreator.Gui
                 return Random.Next(min, max);
             }
         }
+
         public AccountCreator(MainForm mainForm, string mail, string alias, string pass, int index, bool auto)
         {
             _mainForm = mainForm;
@@ -46,21 +43,6 @@ namespace SteamAccCreator.Gui
             _pass = pass;
             _index = index;
             _auto = auto;
-        }
-        private string GetMD5()
-        {
-            System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            System.IO.FileStream stream = new System.IO.FileStream(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-
-            md5.ComputeHash(stream);
-
-            stream.Close();
-
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            for (int i = 0; i < md5.Hash.Length; i++)
-                sb.Append(md5.Hash[i].ToString("x2"));
-
-            return sb.ToString().ToUpperInvariant();
         }
 
         public async void Run()
@@ -169,37 +151,7 @@ namespace SteamAccCreator.Gui
                 UpdateStatus();
             }
         }
-        public static char cipher(char ch, int key)
-        {
-            if (!char.IsLetter(ch))
-            {
 
-                return ch;
-            }
-
-            char d = char.IsUpper(ch) ? 'A' : 'a';
-            return (char)((((ch + key) - d) % 26) + d);
-        }
-        public static string Encipher(string input, int key)
-        {
-            string output = string.Empty;
-
-            foreach (char ch in input)
-                output += cipher(ch, key);
-
-            return output;
-        }
-        public static string Reverse(string s)
-        {
-            char[] charArray = s.ToCharArray();
-            Array.Reverse(charArray);
-            return new string(charArray);
-        }
-        public static string Base64Encode(string plainText)
-        {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
-        }
         private string GetRandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -258,13 +210,7 @@ namespace SteamAccCreator.Gui
         private void VerifyMail()
         {
             if (_mainForm.AutoMailVerify)
-            {
                 _mailHandler.ConfirmMail(_mail);
-            }
-            else
-            {
-                //Clipboard.SetText(_mail);
-            }
         }
 
         private bool CheckIfMailIsVerified()

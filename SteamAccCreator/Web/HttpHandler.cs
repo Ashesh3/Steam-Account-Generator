@@ -1,14 +1,13 @@
+using Newtonsoft.Json;
+using RestSharp;
+using SteamAccCreator.Gui;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using Newtonsoft.Json;
-using RestSharp;
-using SteamAccCreator.Gui;
 using Image = System.Drawing.Image;
 
 namespace SteamAccCreator.Web
@@ -38,40 +37,7 @@ namespace SteamAccCreator.Web
 
         private static readonly Regex CaptchaRegex = new Regex(@"\/rendercaptcha\?gid=([0-9]+)\D");
         private static readonly Regex BoolRegex = new Regex(@"(true|false)");
-        public static char cipher(char ch, int key)
-        {
-            if (!char.IsLetter(ch))
-            {
 
-                return ch;
-            }
-
-            char d = char.IsUpper(ch) ? 'A' : 'a';
-            return (char)((((ch + key) - d) % 26) + d);
-
-
-        }
-
-        public static string Encipher(string input, int key)
-        {
-            string output = string.Empty;
-
-            foreach (char ch in input)
-                output += cipher(ch, key);
-
-            return output;
-        }
-        public static string Reverse(string s)
-        {
-            char[] charArray = s.ToCharArray();
-            Array.Reverse(charArray);
-            return new string(charArray);
-        }
-        public static string Base64Encode(string plainText)
-        {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
-        }
         public Image GetCaptchaImageraw()
         {
             //load Steam page
@@ -91,27 +57,12 @@ namespace SteamAccCreator.Web
             }
         }
 
-        private string GetMD5()
-        {
-            System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            System.IO.FileStream stream = new System.IO.FileStream(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-
-            md5.ComputeHash(stream);
-
-            stream.Close();
-
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            for (int i = 0; i < md5.Hash.Length; i++)
-                sb.Append(md5.Hash[i].ToString("x2"));
-
-            return sb.ToString().ToUpperInvariant();
-        }
-        public string[] GetCaptchaImage(ref string _status,bool usetwocap = false)
+        public string[] GetCaptchaImage(ref string _status, bool usetwocap = false)
         {
             string[] sols = { "" };
 
             _status = "Getting Captcha...";
-          //  mainForm.UpdateStatus();
+            //  mainForm.UpdateStatus();
 
             //load Steam page
             _client.BaseUrl = JoinUri;
@@ -142,17 +93,17 @@ namespace SteamAccCreator.Web
             {
                 _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
             }
-           
+
             string finalpayload = "";
-            for(int i = 0;i<1;i++)
+            for (int i = 0; i < 1; i++)
             {
-                _status = "Getting Captcha.. "+(i/10)*100+"%";
-               // mainForm.UpdateStatus(_index, _status);
+                _status = "Getting Captcha.. " + (i / 10) * 100 + "%";
+                // mainForm.UpdateStatus(_index, _status);
 
                 var captchaResponse = _client.DownloadData(_request);
                 string cap1 = getbasefromimage(captchaResponse);
-     
-                    finalpayload = cap1;
+
+                finalpayload = cap1;
 
             }
             _status = "Recognizing Captcha!";
@@ -175,7 +126,7 @@ namespace SteamAccCreator.Web
                 }
                 else
                 {
-                    
+
                     try
                     {
                         var id = respp[1];
@@ -185,7 +136,7 @@ namespace SteamAccCreator.Web
                         srequest = new RestSharp.RestRequest("res.php", RestSharp.Method.POST);
                         srequest.AddParameter("key", MainForm.twocapkey);
                         srequest.AddParameter("action", "get");
-                        srequest.AddParameter("id",id);
+                        srequest.AddParameter("id", id);
                         srequest.AddParameter("soft_id", "2370");
                         srequest.AddParameter("json", "0");
                         responsecapx = _client.Execute(srequest);
@@ -211,9 +162,10 @@ namespace SteamAccCreator.Web
                                 sols[0] = respp[1];
                                 return sols;
                             }
-                        }else
+                        }
+                        else
                         {
-                           
+
                             sols[0] = respp[1];
                             return sols;
 
@@ -275,7 +227,7 @@ namespace SteamAccCreator.Web
 
         }
 
-        public bool CreateAccount(string email, string[] captchaText, ref string status,int n)
+        public bool CreateAccount(string email, string[] captchaText, ref string status, int n)
         {
             ;
             _client.BaseUrl = VerifyCaptchaUri;
@@ -292,7 +244,7 @@ namespace SteamAccCreator.Web
             _request.AddParameter("email", email);
             _request.AddParameter("count", "1");
             var response = _client.Execute(_request);
-           
+
             _request.Parameters.Clear();
 
             if (!response.IsSuccessful)
@@ -308,10 +260,10 @@ namespace SteamAccCreator.Web
             if (!bCaptchaMatches)
             {
                 status = Error.WRONG_CAPTCHA;
-                if ((captchaText.Length-1) < (n+1))
+                if ((captchaText.Length - 1) < (n + 1))
                     return false;
                 else
-                     return CreateAccount(email, captchaText, ref status,n+1);
+                    return CreateAccount(email, captchaText, ref status, n + 1);
             }
 
             if (!bEmailAvail)
@@ -333,7 +285,6 @@ namespace SteamAccCreator.Web
 
             response = _client.Execute(_request);
             _request.Parameters.Clear();
-            //dynamic jsonResponse;
             try
             {
                 dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
@@ -356,19 +307,11 @@ namespace SteamAccCreator.Web
                     }
                     return false;
                 }
-               
-            
-            
-           
 
-            _sessionId = jsonResponse.sessionid;
-            status = "Waiting for email to be verified";
-
+                _sessionId = jsonResponse.sessionid;
+                status = "Waiting for email to be verified";
             }
-            catch (Exception)
-            {
-                
-            }
+            catch { }
 
             return true;
         }
@@ -391,7 +334,7 @@ namespace SteamAccCreator.Web
             {
                 case "1":
                     status = "Email confirmed..Done!";
- 
+
                     return true;
 
                 case "42":
@@ -416,7 +359,7 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        public bool CompleteSignup(string alias, string password, ref string status, ref long steamId,bool addcsgo)
+        public bool CompleteSignup(string alias, string password, ref string status, ref long steamId, bool addcsgo)
         {
             if (!CheckAlias(alias, ref status))
                 return false;
@@ -441,7 +384,7 @@ namespace SteamAccCreator.Web
             {
                 _cookieJar.Add(new Cookie(sessionCookie.Name, sessionCookie.Value, sessionCookie.Path, sessionCookie.Domain));
             }
-            
+
             _request.Parameters.Clear();
 
             dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
@@ -539,7 +482,5 @@ namespace SteamAccCreator.Web
             status = Error.PASSWORD_UNSAFE;
             return false;
         }
-
-
     }
 }
