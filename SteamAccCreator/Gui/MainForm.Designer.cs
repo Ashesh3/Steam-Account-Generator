@@ -50,6 +50,11 @@ namespace SteamAccCreator.Gui
             this.autocap = new System.Windows.Forms.CheckBox();
             this.pnlCreation = new System.Windows.Forms.GroupBox();
             this.dataAccounts = new System.Windows.Forms.DataGridView();
+            this.colMail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colAlias = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPass = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSteamId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -62,6 +67,7 @@ namespace SteamAccCreator.Gui
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.capHandMode = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.captwoapikey = new System.Windows.Forms.TextBox();
             this.captchasolutions = new System.Windows.Forms.RadioButton();
@@ -70,18 +76,12 @@ namespace SteamAccCreator.Gui
             this.secretkey = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.apikey = new System.Windows.Forms.TextBox();
-            this.colMail = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colAlias = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPass = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colSteamId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+            this.linkCoder = new System.Windows.Forms.LinkLabel();
             this.label2 = new System.Windows.Forms.Label();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.linkTelegram = new System.Windows.Forms.LinkLabel();
+            this.label3 = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.capHandMode = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.nmbrAmountAccounts)).BeginInit();
             this.pnlSettings.SuspendLayout();
             this.pnlCreation.SuspendLayout();
@@ -381,6 +381,61 @@ namespace SteamAccCreator.Gui
             this.dataAccounts.TabIndex = 19;
             this.dataAccounts.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataAccounts_CellContentClick);
             // 
+            // colMail
+            // 
+            this.colMail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colMail.Frozen = true;
+            this.colMail.HeaderText = "Mail";
+            this.colMail.Name = "colMail";
+            this.colMail.ReadOnly = true;
+            this.colMail.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colMail.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colMail.Width = 32;
+            // 
+            // colAlias
+            // 
+            this.colAlias.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colAlias.Frozen = true;
+            this.colAlias.HeaderText = "Alias";
+            this.colAlias.Name = "colAlias";
+            this.colAlias.ReadOnly = true;
+            this.colAlias.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colAlias.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colAlias.Width = 35;
+            // 
+            // colPass
+            // 
+            this.colPass.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colPass.Frozen = true;
+            this.colPass.HeaderText = "Pass";
+            this.colPass.Name = "colPass";
+            this.colPass.ReadOnly = true;
+            this.colPass.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colPass.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colPass.Width = 36;
+            // 
+            // colSteamId
+            // 
+            this.colSteamId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colSteamId.Frozen = true;
+            this.colSteamId.HeaderText = "Steam ID";
+            this.colSteamId.Name = "colSteamId";
+            this.colSteamId.ReadOnly = true;
+            this.colSteamId.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colSteamId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colSteamId.Width = 57;
+            // 
+            // colStatus
+            // 
+            this.colStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colStatus.Frozen = true;
+            this.colStatus.HeaderText = "Status";
+            this.colStatus.Name = "colStatus";
+            this.colStatus.ReadOnly = true;
+            this.colStatus.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colStatus.Width = 651;
+            // 
             // groupBox1
             // 
             this.groupBox1.AutoSize = true;
@@ -542,6 +597,17 @@ namespace SteamAccCreator.Gui
             this.groupBox3.Text = "Captcha Solving";
             this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
+            // capHandMode
+            // 
+            this.capHandMode.AutoSize = true;
+            this.capHandMode.Location = new System.Drawing.Point(106, 21);
+            this.capHandMode.Name = "capHandMode";
+            this.capHandMode.Size = new System.Drawing.Size(81, 17);
+            this.capHandMode.TabIndex = 32;
+            this.capHandMode.Text = "Hand mode";
+            this.capHandMode.UseVisualStyleBackColor = true;
+            this.capHandMode.CheckedChanged += new System.EventHandler(this.capHandMode_CheckedChanged);
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -636,67 +702,12 @@ namespace SteamAccCreator.Gui
             this.apikey.Size = new System.Drawing.Size(168, 20);
             this.apikey.TabIndex = 24;
             // 
-            // colMail
-            // 
-            this.colMail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colMail.Frozen = true;
-            this.colMail.HeaderText = "Mail";
-            this.colMail.Name = "colMail";
-            this.colMail.ReadOnly = true;
-            this.colMail.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.colMail.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colMail.Width = 32;
-            // 
-            // colAlias
-            // 
-            this.colAlias.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colAlias.Frozen = true;
-            this.colAlias.HeaderText = "Alias";
-            this.colAlias.Name = "colAlias";
-            this.colAlias.ReadOnly = true;
-            this.colAlias.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.colAlias.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colAlias.Width = 35;
-            // 
-            // colPass
-            // 
-            this.colPass.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colPass.Frozen = true;
-            this.colPass.HeaderText = "Pass";
-            this.colPass.Name = "colPass";
-            this.colPass.ReadOnly = true;
-            this.colPass.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.colPass.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colPass.Width = 36;
-            // 
-            // colSteamId
-            // 
-            this.colSteamId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colSteamId.Frozen = true;
-            this.colSteamId.HeaderText = "Steam ID";
-            this.colSteamId.Name = "colSteamId";
-            this.colSteamId.ReadOnly = true;
-            this.colSteamId.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.colSteamId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colSteamId.Width = 57;
-            // 
-            // colStatus
-            // 
-            this.colStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colStatus.Frozen = true;
-            this.colStatus.HeaderText = "Status";
-            this.colStatus.Name = "colStatus";
-            this.colStatus.ReadOnly = true;
-            this.colStatus.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.colStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colStatus.Width = 651;
-            // 
             // groupBox4
             // 
             this.groupBox4.AutoSize = true;
-            this.groupBox4.Controls.Add(this.linkLabel1);
+            this.groupBox4.Controls.Add(this.linkCoder);
             this.groupBox4.Controls.Add(this.label2);
-            this.groupBox4.Controls.Add(this.linkLabel2);
+            this.groupBox4.Controls.Add(this.linkTelegram);
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.groupBox4.Location = new System.Drawing.Point(15, 609);
@@ -706,27 +717,19 @@ namespace SteamAccCreator.Gui
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "About";
             // 
-            // label3
+            // linkCoder
             // 
-            this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label3.Location = new System.Drawing.Point(5, 20);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(140, 13);
-            this.label3.TabIndex = 32;
-            this.label3.Text = "Join Telegram For Updates: ";
-            // 
-            // linkLabel2
-            // 
-            this.linkLabel2.AutoSize = true;
-            this.linkLabel2.Location = new System.Drawing.Point(140, 20);
-            this.linkLabel2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.linkLabel2.Name = "linkLabel2";
-            this.linkLabel2.Size = new System.Drawing.Size(128, 13);
-            this.linkLabel2.TabIndex = 33;
-            this.linkLabel2.TabStop = true;
-            this.linkLabel2.Text = "https://tele.click/sag_bot";
+            this.linkCoder.AutoSize = true;
+            this.linkCoder.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.linkCoder.Location = new System.Drawing.Point(58, 37);
+            this.linkCoder.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.linkCoder.Name = "linkCoder";
+            this.linkCoder.Size = new System.Drawing.Size(149, 13);
+            this.linkCoder.TabIndex = 35;
+            this.linkCoder.TabStop = true;
+            this.linkCoder.Text = "https://tele.click/dedsec1337";
+            this.linkCoder.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.linkCoder.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
             // label2
             // 
@@ -739,31 +742,34 @@ namespace SteamAccCreator.Gui
             this.label2.TabIndex = 34;
             this.label2.Text = "Coded by: ";
             // 
-            // linkLabel1
+            // linkTelegram
             // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(58, 37);
-            this.linkLabel1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(149, 13);
-            this.linkLabel1.TabIndex = 35;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "https://tele.click/dedsec1337";
+            this.linkTelegram.AutoSize = true;
+            this.linkTelegram.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.linkTelegram.Location = new System.Drawing.Point(140, 20);
+            this.linkTelegram.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.linkTelegram.Name = "linkTelegram";
+            this.linkTelegram.Size = new System.Drawing.Size(128, 13);
+            this.linkTelegram.TabIndex = 33;
+            this.linkTelegram.TabStop = true;
+            this.linkTelegram.Text = "https://tele.click/sag_bot";
+            this.linkTelegram.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.linkTelegram.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label3.Location = new System.Drawing.Point(5, 20);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(140, 13);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "Join Telegram For Updates: ";
             // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
-            // 
-            // capHandMode
-            // 
-            this.capHandMode.AutoSize = true;
-            this.capHandMode.Location = new System.Drawing.Point(106, 21);
-            this.capHandMode.Name = "capHandMode";
-            this.capHandMode.Size = new System.Drawing.Size(81, 17);
-            this.capHandMode.TabIndex = 32;
-            this.capHandMode.Text = "Hand mode";
-            this.capHandMode.UseVisualStyleBackColor = true;
-            this.capHandMode.CheckedChanged += new System.EventHandler(this.capHandMode_CheckedChanged);
             // 
             // MainForm
             // 
@@ -850,9 +856,9 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.DataGridViewTextBoxColumn colSteamId;
         private System.Windows.Forms.DataGridViewTextBoxColumn colStatus;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.LinkLabel linkCoder;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.LinkLabel linkLabel2;
+        private System.Windows.Forms.LinkLabel linkTelegram;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.CheckBox capHandMode;

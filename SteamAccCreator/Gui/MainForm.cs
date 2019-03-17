@@ -495,5 +495,19 @@ namespace SteamAccCreator.Gui
                 captwoapikey.Enabled =
                 autocap.Enabled = !capHandMode.Checked;
         }
+
+        private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var link = sender as LinkLabel;
+            if (link == null)
+                return;
+
+            try
+            {
+                System.Diagnostics.Process.Start(link.Text);
+                e.Link.Visited = true;
+            }
+            catch { }
+        }
     }
 }
