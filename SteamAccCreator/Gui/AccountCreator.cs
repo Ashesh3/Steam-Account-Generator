@@ -398,11 +398,10 @@ namespace SteamAccCreator.Gui
             {
                 if (_auto)
                 {
-                    //Ask for captcha
                     _status = "Recognizing Captcha...";
                     UpdateStatus();
                     _captcha = ShowCaptchaDialog(_httpHandler, ref _status, true, _mainForm.Use2Cap);
-                    if (_captcha[0] == "")
+                    if (string.IsNullOrEmpty(_captcha[0]))
                     {
                         _status = "Error on Captcha Service";
                         UpdateStatus();
@@ -412,10 +411,16 @@ namespace SteamAccCreator.Gui
                 }
                 else
                 {
-                    //Ask for captcha
-                    _status = "Creating Account...";
+                    _status = "Waiting for captcha solution...";
                     UpdateStatus();
                     _captcha = ShowCaptchaDialog(_httpHandler, ref _status, false, false);
+                    if (string.IsNullOrEmpty(_captcha[0]))
+                    {
+                        _status = "No captcha - no account!";
+                        UpdateStatus();
+                        success = false;
+                        return;
+                    }
                 }
                 _status = "Creating Account...";
                 UpdateStatus();
@@ -495,27 +500,20 @@ namespace SteamAccCreator.Gui
 
         private string[] ShowCaptchaDialog(HttpHandler httpHandler, ref string _status, bool _auto, bool usetwocap = false)
         {
-            if (_auto)
+            var captcha = default(string[]);
+            using (var captchaDialog = new CaptchaDialog(httpHandler, ref _status, _auto, usetwocap))
             {
-                var captchaDialog1 = new CaptchaDialog(httpHandler, ref _status, true, usetwocap);
-                string[] captcha = captchaDialog1.ans;
-
-                Console.Write(captcha);
-                captchaDialog1.Dispose();
-                return captcha;
-            }
-            else
-            {
-                var captchaDialog = new CaptchaDialog(httpHandler, ref _status);
-                string[] captcha = { "" };
-
-                if (captchaDialog.ShowDialog() == DialogResult.OK)
+                if (_auto)
+                    captcha = captchaDialog.ans;
+                else
                 {
-                    captcha[0] = captchaDialog.txtCaptcha.Text;
+                    if (captchaDialog.ShowDialog() == DialogResult.OK)
+                        captcha = new[] { captchaDialog.txtCaptcha.Text };
+                    else
+                        captcha = new[] { "" };
                 }
-                captchaDialog.Dispose();
-                return captcha;
             }
+            return captcha;
         }
     }
 }
