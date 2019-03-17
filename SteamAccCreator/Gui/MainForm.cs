@@ -148,15 +148,30 @@ namespace SteamAccCreator.Gui
         {
             BeginInvoke(new Action(() =>
             {
+                UpdateStatus(i,
+                    dataAccounts.Rows[i].Cells[0].Value.ToString(),
+                    dataAccounts.Rows[i].Cells[1].Value.ToString(),
+                    dataAccounts.Rows[i].Cells[2].Value.ToString(),
+                    steamId,
+                    status);
+            }));
+        }
+
+        public void UpdateStatus(int i, string mail, string alias, string password, long steamId, string status)
+            => UpdateStatus(i, mail, alias, password, $"{steamId}", status);
+        public void UpdateStatus(int i, string mail, string alias, string password, string steamId, string status)
+        {
+            BeginInvoke(new Action(() =>
+            {
                 try
                 {
+                    dataAccounts.Rows[i].Cells[0].Value = mail;
+                    dataAccounts.Rows[i].Cells[1].Value = alias;
+                    dataAccounts.Rows[i].Cells[2].Value = password;
                     dataAccounts.Rows[i].Cells[3].Value = $"{steamId}";
                     dataAccounts.Rows[i].Cells[4].Value = status;
                 }
-                catch (Exception)
-                {
-
-                }
+                catch { }
             }));
         }
 

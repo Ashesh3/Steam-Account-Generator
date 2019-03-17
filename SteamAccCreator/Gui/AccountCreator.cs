@@ -280,9 +280,11 @@ namespace SteamAccCreator.Gui
                 {
                     case Error.PASSWORD_UNSAFE:
                         _pass = ShowUpdateInfoBox(_status);
+                        UpdateStatusFull();
                         break;
                     case Error.ALIAS_UNAVAILABLE:
                         _alias = ShowUpdateInfoBox(_status);
+                        UpdateStatusFull();
                         break;
                     default:
                         return;
@@ -298,6 +300,8 @@ namespace SteamAccCreator.Gui
             }
         }
 
+        public void UpdateStatusFull()
+            => _mainForm.UpdateStatus(_index, _mail, _alias, _pass, _steamId, _status);
         public void UpdateStatus()
         {
             _mainForm.UpdateStatus(_index, _status, _steamId);
