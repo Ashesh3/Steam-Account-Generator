@@ -7,16 +7,8 @@ namespace SteamAccCreator.Web
 {
     public class MailHandler
     {
-        private static readonly Random Random = new Random();
         private readonly RestClient _client = new RestClient();
         private readonly RestRequest _request = new RestRequest();
-        public static int GetRandomNumber(int min, int max)
-        {
-            lock (Random) // synchronize
-            {
-                return Random.Next(min, max);
-            }
-        }
 
         public static readonly Uri MailboxUri = new Uri("https://fapi.cloudaccess.host/mail.php");
         private static readonly Uri SteamUri = new Uri("https://store.steampowered.com/account/newaccountverification?");

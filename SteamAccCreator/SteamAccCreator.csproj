@@ -116,6 +116,7 @@
     <Compile Include="Gui\AccountCreator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility.cs" />
     <Compile Include="Web\Error.cs" />
     <Compile Include="Web\HttpHandler.cs" />
     <Compile Include="Web\MailHandler.cs" />

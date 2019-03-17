@@ -254,8 +254,6 @@ namespace SteamAccCreator.Gui
         };
         #endregion
 
-        private static readonly Random Random = new Random();
-
         private string _status;
 
         private readonly HttpHandler _httpHandler = new HttpHandler();
@@ -269,14 +267,6 @@ namespace SteamAccCreator.Gui
         private string[] _captcha;
         private readonly string _enteredAlias;
         private readonly int _index;
-
-        public static int GetRandomNumber(int min, int max)
-        {
-            lock (Random) // synchronize
-            {
-                return Random.Next(min, max);
-            }
-        }
 
         public AccountCreator(MainForm mainForm, string mail, string alias, string pass, int index, bool auto)
         {
@@ -294,12 +284,12 @@ namespace SteamAccCreator.Gui
             if (_mainForm.RandomAlias)
             {
                 if (_mainForm.Neatusername)
-                    _alias = new CultureInfo("en-US").TextInfo.ToTitleCase(Adj[GetRandomNumber(0, Adj.Length - 1)]) + 
-                        new CultureInfo("en-US").TextInfo.ToTitleCase(Adj[GetRandomNumber(0, Adj.Length - 1)]) + 
-                        new CultureInfo("en-US").TextInfo.ToTitleCase(Adj[GetRandomNumber(0, Adj.Length - 1)]) + 
-                        Animals[GetRandomNumber(0, Animals.Length - 1)];
+                    _alias = Adj.RandomElement().ToTitleCase() +
+                        Adj.RandomElement().ToTitleCase() +
+                        Adj.RandomElement().ToTitleCase() +
+                        Animals.RandomElement();
                 else
-                    _alias = GetRandomString(12);
+                    _alias = Utility.GetRandomString(12);
             }
             else
                 _alias = _enteredAlias + _index;
@@ -308,7 +298,7 @@ namespace SteamAccCreator.Gui
             {
                 if (_mainForm.NeatPassword)
                 {
-                    _pass = GetRandomString(24) + GetRandomNumber(100, 1000);
+                    _pass = Utility.GetRandomString(24) + Utility.GetRandomNumber(100, 1000);
 
                     try
                     {
@@ -316,18 +306,18 @@ namespace SteamAccCreator.Gui
                         var request21 = new RestSharp.RestRequest("api/v1/passphrase/plain?pc=1&wc=3&sp=n&maxCh=30", RestSharp.Method.GET);
                         var queryResult1 = _client21.Execute(request21);
                         var neatPasw = queryResult1.Content.Trim();
-                        _pass = neatPasw + GetRandomString(2) + GetRandomNumber(100, 1000);
+                        _pass = neatPasw + Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
                     }
                     catch (Exception)
                     {
-                        _pass = new CultureInfo("en-US").TextInfo.ToTitleCase(Adj[GetRandomNumber(0, Adj.Length - 1)]) +
-                            new CultureInfo("en-US").TextInfo.ToTitleCase(Adj[GetRandomNumber(0, Adj.Length - 1)]) + 
-                            new CultureInfo("en-US").TextInfo.ToTitleCase(Animals[GetRandomNumber(0, Animals.Length - 1)]) + 
-                            GetRandomString(2) + GetRandomNumber(100, 1000);
+                        _pass = Adj.RandomElement().ToTitleCase() +
+                            Adj.RandomElement().ToTitleCase() +
+                            Adj.RandomElement().ToTitleCase() +
+                            Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
                     }
                 }
                 else
-                    _pass = GetRandomString(24) + GetRandomNumber(100, 1000);
+                    _pass = Utility.GetRandomString(24) + Utility.GetRandomNumber(100, 1000);
             }
             if (_mainForm.RandomMail)
             {
@@ -398,18 +388,6 @@ namespace SteamAccCreator.Gui
 
                 UpdateStatus();
             }
-        }
-
-        private string GetRandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var stringChars = new char[length];
-
-            for (var i = 0; i < length; i++)
-            {
-                stringChars[i] = chars[Random.Next(chars.Length)];
-            }
-            return new string(stringChars);
         }
 
         private void StartCreation()
