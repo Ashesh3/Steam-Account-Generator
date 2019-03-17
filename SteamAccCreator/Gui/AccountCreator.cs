@@ -88,7 +88,8 @@ namespace SteamAccCreator.Gui
                         var _client21 = new RestSharp.RestClient("https://makemeapassword.ligos.net");
                         var request21 = new RestSharp.RestRequest("api/v1/passphrase/plain?pc=1&wc=3&sp=n&maxCh=30", RestSharp.Method.GET);
                         var queryResult1 = _client21.Execute(request21);
-                        _pass = queryResult1.Content + GetRandomString(2) + GetRandomNumber(100, 1000);
+                        var neatPasw = queryResult1.Content.Trim();
+                        _pass = neatPasw + GetRandomString(2) + GetRandomNumber(100, 1000);
                     }
                     catch (Exception)
                     {
