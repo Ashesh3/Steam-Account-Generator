@@ -2,6 +2,7 @@
 
 namespace SteamAccCreator.Models
 {
+    [Serializable]
     public class OutputConfig
     {
         public bool Enabled { get; set; }

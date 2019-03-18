@@ -1,5 +1,8 @@
-﻿namespace SteamAccCreator.Models
+﻿using System;
+
+namespace SteamAccCreator.Models
 {
+    [Serializable]
     public class CredentialConfig
     {
         public bool Random { get; set; }

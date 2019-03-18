@@ -1,5 +1,8 @@
-﻿namespace SteamAccCreator.Models
+﻿using System;
+
+namespace SteamAccCreator.Models
 {
+    [Serializable]
     public class GameInfo
     {
         public string Name { get; set; }

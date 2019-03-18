@@ -2,6 +2,7 @@
 
 namespace SteamAccCreator.Models
 {
+    [Serializable]
     public class Configuration
     {
         public MailConfig Mail { get; set; } = new MailConfig();
@@ -24,6 +25,6 @@ namespace SteamAccCreator.Models
         }
 
         public Configuration Clone()
-            => this.MemberwiseClone() as Configuration;
+            => this.DeepClone();
     }
 }

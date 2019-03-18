@@ -1,5 +1,8 @@
-﻿namespace SteamAccCreator.Models
+﻿using System;
+
+namespace SteamAccCreator.Models
 {
+    [Serializable]
     public class CaptchaSolvingConfig
     {
         public bool Enabled { get; set; }
