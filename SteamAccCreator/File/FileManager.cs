@@ -9,13 +9,6 @@ namespace SteamAccCreator.File
     {
         private static readonly Random Random = new Random();
 
-        public enum FileWriteType
-        {
-            Original,
-            Detailed,
-            KeePassCSV
-        }
-
         public static int GetRandomNumber(int min, int max)
         {
             lock (Random) // synchronize
@@ -23,7 +16,7 @@ namespace SteamAccCreator.File
                 return Random.Next(min, max);
             }
         }
-        public void WriteIntoFile(string mail, bool writeMail, string alias, string pass, long steamId, string path, FileWriteType fwType)
+        public void WriteIntoFile(string mail, bool writeMail, string alias, string pass, long steamId, string path, SaveType fwType)
         {
             try
             {
@@ -33,7 +26,7 @@ namespace SteamAccCreator.File
                 {
                     switch (fwType)
                     {
-                        case FileWriteType.Detailed:
+                        case SaveType.FormattedTxt:
                             {
                                 if (writeMail)
                                     writer.WriteLine("Mail: \t\t" + mail);
@@ -48,7 +41,7 @@ namespace SteamAccCreator.File
                                 writer.WriteLine("###########################");
                             }
                             break;
-                        case FileWriteType.Original:
+                        case SaveType.PlainTxt:
                             {
                                 if (writeMail == false)
                                     writer.WriteLine(alias + ":" + pass);
@@ -56,7 +49,7 @@ namespace SteamAccCreator.File
                                     writer.WriteLine(alias + ":" + pass + ":" + mail);
                             }
                             break;
-                        case FileWriteType.KeePassCSV:
+                        case SaveType.KeepassCsv:
                             {
                                 writer.WriteLine($"{alias},{alias},{pass},https://steamcommunity.com/profiles/{steamId}/,{((writeMail) ? mail : "")}");
                             }

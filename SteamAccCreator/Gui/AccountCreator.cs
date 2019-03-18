@@ -490,7 +490,7 @@ namespace SteamAccCreator.Gui
             if (Config.Output.Enabled)
             {
                 UpdateStatus("Writing to file...");
-                _fileManager.WriteIntoFile(Mail, Config.Output.WriteEmails, Login, Password, SteamId, Config.Output.Path, _mainForm.original);
+                _fileManager.WriteIntoFile(Mail, Config.Output.WriteEmails, Login, Password, SteamId, Config.Output.Path, Config.Output.SaveType);
             }
         }
 

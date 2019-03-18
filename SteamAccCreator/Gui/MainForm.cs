@@ -203,8 +203,6 @@ namespace SteamAccCreator.Gui
             LinkFwPath.Text = Configuration.Output.Path = saveFileDialog1.FileName;
         }
 
-        public File.FileManager.FileWriteType original = File.FileManager.FileWriteType.Original;
-
         public static bool SocketConnect(string host, int port)
         {
             var is_success = false;
