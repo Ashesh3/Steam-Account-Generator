@@ -403,6 +403,7 @@ namespace SteamAccCreator.Gui
             this.CbAddGames.TabIndex = 21;
             this.CbAddGames.Text = "Add games from list";
             this.CbAddGames.UseVisualStyleBackColor = true;
+            this.CbAddGames.CheckedChanged += new System.EventHandler(this.CbAddGames_CheckedChanged);
             // 
             // CbRandomPassword
             // 

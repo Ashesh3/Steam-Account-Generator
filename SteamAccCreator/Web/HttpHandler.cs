@@ -445,18 +445,22 @@ namespace SteamAccCreator.Web
                     if (game == null)
                         continue;
 
-                    _client.BaseUrl = new Uri("https://store.steampowered.com/checkout/addfreelicense");
-                    if (UseProxy)
-                        _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+                    try
+                    {
+                        _client.BaseUrl = new Uri("https://store.steampowered.com/checkout/addfreelicense");
+                        if (UseProxy)
+                            _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
 
-                    updateStatus($"Adding game: {game.Name}");
+                        updateStatus($"Adding game: {game.Name}");
 
-                    _request.Method = Method.POST;
-                    _request.AddParameter("action", "add_to_cart");
-                    _request.AddParameter("subid", game.SubId);
-                    _request.AddParameter("sessionid", sess);
-                    var responce111 = _client.Execute(_request);
-                    _client.FollowRedirects = true;
+                        _request.Method = Method.POST;
+                        _request.AddParameter("action", "add_to_cart");
+                        _request.AddParameter("subid", game.SubId);
+                        _request.AddParameter("sessionid", sess);
+                        var responce111 = _client.Execute(_request);
+                        _client.FollowRedirects = true;
+                    }
+                    catch { }
 
                     if (game != addThisGames.Last())
                         Thread.Sleep(500);

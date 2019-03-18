@@ -399,6 +399,11 @@ namespace SteamAccCreator.Gui
             System.IO.File.WriteAllText(saveFileDialog1.FileName, data);
         }
 
+        private void CbAddGames_CheckedChanged(object sender, EventArgs e)
+        {
+            Configuration.Games.AddGames = CbAddGames.Checked;
+        }
+
         private void CbCapAuto_CheckedChanged(object sender, EventArgs e)
         {
             if (Configuration.Captcha.Enabled = CbCapAuto.Checked)
