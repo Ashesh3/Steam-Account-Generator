@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -10,127 +13,139 @@ namespace SteamAccCreator.Gui
 {
     public partial class MainForm : Form
     {
-        public bool RandomMail { get; private set; }
-        public bool UseCsgo { get; private set; }
-        public bool RandomAlias { get; private set; }
-        public bool Neatusername { get; private set; }
-        public bool NeatPassword { get; private set; }
-        public bool RandomPass { get; private set; }
-        public bool WriteIntoFile { get; private set; }
-        public bool UseProxy { get; private set; }
-        public bool AutoMailVerify { get; private set; }
-        public bool UseCaptchaService { get; private set; }
-        public bool Use2Cap { get; private set; }
-        public static string apixkey;
-        public static string twocapkey;
-        public static string secxkey;
-        private int _index = 0;
+        private static readonly string FILE_CONFIG = Path.Combine(Environment.CurrentDirectory, "config.json");
+
+        public Models.Configuration Configuration { get; private set; } = new Models.Configuration();
 
         public MainForm()
         {
             InitializeComponent();
-            comboBox1.SelectedIndex = 0;
-        }
 
-        public string proxyval = null;
-        public int proxyport = 0;
-        public bool proxy = false;
+            // load config here
+            try
+            {
+                if (System.IO.File.Exists(FILE_CONFIG))
+                {
+                    var configData = System.IO.File.ReadAllText(FILE_CONFIG);
+                    Configuration = Newtonsoft.Json.JsonConvert.DeserializeObject<Models.Configuration>(configData);
+                }
+            }
+            catch { Configuration = new Models.Configuration(); }
+
+            Configuration.FixNulls();
+
+            if (string.IsNullOrEmpty(Configuration.Output.Path))
+                Configuration.Output.Path = Path.Combine(Environment.CurrentDirectory, "accounts.txt");
+
+            CbRandomMail.Checked = Configuration.Mail.Random;
+            txtEmail.Text = Configuration.Mail.Value;
+
+            CbRandomLogin.Checked = Configuration.Login.Random;
+            CbNeatLogin.Checked = Configuration.Login.Neat;
+            txtAlias.Text = Configuration.Login.Value;
+
+            CbRandomPassword.Checked = Configuration.Password.Random;
+            CbNeatPassword.Checked = Configuration.Password.Neat;
+            txtPass.Text = Configuration.Password.Value;
+
+            CbAddGames.Checked = Configuration.Games.AddGames;
+            ListGames.Items.AddRange(Configuration.Games.GamesToAdd ?? new Models.GameInfo[0]);
+
+            CbCapAuto.Checked = Configuration.Captcha.Enabled;
+            CbCapHandMode.Checked = Configuration.Captcha.HandMode;
+            RadCapCaptchasolutions.Checked = !(RadCapRuCaptcha.Checked = Configuration.Captcha.Service == Enums.CaptchaService.RuCaptcha);
+            TbCapSolutionsApi.Text = Configuration.Captcha.CaptchaSolutions.ApiKey;
+            TbCapSolutionsSecret.Text = Configuration.Captcha.CaptchaSolutions.ApiSecret;
+            TbCapRuCapApi.Text = Configuration.Captcha.RuCaptcha.ApiKey;
+
+            CbFwEnable.Checked = Configuration.Output.Enabled;
+            CbFwMail.Checked = Configuration.Output.WriteEmails;
+            LinkFwPath.Text = Configuration.Output.Path;
+            CbFwOutType.SelectedIndex = (int)Configuration.Output.SaveType;
+
+            CbProxyEnabled.Checked = Configuration.Proxy.Enabled;
+            TbProxyAddr.Text = Configuration.Proxy.Host;
+            TbProxyPort.Value = (Configuration.Proxy.Port < 1 || Configuration.Proxy.Port > 65535) ? Configuration.Proxy.Port = 1 : Configuration.Proxy.Port;
+        }
 
         public async void BtnCreateAccount_Click(object sender, EventArgs e)
         {
-            //btnCreateAccount.Visible = false;
-            if (nmbrAmountAccounts.Value > 100)
-                nmbrAmountAccounts.Value = 100;
-            else if (nmbrAmountAccounts.Value < 1)
-                nmbrAmountAccounts.Value = 1;
+            if (NumAccountsCount.Value > 100)
+                NumAccountsCount.Value = 100;
+            else if (NumAccountsCount.Value < 1)
+                NumAccountsCount.Value = 1;
 
-            if (UseCaptchaService)
+            Configuration.Captcha.Enabled = CbCapAuto.Checked && CbCapAuto.Enabled;
+            if (Configuration.Captcha.Enabled)
             {
-                if (!Use2Cap)
+                switch (Configuration.Captcha.Service)
                 {
-                    if (secretkey.Text == "" || apikey.Text == "")
-                    {
-                        UseCaptchaService = false;
-                        autocap.Checked = false;
-                    }
-                    else
-                    {
-                        apixkey = apikey.Text;
-                        secxkey = secretkey.Text;
-                    }
-                }
-                else
-                {
-                    if (captwoapikey.Text == "")
-                    {
-                        UseCaptchaService = false;
-                        autocap.Checked = false;
-                    }
-                    else
-                    {
-                        twocapkey = captwoapikey.Text;
-                    }
+                    case Enums.CaptchaService.Captchasolutions:
+                        {
+                            if (string.IsNullOrEmpty(TbCapSolutionsApi.Text) ||
+                                string.IsNullOrEmpty(TbCapSolutionsSecret.Text))
+                            {
+                                CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
+                            }
+                            else
+                            {
+                                Configuration.Captcha.CaptchaSolutions.ApiKey = TbCapSolutionsApi.Text;
+                                Configuration.Captcha.CaptchaSolutions.ApiSecret = TbCapSolutionsSecret.Text;
+                            }
+                        }
+                        break;
+                    case Enums.CaptchaService.RuCaptcha:
+                        {
+                            if (string.IsNullOrEmpty(TbCapRuCapApi.Text))
+                                CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
+                            else
+                                Configuration.Captcha.RuCaptcha.ApiKey = TbCapRuCapApi.Text;
+                        }
+                        break;
+                    case Enums.CaptchaService.Unknown:
+                    default:
+                        CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
+                        break;
                 }
             }
 
-            if (checkBox1.Checked == true)
+            Configuration.Proxy.Enabled = CbProxyEnabled.Checked;
+            if (Configuration.Proxy.Enabled)
             {
-                proxyval = textBox1.Text;
-                proxyport = Convert.ToInt32(textBox2.Text);
-                proxy = true;
-            }
-            else
-            {
-                proxy = false;
+                Configuration.Proxy.Host = TbProxyAddr.Text;
+                Configuration.Proxy.Port = (int)TbProxyPort.Value;
             }
 
-            async Task makeSomeShitForValve()
+            if (CbFwEnable.Checked == true && string.IsNullOrEmpty(Configuration.Output.Path))
+                Configuration.Output.Path = Path.Combine(Environment.CurrentDirectory, $"Accounts.{((CbFwOutType.SelectedIndex == 2) ? "csv" : "txt")}");
+
+            var slowCaptchaMode = Configuration.Captcha.HandMode = CbCapHandMode.Checked;
+            if (slowCaptchaMode)
+                CbCapHandMode.Enabled = false;
+
+            for (var i = 0; i < NumAccountsCount.Value; i++)
             {
-                var slowCaptchaMode = capHandMode.Checked;
+                var accCreator = new AccountCreator(this, Configuration.Clone());
                 if (slowCaptchaMode)
-                    capHandMode.Enabled = false;
-
-                for (var i = 0; i < nmbrAmountAccounts.Value; i++)
                 {
-                    var accCreator = new AccountCreator(this, txtEmail.Text, txtAlias.Text, txtPass.Text, _index, UseCaptchaService);
-                    if (slowCaptchaMode)
-                    {
-                        await Task.Run(() => accCreator.Run());
-                    }
-                    else
-                    {
-                        var thread = new Thread(accCreator.Run);
-                        thread.Start();
-                    }
-                    _index++;
-                }
-
-                capHandMode.Enabled = true;
-            }
-
-            if (checkBox4.Checked == true)
-            {
-                if (!string.IsNullOrEmpty(file))
-                {
-                    await makeSomeShitForValve();
+                    await Task.Run(() => accCreator.Run());
                 }
                 else
                 {
-                    MessageBox.Show("Please Select a File to Edit. :)");
+                    var thread = new Thread(accCreator.Run);
+                    thread.Start();
                 }
             }
-            else
-            {
-                await makeSomeShitForValve();
-            }
 
+            CbCapHandMode.Enabled = true;
         }
 
-        public void AddToTable(string mail, string alias, string pass, long steamId)
+        public int AddToTable(string mail, string alias, string pass, long steamId, string status)
         {
-            BeginInvoke(new Action(() =>
+            var index = -1;
+            Invoke(new Action(() =>
             {
-                dataAccounts.Rows.Add(new DataGridViewRow
+                index = dataAccounts.Rows.Add(new DataGridViewRow
                 {
                     Cells =
                     {
@@ -138,20 +153,21 @@ namespace SteamAccCreator.Gui
                         new DataGridViewTextBoxCell {Value = alias},
                         new DataGridViewTextBoxCell {Value = pass},
                         new DataGridViewTextBoxCell {Value = $"{steamId}"},
-                        new DataGridViewTextBoxCell {Value = "Ready"}
+                        new DataGridViewTextBoxCell {Value = status}
                     }
                 });
             }));
+            return index;
         }
 
         public void UpdateStatus(int i, string status, long steamId)
         {
-            BeginInvoke(new Action(() =>
+            Invoke(new Action(() =>
             {
                 UpdateStatus(i,
-                    dataAccounts.Rows[i].Cells[0].Value.ToString(),
-                    dataAccounts.Rows[i].Cells[1].Value.ToString(),
-                    dataAccounts.Rows[i].Cells[2].Value.ToString(),
+                    dataAccounts.Rows[i].Cells[0].Value?.ToString() ?? "",
+                    dataAccounts.Rows[i].Cells[1].Value?.ToString() ?? "",
+                    dataAccounts.Rows[i].Cells[2].Value?.ToString() ?? "",
                     steamId,
                     status);
             }));
@@ -161,7 +177,7 @@ namespace SteamAccCreator.Gui
             => UpdateStatus(i, mail, alias, password, $"{steamId}", status);
         public void UpdateStatus(int i, string mail, string alias, string password, string steamId, string status)
         {
-            BeginInvoke(new Action(() =>
+            Invoke(new Action(() =>
             {
                 try
                 {
@@ -175,155 +191,19 @@ namespace SteamAccCreator.Gui
             }));
         }
 
-
-        private void ChkAutoVerifyMail_CheckedChanged(object sender, EventArgs e)
-        {
-            AutoMailVerify = chkAutoVerifyMail.Checked;
-        }
-
-        private void ChkWriteIntoFile_CheckedChanged(object sender, EventArgs e)
-        {
-            WriteIntoFile = chkWriteIntoFile.Checked;
-        }
-
-        private void ChkRandomMail_CheckedChanged(object sender, EventArgs e)
-        {
-            chkWriteIntoFile.ForeColor = System.Drawing.Color.White;
-            chkAutoVerifyMail.ForeColor = System.Drawing.Color.White;
-            var state = chkRandomMail.Checked;
-            chkAutoVerifyMail.Checked = state;
-            chkAutoVerifyMail.AutoCheck = state;
-            RandomMail = state;
-            txtEmail.Enabled = !state;
-            ToggleForceWriteIntoFile();
-            chkWriteIntoFile.ForeColor = System.Drawing.Color.White;
-            chkAutoVerifyMail.ForeColor = System.Drawing.Color.White;
-        }
-
-        private void ChkRandomPass_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = chkRandomPass.Checked;
-            txtPass.Enabled = !state;
-            RandomPass = state;
-            neatpassBox.Visible = true;
-            NeatPassword = true;
-            ToggleForceWriteIntoFile();
-        }
-
-        private void ChkRandomAlias_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = chkRandomAlias.Checked;
-            Neatusername = true;
-            txtAlias.Enabled = !state;
-            NeatUsername.Visible = state;
-            RandomAlias = state;
-            ToggleForceWriteIntoFile();
-        }
-
         private void ToggleForceWriteIntoFile()
         {
-            var shouldForce = chkRandomMail.Checked || chkRandomPass.Checked || chkRandomAlias.Checked;
-            chkWriteIntoFile.Checked = shouldForce;
-            chkWriteIntoFile.AutoCheck = !shouldForce;
-            chkWriteIntoFile.ForeColor = System.Drawing.Color.White;
-            chkAutoVerifyMail.ForeColor = System.Drawing.Color.White;
-        }
-
-        public bool istrue = false;
-        public string Path = @"accounts.txt";
-
-        private void checkBox4_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox4.Checked == true)
-            {
-                button1.Enabled = true;
-                Path = file;
-            }
-            else
-            {
-                button1.Enabled = false;
-                Path = @"accounts.txt";
-            }
-        }
-
-        public string file = null;
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            saveFileDialog1.Filter = "Text File|*.txt|KeePass CSV|*.csv";
-            saveFileDialog1.Title = "Save Files To";
-
-            saveFileDialog1.CheckPathExists = true;
-            saveFileDialog1.OverwritePrompt = true;
-
-            var isComboBox = sender == comboBox1;
-            if (isComboBox)
-                saveFileDialog1.FilterIndex = 2;
-
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                file = saveFileDialog1.FileName;
-                checkBox4.Checked = true;
-                if (saveFileDialog1.FilterIndex == 2)
-                {
-                    comboBox1.SelectedIndex = (int)(original = File.FileManager.FileWriteType.KeePassCSV);
-                    checkBox4.Enabled = comboBox1.Enabled = false;
-
-                    using (var fw = new StreamWriter(file))
-                    {
-                        fw.WriteLine("Title,User Name,Password,URL,Notes");
-                    }
-                }
-                else
-                    checkBox4.Enabled = comboBox1.Enabled = true;
-            }
-            else if (isComboBox)
-            {
-                comboBox1.SelectedIndex = 0;
-            }
-        }
-
-        private void checkBox7_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox7.Checked == true)
-            {
-                istrue = true;
-            }
-            else
-            {
-                istrue = false;
-            }
+            var shouldForce = CbRandomMail.Checked || CbRandomPassword.Checked || CbRandomLogin.Checked;
+            CbFwEnable.Checked = shouldForce;
+            CbFwEnable.AutoCheck = !shouldForce;
         }
 
         private void saveFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Path = saveFileDialog1.FileName;
-            MessageBox.Show($"File \"{System.IO.Path.GetFileName(Path)}\" will be saved here: {System.IO.Path.GetDirectoryName(Path)}");
-        }
-
-        private void nmbrAmountAccounts_ValueChanged(object sender, EventArgs e)
-        {
-            if (nmbrAmountAccounts.Value > 100)
-            {
-                nmbrAmountAccounts.Value = 100;
-            }
+            LinkFwPath.Text = Configuration.Output.Path = saveFileDialog1.FileName;
         }
 
         public File.FileManager.FileWriteType original = File.FileManager.FileWriteType.Original;
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox1.Checked == true)
-            {
-                textBox1.Enabled = true;
-                textBox2.Enabled = true;
-            }
-            else
-            {
-                textBox1.Enabled = false;
-                textBox2.Enabled = false;
-            }
-        }
 
         public static bool SocketConnect(string host, int port)
         {
@@ -349,168 +229,6 @@ namespace SteamAccCreator.Gui
             return is_success;
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (checkBox1.Checked == true)
-            {
-                if (textBox1.Text != "" && textBox2.Text != "")
-                {
-                    if (SocketConnect(textBox1.Text, Convert.ToInt32(textBox2.Text)) == true)
-                    {
-                        label1.Text = "Working: True";
-                    }
-                    else
-                    {
-                        label1.Text = "Working: False";
-                    }
-                }
-            }
-        }
-
-        private void SiteLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://steam.bot.nu/steam/");
-        }
-
-        private void NeatUsername_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = NeatUsername.Checked;
-            Neatusername = state;
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-        }
-
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = neatpassBox.Checked;
-            NeatPassword = state;
-        }
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("https://tele.click/dedsec1337");
-        }
-
-        private void checkBox2_CheckedChanged_1(object sender, EventArgs e)
-        {
-        }
-
-        private void autocap_CheckedChanged(object sender, EventArgs e)
-        {
-            Use2Cap = false;
-            captchasolutions.Checked = true;
-            twocap.Checked = false;
-            var state = autocap.Checked;
-            UseCaptchaService = state;
-            if (UseCaptchaService)
-            {
-                apikey.Enabled = true;
-                secretkey.Enabled = true;
-            }
-            else
-            {
-                apikey.Enabled = false;
-                secretkey.Enabled = false;
-                captwoapikey.Enabled = false;
-            }
-
-        }
-
-        private void csgo_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = csgo.Checked;
-            UseCsgo = state;
-        }
-
-        private void twocap_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = twocap.Checked;
-            Use2Cap = state;
-
-            if (state)
-            {
-                apikey.Enabled = false;
-                secretkey.Enabled = false;
-                captwoapikey.Enabled = true;
-            }
-            else
-            {
-                apikey.Enabled = true;
-                secretkey.Enabled = true;
-                captwoapikey.Enabled = false;
-            }
-            if (!UseCaptchaService)
-            {
-                apikey.Enabled = false;
-                secretkey.Enabled = false;
-                captwoapikey.Enabled = false;
-
-            }
-        }
-
-        private void groupBox3_Enter(object sender, EventArgs e)
-        {
-        }
-
-        private void captchasolutions_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = captchasolutions.Checked;
-            Use2Cap = !state;
-            if (!state)
-            {
-                apikey.Enabled = false;
-                secretkey.Enabled = false;
-                captwoapikey.Enabled = true;
-            }
-            else
-            {
-                apikey.Enabled = true;
-                secretkey.Enabled = true;
-                captwoapikey.Enabled = false;
-            }
-            if (!UseCaptchaService)
-            {
-                apikey.Enabled = false;
-                secretkey.Enabled = false;
-                captwoapikey.Enabled = false;
-            }
-        }
-
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("https://tele.click/sag_bot");
-        }
-
-        private void dataAccounts_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            original = (File.FileManager.FileWriteType)comboBox1.SelectedIndex;
-            if (original == File.FileManager.FileWriteType.KeePassCSV && sender == comboBox1)
-                button1_Click(sender, e);
-        }
-
-        private void capHandMode_CheckedChanged(object sender, EventArgs e)
-        {
-            if (capHandMode.Checked)
-                autocap.Checked = false;
-
-            captchasolutions.Enabled =
-                apikey.Enabled =
-                secretkey.Enabled =
-                twocap.Enabled =
-                captwoapikey.Enabled =
-                autocap.Enabled = !capHandMode.Checked;
-        }
-
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             var link = sender as LinkLabel;
@@ -523,6 +241,281 @@ namespace SteamAccCreator.Gui
                 e.Link.Visited = true;
             }
             catch { }
+        }
+
+        private void CbRandomMail_CheckedChanged(object sender, EventArgs e)
+        {
+            txtEmail.Enabled = !(Configuration.Mail.Random = CbRandomMail.Checked);
+            ToggleForceWriteIntoFile();
+        }
+
+        private void CbRandomLogin_CheckedChanged(object sender, EventArgs e)
+        {
+            txtAlias.Enabled = !(CbNeatLogin.Enabled = Configuration.Login.Random = CbRandomLogin.Checked);
+            ToggleForceWriteIntoFile();
+        }
+
+        private void CbNeatLogin_CheckedChanged(object sender, EventArgs e)
+        {
+            Configuration.Login.Neat = CbNeatLogin.Checked;
+        }
+
+        private void CbRandomPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            txtPass.Enabled = !(CbNeatPassword.Enabled = Configuration.Password.Random = CbRandomPassword.Checked);
+            ToggleForceWriteIntoFile();
+        }
+
+        private void CbNeatPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            Configuration.Password.Neat = CbNeatPassword.Checked;
+        }
+
+        private void BtnLoadIds_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "All supported|*.txt;*.json|Text file|*.txt|JSON file|*.json|Try to parse from any type|*.*";
+
+            if (openFileDialog1.ShowDialog() != DialogResult.OK)
+                return;
+
+            var fileData = System.IO.File.ReadAllText(openFileDialog1.FileName);
+            Configuration.Games.GamesToAdd = Configuration.Games.GamesToAdd ?? new Models.GameInfo[0];
+            try
+            {
+                var games = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Models.GameInfo>>(fileData);
+                var _temp = Configuration.Games.GamesToAdd.ToList();
+
+                games = games.Where(x => !_temp.Any(g => g.Equals(x)));
+                _temp.AddRange(games);
+
+                Configuration.Games.GamesToAdd = _temp;
+            }
+            catch
+            {
+                var matches = Regex.Matches(fileData, @"(\d+):(.*)", RegexOptions.IgnoreCase);
+                foreach (Match match in matches)
+                {
+                    try
+                    {
+                        var game = new Models.GameInfo()
+                        {
+                            SubId = int.Parse(match.Groups[1].Value),
+                            Name = match.Groups[2].Value
+                        };
+
+                        if (!Configuration.Games.GamesToAdd.Any(x => x.Equals(game)))
+                            Configuration.Games.GamesToAdd = Configuration.Games.GamesToAdd.Append(game);
+                    }
+                    catch { }
+                }
+            }
+
+            ListGames.UpdateItems(Configuration.Games.GamesToAdd);
+        }
+
+        private void BtnAddGame_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new AddGameDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    Configuration.Games.GamesToAdd = Configuration.Games.GamesToAdd.Append(dialog.GameInfo);
+                    ListGames.UpdateItems(Configuration.Games.GamesToAdd);
+                }
+            }
+        }
+
+        private void BtnRemoveGame_Click(object sender, EventArgs e)
+        {
+            var index = ListGames.SelectedIndex;
+            if (index < 0 || index >= ListGames.Items.Count)
+                return;
+
+            var _temp = Configuration.Games.GamesToAdd.ToList();
+            _temp.RemoveAt(index);
+            Configuration.Games.GamesToAdd = _temp;
+            ListGames.UpdateItems(Configuration.Games.GamesToAdd);
+        }
+
+        private void BtnClearGames_Click(object sender, EventArgs e)
+        {
+            Configuration.Games.GamesToAdd = new Models.GameInfo[0];
+            ListGames.Items.Clear();
+        }
+
+        private void ListGames_Format(object sender, ListControlConvertEventArgs e)
+        {
+            if (e.ListItem.GetType() != typeof(Models.GameInfo))
+                return;
+
+            var info = e.ListItem as Models.GameInfo;
+            e.Value = $"{info.Name} ({info.SubId})";
+        }
+
+        private void ListGames_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var index = ListGames.SelectedIndex;
+
+            BtnAddGame.Enabled = BtnRemoveGame.Enabled = !(index < 0 || index >= ListGames.Items.Count);
+        }
+
+        private void ListGames_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var index = ListGames.SelectedIndex;
+            if (index < 0 || index >= ListGames.Items.Count)
+                return;
+
+            var game = ListGames.Items[index] as Models.GameInfo;
+            using (var dialog = new AddGameDialog(game))
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    var _temp = Configuration.Games.GamesToAdd.ToList();
+                    ListGames.Items[index] = _temp[index] = game;
+                    Configuration.Games.GamesToAdd = _temp;
+                }
+            }
+        }
+
+        private void BtnExportGames_Click(object sender, EventArgs e)
+        {
+            if (ListGames.Items.Count < 1)
+            {
+                MessageBox.Show(this, "Games list is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            saveFileDialog1.Filter = "JSON|*.json";
+            saveFileDialog1.FilterIndex = 0;
+            saveFileDialog1.DefaultExt = "json";
+            saveFileDialog1.OverwritePrompt = true;
+
+            saveFileDialog1.Title = "Export game IDs";
+
+            if (saveFileDialog1.ShowDialog() != DialogResult.OK)
+                return;
+
+            var data = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration.Games.GamesToAdd, Newtonsoft.Json.Formatting.Indented);
+            System.IO.File.WriteAllText(saveFileDialog1.FileName, data);
+        }
+
+        private void CbCapAuto_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Configuration.Captcha.Enabled = CbCapAuto.Checked)
+            {
+                RadCapCaptchasolutions.Enabled =
+                    RadCapRuCaptcha.Enabled = true;
+
+                RadCapCaptchasolutions_CheckedChanged(this, e);
+                RadCapRuCaptcha_CheckedChanged(this, e);
+            }
+            else
+            {
+                RadCapCaptchasolutions.Enabled =
+                    RadCapRuCaptcha.Enabled =
+                    TbCapRuCapApi.Enabled =
+                    TbCapSolutionsApi.Enabled =
+                    TbCapSolutionsSecret.Enabled = false;
+            }
+        }
+
+        private void CbCapHandMode_CheckedChanged(object sender, EventArgs e)
+        {
+            CbCapAuto.Checked = CbCapAuto.Enabled = !CbCapHandMode.Checked;
+        }
+
+        private void RadCapCaptchasolutions_CheckedChanged(object sender, EventArgs e)
+        {
+            TbCapSolutionsApi.Enabled =
+                TbCapSolutionsSecret.Enabled = RadCapCaptchasolutions.Checked;
+        }
+
+        private void RadCapRuCaptcha_CheckedChanged(object sender, EventArgs e)
+        {
+            TbCapRuCapApi.Enabled = RadCapRuCaptcha.Checked;
+        }
+
+        private void CbFwEnable_CheckedChanged(object sender, EventArgs e)
+        {
+            Configuration.Output.Enabled = CbFwEnable.Checked;
+        }
+
+        private void CbFwMail_CheckedChanged(object sender, EventArgs e)
+        {
+            Configuration.Output.WriteEmails = CbFwMail.Checked;
+        }
+
+        private void BtnFwChangeFolder_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.Filter = "Text File|*.txt|KeePass CSV|*.csv";
+            saveFileDialog1.Title = "Save Files To";
+
+            saveFileDialog1.CheckPathExists = true;
+            saveFileDialog1.OverwritePrompt = true;
+
+            saveFileDialog1.ShowDialog();
+        }
+
+        private void CbFwOutType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Configuration.Output.SaveType = (File.SaveType)CbFwOutType.SelectedIndex;
+
+            if (Configuration.Output.SaveType == File.SaveType.KeepassCsv)
+                Configuration.Output.Path = Path.ChangeExtension(Configuration.Output.Path, "csv");
+            else
+                Configuration.Output.Path = Path.ChangeExtension(Configuration.Output.Path, "txt");
+
+            LinkFwPath.Text = Configuration.Output.Path;
+        }
+
+        private void LinkFwPath_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+                return;
+
+            System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{Configuration.Output.Path}\"");
+            e.Link.Visited = true;
+        }
+
+        private void CbProxyEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Configuration.Proxy.Enabled = CbProxyEnabled.Checked;
+        }
+
+        private void BtnProxyTest_Click(object sender, EventArgs e)
+        {
+            if (!Configuration.Proxy.Enabled)
+                return;
+
+            if (string.IsNullOrEmpty(TbProxyAddr.Text))
+                return;
+
+            LabProxyStatus.Text = (SocketConnect(TbProxyAddr.Text, (int)TbProxyPort.Value) == true) ? "True" : "False";
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
+                System.IO.File.WriteAllText(FILE_CONFIG, confData);
+            }
+            catch { }
+        }
+
+        private void txtEmail_TextChanged(object sender, EventArgs e)
+        {
+            Configuration.Mail.Value = txtEmail.Text;
+        }
+
+        private void txtAlias_TextChanged(object sender, EventArgs e)
+        {
+            Configuration.Login.Value = txtAlias.Text;
+        }
+
+        private void txtPass_TextChanged(object sender, EventArgs e)
+        {
+            Configuration.Password.Value = txtPass.Text;
         }
     }
 }

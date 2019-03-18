@@ -1,6 +1,8 @@
 using SteamAccCreator.File;
 using SteamAccCreator.Web;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
@@ -254,51 +256,73 @@ namespace SteamAccCreator.Gui
         };
         #endregion
 
-        private string _status;
-
-        private readonly HttpHandler _httpHandler = new HttpHandler();
+        private readonly HttpHandler _httpHandler;
         private readonly FileManager _fileManager = new FileManager();
         private readonly MailHandler _mailHandler = new MailHandler();
         public readonly MainForm _mainForm;
 
-        private string _alias, _pass, _mail = string.Empty;
-        private long _steamId = 0;
-        private bool _auto;
-        private string[] _captcha;
-        private readonly string _enteredAlias;
-        private readonly int _index;
-
-        public AccountCreator(MainForm mainForm, string mail, string alias, string pass, int index, bool auto)
+        public readonly Models.Configuration Config;
+        private string Mail
         {
+            get => Config.Mail.Value;
+            set => Config.Mail.Value = value;
+        }
+        public string Login
+        {
+            get => Config.Login.Value;
+            set => Config.Login.Value = value;
+        }
+        public string Password
+        {
+            get => Config.Password.Value;
+            set => Config.Password.Value = value;
+        }
+        private IEnumerable<Models.GameInfo> AddThisGames
+            => (Config.Games.AddGames) ? Config.Games.GamesToAdd : new Models.GameInfo[0];
+
+        private long SteamId = 0;
+        private string Status;
+        private string[] CaptchaSolved = new string[0];
+
+        private readonly string EnteredLogin;
+        private readonly int TableIndex;
+
+        public AccountCreator(MainForm mainForm, Models.Configuration config)
+        {
+            Status = "Init...";
             _mainForm = mainForm;
-            _mail = mail;
-            _alias = alias;
-            _enteredAlias = alias;
-            _pass = pass;
-            _index = index;
-            _auto = auto;
+
+            Config = config;
+
+            EnteredLogin = Login;
+
+            TableIndex = _mainForm.AddToTable(Mail, Login, Password, SteamId, Status);
+
+            _httpHandler = new HttpHandler(Config.Proxy.Enabled, Config.Proxy.Host, Config.Proxy.Port);
         }
 
         public async void Run()
         {
-            if (_mainForm.RandomAlias)
+            if (Config.Login.Random)
             {
-                if (_mainForm.Neatusername)
-                    _alias = Adj.RandomElement().ToTitleCase() +
+                if (Config.Login.Neat)
+                    Login = Adj.RandomElement().ToTitleCase() +
                         Adj.RandomElement().ToTitleCase() +
                         Adj.RandomElement().ToTitleCase() +
                         Animals.RandomElement();
                 else
-                    _alias = Utility.GetRandomString(12);
+                    Login = Utility.GetRandomString(12);
             }
             else
-                _alias = _enteredAlias + _index;
+                Login = EnteredLogin + TableIndex;
 
-            if (_mainForm.RandomPass)
+            UpdateStatusFull();
+
+            if (Config.Password.Random)
             {
-                if (_mainForm.NeatPassword)
+                if (Config.Password.Neat)
                 {
-                    _pass = Utility.GetRandomString(24) + Utility.GetRandomNumber(100, 1000);
+                    Password = Utility.GetRandomString(24) + Utility.GetRandomNumber(100, 1000);
 
                     try
                     {
@@ -306,20 +330,23 @@ namespace SteamAccCreator.Gui
                         var request21 = new RestSharp.RestRequest("api/v1/passphrase/plain?pc=1&wc=3&sp=n&maxCh=30", RestSharp.Method.GET);
                         var queryResult1 = _client21.Execute(request21);
                         var neatPasw = queryResult1.Content.Trim();
-                        _pass = neatPasw + Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
+                        Password = neatPasw + Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
                     }
                     catch (Exception)
                     {
-                        _pass = Adj.RandomElement().ToTitleCase() +
+                        Password = Adj.RandomElement().ToTitleCase() +
                             Adj.RandomElement().ToTitleCase() +
                             Adj.RandomElement().ToTitleCase() +
                             Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
                     }
                 }
                 else
-                    _pass = Utility.GetRandomString(24) + Utility.GetRandomNumber(100, 1000);
+                    Password = Utility.GetRandomString(24) + Utility.GetRandomNumber(100, 1000);
             }
-            if (_mainForm.RandomMail)
+
+            UpdateStatusFull();
+
+            if (Config.Mail.Random)
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
@@ -336,7 +363,7 @@ namespace SteamAccCreator.Gui
                 }
 
                 var mailCheck = new RestSharp.RestRequest(RestSharp.Method.GET);
-                mailCheck.AddParameter("alias", _alias);
+                mailCheck.AddParameter("alias", Login);
                 var mailCheckResult = _cli.Execute(mailCheck);
 
                 if (mailCheckResult.Content != "ok")
@@ -345,20 +372,15 @@ namespace SteamAccCreator.Gui
                     return;
                 }
 
-                _mail = (_alias + Provider).ToLower();
+                Mail = (Login + Provider).ToLower();
             }
 
-            _mainForm.AddToTable(_mail, _alias, _pass, _steamId);
-            if (_auto)
-            {
-                _status = "Solving Captcha...";
-                UpdateStatus();
-            }
+            UpdateStatusFull();
+
+            if (Config.Captcha.Enabled)
+                UpdateStatus("Solving Captcha...");
             else
-            {
-                _status = "Creating Account..";
-                UpdateStatus();
-            }
+                UpdateStatus("Creating Account..");
 
             StartCreation();
 
@@ -368,26 +390,21 @@ namespace SteamAccCreator.Gui
             {
                 VerifyMail();
                 verified = CheckIfMailIsVerified();
-                UpdateStatus();
+                UpdateStatus(Status);
                 tries--;
-                await Task.Delay(2000).ConfigureAwait(false);
+                await Task.Delay(5000).ConfigureAwait(false);
             } while (!verified && tries > 0);
-            if (!verified)
-            {
-                _status = "No Email Received.. Try again!";
-                UpdateStatus();
-            }
-            else
+
+            if (verified)
             {
                 FinishCreation();
-                _status = "Finished";
-                UpdateStatus();
+                UpdateStatus("Finished");
                 WriteAccountIntoFile();
 
-                _status = "Finished";
-
-                UpdateStatus();
+                UpdateStatus("Finished");
             }
+            else
+                UpdateStatus("No Email Received.. Try again!");
         }
 
         private void StartCreation()
@@ -396,72 +413,63 @@ namespace SteamAccCreator.Gui
 
             do
             {
-                if (_auto)
+                if (Config.Captcha.Enabled)
                 {
-                    _status = "Recognizing Captcha...";
-                    UpdateStatus();
-                    _captcha = ShowCaptchaDialog(_httpHandler, ref _status, true, _mainForm.Use2Cap);
-                    if (string.IsNullOrEmpty(_captcha[0]))
+                    UpdateStatus("Recognizing Captcha...");
+                    CaptchaSolved = ShowCaptchaDialog(_httpHandler, ref Status, Config.Captcha);
+                    if (string.IsNullOrEmpty(CaptchaSolved[0]))
                     {
-                        _status = "Error on Captcha Service";
-                        UpdateStatus();
+                        UpdateStatus("Error on Captcha Service");
                         success = false;
                         return;
                     }
                 }
                 else
                 {
-                    _status = "Waiting for captcha solution...";
-                    UpdateStatus();
-                    _captcha = ShowCaptchaDialog(_httpHandler, ref _status, false, false);
-                    if (string.IsNullOrEmpty(_captcha[0]))
+                    UpdateStatus("Waiting for captcha solution...");
+                    CaptchaSolved = ShowCaptchaDialog(_httpHandler, ref Status, Config.Captcha);
+                    if (string.IsNullOrEmpty(CaptchaSolved[0]))
                     {
-                        _status = "No captcha - no account!";
-                        UpdateStatus();
+                        UpdateStatus("No captcha - no account!");
                         success = false;
                         return;
                     }
                 }
-                _status = "Creating Account...";
-                UpdateStatus();
-                success = _httpHandler.CreateAccount(_mail, _captcha, ref _status, 0);
-                UpdateStatus();
 
-                if (_status == Error.EMAIL_ERROR)
-                {
+                UpdateStatus("Creating Account...");
+                var bShouldStop = false;
+                success = _httpHandler.CreateAccount(Mail, CaptchaSolved, ref Status, 0, ref bShouldStop);
+                UpdateStatus(Status);
+
+                if (bShouldStop)
                     return;
-                }
-                if (_status == Error.UNKNOWN)
-                {
-                    return;
-                }
             } while (!success);
         }
 
         private void VerifyMail()
         {
-            if (_mainForm.AutoMailVerify)
-                _mailHandler.ConfirmMail(_mail);
+            if (Config.Mail.Random)
+                _mailHandler.ConfirmMail(Mail);
         }
 
         private bool CheckIfMailIsVerified()
         {
-            return _httpHandler.CheckEmailVerified(ref _status);
+            return _httpHandler.CheckEmailVerified(ref Status);
         }
 
         private void FinishCreation()
         {
-            while (!_httpHandler.CompleteSignup(_alias, _pass, ref _status, ref _steamId, _mainForm.UseCsgo))
+            while (!_httpHandler.CompleteSignup(Login, Password, ref Status, ref SteamId, AddThisGames))
             {
-                UpdateStatus();
-                switch (_status)
+                UpdateStatus(Status);
+                switch (Status)
                 {
                     case Error.PASSWORD_UNSAFE:
-                        _pass = ShowUpdateInfoBox(_status);
+                        Password = ShowUpdateInfoBox(Status);
                         UpdateStatusFull();
                         break;
                     case Error.ALIAS_UNAVAILABLE:
-                        _alias = ShowUpdateInfoBox(_status);
+                        Login = ShowUpdateInfoBox(Status);
                         UpdateStatusFull();
                         break;
                     default:
@@ -472,18 +480,14 @@ namespace SteamAccCreator.Gui
 
         private void WriteAccountIntoFile()
         {
-            if (_mainForm.WriteIntoFile)
-            {
-                _fileManager.WriteIntoFile(_mail, _mainForm.istrue, _alias, _pass, _steamId, _mainForm.Path, _mainForm.original);
-            }
+            if (Config.Output.Enabled)
+                _fileManager.WriteIntoFile(Mail, Config.Output.WriteEmails, Login, Password, SteamId, Config.Output.Path, _mainForm.original);
         }
 
         public void UpdateStatusFull()
-            => _mainForm.UpdateStatus(_index, _mail, _alias, _pass, _steamId, _status);
-        public void UpdateStatus()
-        {
-            _mainForm.UpdateStatus(_index, _status, _steamId);
-        }
+            => _mainForm.UpdateStatus(TableIndex, Mail, Login, Password, SteamId, Status);
+        public void UpdateStatus(string status)
+            => _mainForm.UpdateStatus(TableIndex, Status = status, SteamId);
 
         private string ShowUpdateInfoBox(string status)
         {
@@ -498,22 +502,20 @@ namespace SteamAccCreator.Gui
             return update;
         }
 
-        private string[] ShowCaptchaDialog(HttpHandler httpHandler, ref string _status, bool _auto, bool usetwocap = false)
+        private string[] ShowCaptchaDialog(HttpHandler httpHandler, ref string _status, Models.CaptchaSolvingConfig captchaConfig)
         {
             var captcha = default(string[]);
-            using (var captchaDialog = new CaptchaDialog(httpHandler, ref _status, _auto, usetwocap))
+            using (var captchaDialog = new CaptchaDialog(httpHandler, ref _status, captchaConfig))
             {
-                if (_auto)
-                    captcha = captchaDialog.ans;
+                if (captchaConfig.Enabled)
+                    captcha = captchaDialog.Solution;
                 else
                 {
                     if (captchaDialog.ShowDialog() == DialogResult.OK)
                         captcha = new[] { captchaDialog.txtCaptcha.Text };
-                    else
-                        captcha = new[] { "" };
                 }
             }
-            return captcha;
+            return captcha ?? new[] { "" };
         }
     }
 }

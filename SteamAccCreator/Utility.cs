@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,5 +44,13 @@ namespace SteamAccCreator
 
         public static string ToTitleCase(this string text)
             => new CultureInfo("en-US").TextInfo.ToTitleCase(text);
+
+        public static void UpdateItems<T>(this System.Windows.Forms.ListBox listBox, IEnumerable<T> collection)
+        {
+            listBox.Items.Clear();
+            listBox.Items.AddRange(collection);
+        }
+        public static void AddRange<T>(this System.Windows.Forms.ListBox.ObjectCollection objectCollection, IEnumerable<T> collection)
+            => objectCollection.AddRange(collection.Select(x => x as object).ToArray());
     }
 }

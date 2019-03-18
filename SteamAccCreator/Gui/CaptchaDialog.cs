@@ -6,41 +6,32 @@ namespace SteamAccCreator.Gui
 {
     public partial class CaptchaDialog : Form
     {
-        public string[] ans;
-        public bool autox;
         private readonly HttpHandler _httpHandler;
-        public CaptchaDialog(HttpHandler httpHandler, ref string _status,bool auto = false,bool twocap = false)
+        private readonly Models.CaptchaSolvingConfig Config;
+
+        public string[] Solution = new string[0];
+
+        public CaptchaDialog(HttpHandler httpHandler, ref string _status, Models.CaptchaSolvingConfig config)
         {
-            InitializeComponent();
-            autox = auto;
             _httpHandler = httpHandler;
-            if(twocap)
-                LoadCaptcha(auto, ref _status,true);
-            else
-                LoadCaptcha(auto, ref _status, false);
+
+            InitializeComponent();
+
+            LoadCaptcha(ref _status, Config = config);
         }
 
-        private void LoadCaptcha(bool auto,ref string _status,bool usetwocap = false)
+        private void LoadCaptcha(ref string _status, Models.CaptchaSolvingConfig config)
         {
-
-            if (!auto)
-            {
-                boxCaptcha.Image = _httpHandler.GetCaptchaImageraw();
-            }
+            if (config.Enabled)
+                Solution = _httpHandler.GetCaptchaImage(ref _status, config);
             else
-            {
-               if(usetwocap)
-                    ans = _httpHandler.GetCaptchaImage(ref _status,true);
-               else
-                    ans = _httpHandler.GetCaptchaImage(ref _status);
-            }
-            //boxCaptcha.Image = _httpHandler.GetCaptchaImage();
+                boxCaptcha.Image = _httpHandler.GetCaptchaImageraw();
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            string s="";
-            LoadCaptcha(autox,ref s);
+            string s = "";
+            LoadCaptcha(ref s, Config);
         }
 
         private void BtnConfirm_Click(object sender, EventArgs e)
