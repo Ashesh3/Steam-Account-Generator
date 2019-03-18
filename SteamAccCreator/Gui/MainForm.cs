@@ -487,11 +487,10 @@ namespace SteamAccCreator.Gui
 
         private void BtnProxyTest_Click(object sender, EventArgs e)
         {
-            if (!Configuration.Proxy.Enabled)
-                return;
-
             if (string.IsNullOrEmpty(TbProxyAddr.Text))
                 return;
+
+            LabProxyStatus.Text = "Testing...";
 
             LabProxyStatus.Text = (SocketConnect(TbProxyAddr.Text, (int)TbProxyPort.Value) == true) ? "True" : "False";
         }
