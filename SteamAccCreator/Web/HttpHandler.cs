@@ -373,7 +373,7 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        public bool CompleteSignup(string alias, string password, Action<string> updateStatus, ref long steamId, IEnumerable<Models.GameInfo> addThisGames)
+        public bool CompleteSignup(string alias, string password, Action<string> updateStatus, ref long steamId, ref int gamesNotAdded, IEnumerable<Models.GameInfo> addThisGames)
         {
             if (!CheckAlias(alias, updateStatus))
                 return false;
@@ -440,6 +440,7 @@ namespace SteamAccCreator.Web
                     steamId = long.Parse(_steamRegex.Groups[1].Value);
 
                 _request.Parameters.Clear();
+                gamesNotAdded = 0;
                 foreach (var game in addThisGames)
                 {
                     if (game == null)
@@ -460,7 +461,7 @@ namespace SteamAccCreator.Web
                         var responce111 = _client.Execute(_request);
                         _client.FollowRedirects = true;
                     }
-                    catch { }
+                    catch { gamesNotAdded++; }
 
                     if (game != addThisGames.Last())
                         Thread.Sleep(500);

@@ -281,6 +281,7 @@ namespace SteamAccCreator.Gui
             => (Config.Games.AddGames) ? Config.Games.GamesToAdd : new Models.GameInfo[0];
 
         private long SteamId = 0;
+        private int GamesNotAdded = 0;
         private string Status;
         private string[] CaptchaSolved = new string[0];
 
@@ -404,10 +405,10 @@ namespace SteamAccCreator.Gui
             if (verified)
             {
                 FinishCreation();
-                UpdateStatus("Finished");
+
                 WriteAccountIntoFile();
 
-                UpdateStatus("Finished");
+                UpdateStatus($"Finished{(((Config.Games.AddGames) ? $" | Games skipped: {GamesNotAdded}" : ""))}");
             }
             else
                 UpdateStatus("No Email Received.. Try again!");
@@ -465,7 +466,7 @@ namespace SteamAccCreator.Gui
 
         private void FinishCreation()
         {
-            while (!_httpHandler.CompleteSignup(Login, Password, (s) => UpdateStatus(s), ref SteamId, AddThisGames))
+            while (!_httpHandler.CompleteSignup(Login, Password, (s) => UpdateStatus(s), ref SteamId, ref GamesNotAdded, AddThisGames))
             {
                 UpdateStatus(Status);
                 switch (Status)
@@ -487,7 +488,10 @@ namespace SteamAccCreator.Gui
         private void WriteAccountIntoFile()
         {
             if (Config.Output.Enabled)
+            {
+                UpdateStatus("Writing to file...");
                 _fileManager.WriteIntoFile(Mail, Config.Output.WriteEmails, Login, Password, SteamId, Config.Output.Path, _mainForm.original);
+            }
         }
 
         public void UpdateStatusFull()
