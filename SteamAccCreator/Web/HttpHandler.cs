@@ -323,13 +323,6 @@ namespace SteamAccCreator.Web
                     return false;
                 }
 
-                if (jsonResponse.details != null)
-                {
-                    status = jsonResponse.details;
-                    stop = true;
-                    return false;
-                }
-
                 _sessionId = jsonResponse.sessionid;
                 status = "Waiting for email to be verified";
             }
@@ -380,11 +373,11 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        public bool CompleteSignup(string alias, string password, ref string status, ref long steamId, IEnumerable<Models.GameInfo> addThisGames)
+        public bool CompleteSignup(string alias, string password, Action<string> updateStatus, ref long steamId, IEnumerable<Models.GameInfo> addThisGames)
         {
-            if (!CheckAlias(alias, ref status))
+            if (!CheckAlias(alias, updateStatus))
                 return false;
-            if (!CheckPassword(password, alias, ref status))
+            if (!CheckPassword(password, alias, updateStatus))
                 return false;
 
             _client.BaseUrl = CreateAccountUri;
@@ -410,7 +403,7 @@ namespace SteamAccCreator.Web
             dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
             if (jsonResponse.bSuccess == "true")
             {
-                status = "Account created";
+                updateStatus?.Invoke("Account created");
                 //disable guard
                 _client.FollowRedirects = false;
                 _client.CookieContainer = _cookieJar;
@@ -456,6 +449,8 @@ namespace SteamAccCreator.Web
                     if (UseProxy)
                         _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
 
+                    updateStatus($"Adding game: {game.Name}");
+
                     _request.Method = Method.POST;
                     _request.AddParameter("action", "add_to_cart");
                     _request.AddParameter("subid", game.SubId);
@@ -469,11 +464,11 @@ namespace SteamAccCreator.Web
 
                 return true;
             }
-            status = jsonResponse.details;
+            updateStatus?.Invoke(jsonResponse.details);
             return false;
         }
 
-        private static bool CheckAlias(string alias, ref string status)
+        private static bool CheckAlias(string alias, Action<string> statusUpdate)
         {
             var tempClient = new RestClient(CheckAvailUri);
             var tempRequest = new RestRequest(Method.POST);
@@ -485,11 +480,12 @@ namespace SteamAccCreator.Web
 
             if (jsonResponse.bAvailable == "true")
                 return true;
-            status = Error.ALIAS_UNAVAILABLE;
+
+            statusUpdate?.Invoke(Error.ALIAS_UNAVAILABLE);
             return false;
         }
 
-        private static bool CheckPassword(string password, string alias, ref string status)
+        private static bool CheckPassword(string password, string alias, Action<string> updateStatus)
         {
             var tempClient = new RestClient(CheckPasswordAvailUri);
             var tempRequest = new RestRequest(Method.POST);
@@ -502,7 +498,8 @@ namespace SteamAccCreator.Web
 
             if (jsonResponse.bAvailable == "true")
                 return true;
-            status = Error.PASSWORD_UNSAFE;
+
+            updateStatus?.Invoke(Error.PASSWORD_UNSAFE);
             return false;
         }
     }

@@ -392,7 +392,7 @@ namespace SteamAccCreator.Gui
                 verified = CheckIfMailIsVerified();
                 UpdateStatus(Status);
                 tries--;
-                await Task.Delay(5000).ConfigureAwait(false);
+                await Task.Delay(2000).ConfigureAwait(false);
             } while (!verified && tries > 0);
 
             if (verified)
@@ -459,7 +459,7 @@ namespace SteamAccCreator.Gui
 
         private void FinishCreation()
         {
-            while (!_httpHandler.CompleteSignup(Login, Password, ref Status, ref SteamId, AddThisGames))
+            while (!_httpHandler.CompleteSignup(Login, Password, (s) => UpdateStatus(s), ref SteamId, AddThisGames))
             {
                 UpdateStatus(Status);
                 switch (Status)
