@@ -293,8 +293,14 @@ namespace SteamAccCreator.Gui
             _mainForm = mainForm;
 
             Config = config;
+            if (Config.Login.Random)
+                Config.Login.Value = "Init...";
+            if (Config.Password.Random)
+                Config.Password.Value = "Init...";
+            if (Config.Mail.Random)
+                Config.Mail.Value = "Init...";
 
-            EnteredLogin = Login;
+            EnteredLogin = (Config.Login.Random) ? string.Empty : Login;
 
             TableIndex = _mainForm.AddToTable(Mail, Login, Password, SteamId, Status);
 
@@ -358,7 +364,7 @@ namespace SteamAccCreator.Gui
                 string Provider = providerResult.Content;
                 if (!Provider.StartsWith("@"))
                 {
-                    MessageBox.Show("No email service was returned...\n\nTry again...", "Something went wrong", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    UpdateStatus("No email service... Try again (later)?...");
                     return;
                 }
 
@@ -368,7 +374,7 @@ namespace SteamAccCreator.Gui
 
                 if (mailCheckResult.Content != "ok")
                 {
-                    MessageBox.Show($"Something went wrong...\n\nHTTP Status-Code: {mailCheckResult.StatusCode}\nServer response:\n{mailCheckResult.Content}\n\nTry again...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    UpdateStatus($"Something went wrong... HTTP Status-Code: {mailCheckResult.StatusCode}");
                     return;
                 }
 
