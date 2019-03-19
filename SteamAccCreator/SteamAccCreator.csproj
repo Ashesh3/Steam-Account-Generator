@@ -82,6 +82,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -135,6 +136,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />
+    <Compile Include="Web\Captcha\CaptchaSolution.cs" />
     <Compile Include="Web\Error.cs" />
     <Compile Include="Web\HttpHandler.cs" />
     <Compile Include="Web\MailHandler.cs" />

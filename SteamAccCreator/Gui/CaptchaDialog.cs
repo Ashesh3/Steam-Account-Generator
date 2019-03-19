@@ -9,29 +9,30 @@ namespace SteamAccCreator.Gui
         private readonly HttpHandler _httpHandler;
         private readonly Models.CaptchaSolvingConfig Config;
 
-        public string[] Solution = new string[0];
+        public Web.Captcha.CaptchaSolution Solution;
 
-        public CaptchaDialog(HttpHandler httpHandler, ref string _status, Models.CaptchaSolvingConfig config)
+        public CaptchaDialog(HttpHandler httpHandler, Action<string> updateStatus, Models.CaptchaSolvingConfig config)
         {
+            Solution = new Web.Captcha.CaptchaSolution(false, "Something went wrong...", config);
+
             _httpHandler = httpHandler;
 
             InitializeComponent();
 
-            LoadCaptcha(ref _status, Config = config);
+            LoadCaptcha(updateStatus, Config = config);
         }
 
-        private void LoadCaptcha(ref string _status, Models.CaptchaSolvingConfig config)
+        private void LoadCaptcha(Action<string> updateStatus, Models.CaptchaSolvingConfig config)
         {
             if (config.Enabled)
-                Solution = _httpHandler.GetCaptchaImage(ref _status, config);
+                Solution = _httpHandler.SolveCaptcha(updateStatus, config);
             else
                 boxCaptcha.Image = _httpHandler.GetCaptchaImageraw();
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            string s = "";
-            LoadCaptcha(ref s, Config);
+            boxCaptcha.Image = _httpHandler.GetCaptchaImageraw();
         }
 
         private void BtnConfirm_Click(object sender, EventArgs e)

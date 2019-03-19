@@ -68,7 +68,7 @@ namespace SteamAccCreator.Web
 
         private string[] TwoCaptcha(string resource, Dictionary<string, object> args)
         {
-            _client.BaseUrl = new Uri("http://2captcha.com");
+            _client.BaseUrl = new Uri("http://rucaptcha.com");
             var srequest = new RestRequest(resource, Method.POST);
             foreach (var key in args)
             {
@@ -90,143 +90,7 @@ namespace SteamAccCreator.Web
             return responsecap.Content;
         }
 
-        public string[] GetCaptchaImage(ref string _status, Models.CaptchaSolvingConfig captchaConfig)
-        {
-            _status = "Getting Captcha...";
-
-            //load Steam page
-            _client.BaseUrl = JoinUri;
-            if (UseProxy)
-                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
-
-            _request.Method = Method.GET;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            var response = _client.Execute(_request);
-
-            //Store captcha ID
-            try
-            {
-                _captchaGid = CaptchaRegex.Matches(response.Content)[0].Groups[1].Value;
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-                MessageBox.Show(response.Content);
-                MessageBox.Show(response.ErrorException.ToString());
-                MessageBox.Show(response.StatusCode.ToString());
-            }
-            //download and return captcha image
-            _client.BaseUrl = new Uri(CaptchaUri + _captchaGid);
-            if (UseProxy)
-                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
-
-            string finalpayload = "";
-            for (int i = 0; i < 1; i++)
-            {
-                _status = "Getting Captcha.. " + (i / 10) * 100 + "%";
-                // mainForm.UpdateStatus(_index, _status);
-
-                var captchaResponse = _client.DownloadData(_request);
-                string cap1 = getbasefromimage(captchaResponse);
-
-                finalpayload = cap1;
-
-            }
-            _status = "Recognizing Captcha!";
-
-            switch (captchaConfig.Service)
-            {
-                case Enums.CaptchaService.Captchasolutions:
-                    {
-                        var _resp = Captchasolutions("solve",
-                            new Dictionary<string, object>()
-                            {
-                                { "p", "base64" },
-                                { "captcha", $"data:image/jpg;base64,{finalpayload}" },
-                                { "key", captchaConfig.CaptchaSolutions.ApiKey },
-                                { "secret", captchaConfig.CaptchaSolutions.ApiSecret },
-                                { "out", "txt" },
-                            });
-
-                        if (Regex.IsMatch(_resp, @"Error:\s(.+)", RegexOptions.IgnoreCase))
-                        {
-                            MessageBox.Show(_resp);
-                            return new[] { "" };
-                        }
-
-                        return new[] { Regex.Replace(_resp, @"\t|\n|\r", "") };
-                    }
-                case Enums.CaptchaService.RuCaptcha:
-                    {
-                        try
-                        {
-                            var _resp = TwoCaptcha("in.php",
-                                new Dictionary<string, object>()
-                                {
-                                { "key", captchaConfig.RuCaptcha.ApiKey },
-                                { "body", $"data:image/jpg;base64,{finalpayload}" },
-                                { "method", "base64" },
-                                { "soft_id", "2370" },
-                                { "json", "0" },
-                                });
-
-                            if (_resp[0] != "OK")
-                            {
-                                MessageBox.Show(string.Join("|", _resp));
-                                return new[] { "" };
-                            }
-
-                            Thread.Sleep(10000);
-                            _resp = TwoCaptcha("res.php",
-                                new Dictionary<string, object>()
-                                {
-                                { "key", captchaConfig.RuCaptcha.ApiKey },
-                                { "action", "get" },
-                                { "id", _resp[1] },
-                                { "soft_id", "2370" },
-                                { "json", "0" },
-                                });
-
-                            if (_resp[0] == "OK")
-                                return new[] { "" };
-
-                            Thread.Sleep(6000);
-                            _resp = TwoCaptcha("res.php",
-                                new Dictionary<string, object>()
-                                {
-                                { "key", captchaConfig.RuCaptcha.ApiKey },
-                                { "action", "get" },
-                                { "id", _resp[1] },
-                                { "soft_id", "2370" },
-                                { "json", "0" },
-                                });
-
-                            if (_resp[0] != "OK")
-                                return new string[0];
-
-                            return new[] { _resp[1] };
-                        }
-                        catch
-                        {
-                            return new[] { "" };
-                        }
-                    }
-                case Enums.CaptchaService.Unknown:
-                default:
-                    {
-                        using (var dialog = new CaptchaDialog(this, ref _status, captchaConfig))
-                        {
-                            if (dialog.ShowDialog() == DialogResult.OK)
-                                return new[] { dialog.txtCaptcha.Text };
-                        }
-                    }
-                    break;
-            }
-
-            return new[] { "" };
-        }
-
-        public string getbasefromimage(byte[] captcha)
+        public string GetBase64FromImage(byte[] captcha)
         {
             using (var ms = new MemoryStream(captcha))
             {
@@ -243,18 +107,162 @@ namespace SteamAccCreator.Web
             }
         }
 
-        public bool CreateAccount(string email, string[] captchaText, ref string status, int n, ref bool stop)
+        private void SetConfig(string uri, Method method, SecurityProtocolType securityProtocol = SecurityProtocolType.Tls12, bool clearRequest = true)
+            => SetConfig(new Uri(uri), method, securityProtocol, clearRequest);
+        private void SetConfig(Uri uri, Method method, SecurityProtocolType securityProtocol = SecurityProtocolType.Tls12, bool clearRequest = true)
         {
-            _client.BaseUrl = VerifyCaptchaUri;
-            if (captchaText == null)
-                return false;
-            string scaptchaText = captchaText[n];
-            if (UseProxy)
-                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+            if (clearRequest)
+                _request.Parameters.Clear();
 
-            _request.Method = Method.POST;
+            _client.BaseUrl = uri;
+            _client.Proxy = (UseProxy) ? new WebProxy(ProxyHost, ProxyPort) : default(IWebProxy);
+            _request.Method = method;
+            ServicePointManager.SecurityProtocol = securityProtocol;
+        }
+
+        public bool TwoCaptchaReport(Models.RuCaptchaConfig config, Captcha.CaptchaSolution solution, bool good)
+        {
+            var _reportResponse = TwoCaptcha("res.php",
+                new Dictionary<string, object>()
+                {
+                    { "key", config.ApiKey },
+                    { "action", (good) ? "reportgood" : "reportbad" },
+                    { "id", solution.Id },
+                    { "json", "0" },
+                });
+            return _reportResponse?.FirstOrDefault()?.ToUpper() == "OK_REPORT_RECORDED";
+        }
+
+        public Captcha.CaptchaSolution SolveCaptcha(Action<string> updateStatus, Models.CaptchaSolvingConfig captchaConfig)
+        {
+            updateStatus?.Invoke("Getting captcha...");
+
+            //Store captcha ID
+            SetConfig(JoinUri, Method.GET);
+            var response = _client.Execute(_request);
+            try
+            {
+                _captchaGid = CaptchaRegex.Matches(response.Content)[0].Groups[1].Value;
+            }
+            catch (Exception e)
+            {
+                updateStatus($"Captcha error: {e.Message}");
+                return new Captcha.CaptchaSolution(true, $"{e}\n\n{response.ResponseStatus}", captchaConfig);
+            }
+
+            //download and return captcha image
+            SetConfig($"{CaptchaUri}{_captchaGid}", Method.GET);
+            var captchaPayload = string.Empty;
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    updateStatus($"Downloading captcha: Try {i + 1}/3");
+
+                    var _captchaResp = _client.DownloadData(_request);
+                    captchaPayload = GetBase64FromImage(_captchaResp);
+
+                    break;
+                }
+                catch { captchaPayload = string.Empty; }
+            }
+
+            // recognize captcha
+            updateStatus("Recognizing Captcha...");
+            switch (captchaConfig.Service)
+            {
+                case Enums.CaptchaService.Captchasolutions:
+                    {
+                        var _resp = Captchasolutions("solve",
+                            new Dictionary<string, object>()
+                            {
+                                { "p", "base64" },
+                                { "captcha", $"data:image/jpg;base64,{captchaPayload}" },
+                                { "key", captchaConfig.CaptchaSolutions.ApiKey },
+                                { "secret", captchaConfig.CaptchaSolutions.ApiSecret },
+                                { "out", "txt" },
+                            });
+
+                        if (Regex.IsMatch(_resp, @"Error:\s(.+)", RegexOptions.IgnoreCase))
+                            return new Captcha.CaptchaSolution(true, _resp, captchaConfig);
+
+                        return new Captcha.CaptchaSolution(true, Regex.Replace(_resp, @"\t|\n|\r", ""), null);
+                    }
+                case Enums.CaptchaService.RuCaptcha:
+                    {
+                        var _captchaIdResponse = TwoCaptcha("in.php",
+                            new Dictionary<string, object>()
+                            {
+                                { "key", captchaConfig.RuCaptcha.ApiKey },
+                                { "body", $"data:image/jpg;base64,{captchaPayload}" },
+                                { "method", "base64" },
+                                //{ "soft_id", "2370" },
+                                { "json", "0" },
+                            });
+
+                        var _captchaStatus = _captchaIdResponse?.FirstOrDefault()?.ToUpper() ?? "UNKNOWN";
+                        switch (_captchaStatus)
+                        {
+                            case "OK":
+                                break;
+                            case "ERROR_NO_SLOT_AVAILABLE":
+                                Thread.Sleep(6000);
+                                return new Captcha.CaptchaSolution(true, _captchaStatus, captchaConfig);
+                            default:
+                                return new Captcha.CaptchaSolution(false, _captchaStatus, captchaConfig);
+                        }
+
+                        var _captchaId = _captchaIdResponse.ElementAt(1);
+
+                        Thread.Sleep(TimeSpan.FromSeconds(20));
+
+                        var solution = string.Empty;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            var _captchaResponse = TwoCaptcha("res.php",
+                                new Dictionary<string, object>()
+                                {
+                                    { "key", captchaConfig.RuCaptcha.ApiKey },
+                                    { "action", "get" },
+                                    { "id", _captchaId },
+                                    { "json", "0" },
+                                });
+
+                            var _status = _captchaResponse?.FirstOrDefault()?.ToUpper() ?? "UNKNOWN";
+                            switch (_status)
+                            {
+                                case "OK":
+                                    return new Captcha.CaptchaSolution(_captchaResponse.ElementAt(1), _captchaId, captchaConfig);
+                                case "CAPCHA_NOT_READY":
+                                case "ERROR_NO_SLOT_AVAILABLE":
+                                    Thread.Sleep(6000);
+                                    continue;
+                                default:
+                                    return new Captcha.CaptchaSolution(true, _status, captchaConfig);
+                            }
+                        }
+                    }
+                    return new Captcha.CaptchaSolution(true, "Something went wrong", captchaConfig);
+                default:
+                    {
+                        using (var dialog = new CaptchaDialog(this, updateStatus, captchaConfig))
+                        {
+                            if (dialog.ShowDialog() == DialogResult.OK)
+                                return dialog.Solution;
+                        }
+                    }
+                    return new Captcha.CaptchaSolution(false, "Can't solve captcha!", captchaConfig);
+            }
+        }
+
+        public bool CreateAccount(string email, Captcha.CaptchaSolution captcha, Action<string> updateStatus, ref bool stop)
+        {
+            if (!(captcha?.Solved ?? false))
+                return false;
+
+            SetConfig(VerifyCaptchaUri, Method.POST);
             _request.AddParameter("captchagid", _captchaGid);
-            _request.AddParameter("captcha_text", scaptchaText);
+            _request.AddParameter("captcha_text", captcha.Solution);
             _request.AddParameter("email", email);
             _request.AddParameter("count", "1");
             var response = _client.Execute(_request);
@@ -263,8 +271,8 @@ namespace SteamAccCreator.Web
 
             if (!response.IsSuccessful)
             {
-                status = Error.HTTP_FAILED;
-                //return false;
+                updateStatus(Error.HTTP_FAILED);
+                return false;
             }
 
             var matches = BoolRegex.Matches(response.Content);
@@ -273,17 +281,14 @@ namespace SteamAccCreator.Web
 
             if (!bCaptchaMatches)
             {
-                status = Error.WRONG_CAPTCHA;
-                if ((captchaText.Length - 1) < (n + 1))
-                    return false;
-                else
-                    return CreateAccount(email, captchaText, ref status, n + 1, ref stop);
+                updateStatus(Error.WRONG_CAPTCHA);
+                return false;
             }
 
             if (!bEmailAvail)
             {
                 //seems to always return true even if email is already in use
-                status = Error.EMAIL_ERROR;
+                updateStatus(Error.EMAIL_ERROR);
                 stop = true;
                 return false;
             }
@@ -294,7 +299,7 @@ namespace SteamAccCreator.Web
                 _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
 
             _request.AddParameter("captchagid", _captchaGid);
-            _request.AddParameter("captcha_text", scaptchaText);
+            _request.AddParameter("captcha_text", captcha.Solution);
             _request.AddParameter("email", email);
 
             response = _client.Execute(_request);
@@ -307,16 +312,16 @@ namespace SteamAccCreator.Web
                     switch (jsonResponse.success)
                     {
                         case 62:
-                            status = Error.SIMILIAR_MAIL;
+                            updateStatus(Error.SIMILIAR_MAIL);
                             break;
                         case 13:
-                            status = Error.INVALID_MAIL;
+                            updateStatus(Error.INVALID_MAIL);
                             break;
                         case 17:
-                            status = Error.TRASH_MAIL;
+                            updateStatus(Error.TRASH_MAIL);
                             break;
                         default:
-                            status = Error.UNKNOWN;
+                            updateStatus(Error.UNKNOWN);
                             stop = true;
                             break;
                     }
@@ -324,7 +329,7 @@ namespace SteamAccCreator.Web
                 }
 
                 _sessionId = jsonResponse.sessionid;
-                status = "Waiting for email to be verified";
+                updateStatus("Waiting for email to be verified");
             }
             catch { }
 

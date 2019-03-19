@@ -283,13 +283,15 @@ namespace SteamAccCreator.Gui
         private long SteamId = 0;
         private int GamesNotAdded = 0;
         private string Status;
-        private string[] CaptchaSolved = new string[0];
+        private Web.Captcha.CaptchaSolution CaptchaSolved;
 
         private readonly string EnteredLogin;
         private readonly int TableIndex;
 
         public AccountCreator(MainForm mainForm, Models.Configuration config)
         {
+            CaptchaSolved = new Web.Captcha.CaptchaSolution(false, "Something went wrong...", config.Captcha);
+
             Status = "Init...";
             _mainForm = mainForm;
 
@@ -400,7 +402,8 @@ namespace SteamAccCreator.Gui
                 UpdateStatus(Status);
                 tries--;
                 await Task.Delay(2000).ConfigureAwait(false);
-            } while (!verified && tries > 0);
+            }
+            while (!verified && tries > 0);
 
             if (verified)
             {
@@ -416,41 +419,36 @@ namespace SteamAccCreator.Gui
 
         private void StartCreation()
         {
-            bool success;
+            var success = false;
 
             do
             {
                 if (Config.Captcha.Enabled)
-                {
                     UpdateStatus("Recognizing Captcha...");
-                    CaptchaSolved = ShowCaptchaDialog(_httpHandler, ref Status, Config.Captcha);
-                    if (string.IsNullOrEmpty(CaptchaSolved[0]))
-                    {
-                        UpdateStatus("Error on Captcha Service");
-                        success = false;
-                        return;
-                    }
-                }
                 else
-                {
                     UpdateStatus("Waiting for captcha solution...");
-                    CaptchaSolved = ShowCaptchaDialog(_httpHandler, ref Status, Config.Captcha);
-                    if (string.IsNullOrEmpty(CaptchaSolved[0]))
+
+                CaptchaSolved = ShowCaptchaDialog(_httpHandler, (s) => UpdateStatus(s), Config.Captcha);
+                if (!CaptchaSolved.Solved)
+                {
+                    if (CaptchaSolved.RetryAvailable)
                     {
-                        UpdateStatus("No captcha - no account!");
-                        success = false;
-                        return;
+                        UpdateStatus($"{CaptchaSolved.Message} | Retrying...");
+                        continue;
                     }
+
+                    UpdateStatus(CaptchaSolved.Message);
+                    return;
                 }
 
                 UpdateStatus("Creating Account...");
                 var bShouldStop = false;
-                success = _httpHandler.CreateAccount(Mail, CaptchaSolved, ref Status, 0, ref bShouldStop);
-                UpdateStatus(Status);
+                success = _httpHandler.CreateAccount(Mail, CaptchaSolved, (s) => UpdateStatus(s), ref bShouldStop);
 
                 if (bShouldStop)
                     return;
-            } while (!success);
+            }
+            while (!success);
         }
 
         private void VerifyMail()
@@ -512,20 +510,17 @@ namespace SteamAccCreator.Gui
             return update;
         }
 
-        private string[] ShowCaptchaDialog(HttpHandler httpHandler, ref string _status, Models.CaptchaSolvingConfig captchaConfig)
+        private Web.Captcha.CaptchaSolution ShowCaptchaDialog(HttpHandler httpHandler, Action<string> updateStatus, Models.CaptchaSolvingConfig captchaConfig)
         {
-            var captcha = default(string[]);
-            using (var captchaDialog = new CaptchaDialog(httpHandler, ref _status, captchaConfig))
+            using (var captchaDialog = new CaptchaDialog(httpHandler, updateStatus, captchaConfig))
             {
                 if (captchaConfig.Enabled)
-                    captcha = captchaDialog.Solution;
+                    return captchaDialog.Solution;
+                else if (captchaDialog.ShowDialog() == DialogResult.OK)
+                    return captchaDialog.Solution;
                 else
-                {
-                    if (captchaDialog.ShowDialog() == DialogResult.OK)
-                        captcha = new[] { captchaDialog.txtCaptcha.Text };
-                }
+                    return new Web.Captcha.CaptchaSolution(false, "Captcha not recognized!", captchaConfig);
             }
-            return captcha ?? new[] { "" };
         }
     }
 }

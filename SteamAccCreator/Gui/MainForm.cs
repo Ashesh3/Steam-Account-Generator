@@ -53,16 +53,16 @@ namespace SteamAccCreator.Gui
             CbAddGames.Checked = Configuration.Games.AddGames;
             ListGames.Items.AddRange(Configuration.Games.GamesToAdd ?? new Models.GameInfo[0]);
 
+            RadCapCaptchasolutions.Checked = Configuration.Captcha.Service == Enums.CaptchaService.Captchasolutions;
+            RadCapRuCaptcha.Checked = Configuration.Captcha.Service == Enums.CaptchaService.RuCaptcha;
             CbCapAuto.Checked = Configuration.Captcha.Enabled;
             CbCapHandMode.Checked = Configuration.Captcha.HandMode;
-            RadCapCaptchasolutions.Checked = !(RadCapRuCaptcha.Checked = Configuration.Captcha.Service == Enums.CaptchaService.RuCaptcha);
             TbCapSolutionsApi.Text = Configuration.Captcha.CaptchaSolutions.ApiKey;
             TbCapSolutionsSecret.Text = Configuration.Captcha.CaptchaSolutions.ApiSecret;
             TbCapRuCapApi.Text = Configuration.Captcha.RuCaptcha.ApiKey;
 
             CbFwEnable.Checked = Configuration.Output.Enabled;
             CbFwMail.Checked = Configuration.Output.WriteEmails;
-            //LinkFwPath.Text = Configuration.Output.Path;
             LinkFwPath.Text = Configuration.Output.GetVisualPath();
             CbFwOutType.SelectedIndex = (int)Configuration.Output.SaveType;
 
@@ -105,7 +105,6 @@ namespace SteamAccCreator.Gui
                                 Configuration.Captcha.RuCaptcha.ApiKey = TbCapRuCapApi.Text;
                         }
                         break;
-                    case Enums.CaptchaService.Unknown:
                     default:
                         CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
                         break;
@@ -442,11 +441,17 @@ namespace SteamAccCreator.Gui
         {
             TbCapSolutionsApi.Enabled =
                 TbCapSolutionsSecret.Enabled = RadCapCaptchasolutions.Checked;
+
+            if (RadCapCaptchasolutions.Checked)
+                Configuration.Captcha.Service = Enums.CaptchaService.Captchasolutions;
         }
 
         private void RadCapRuCaptcha_CheckedChanged(object sender, EventArgs e)
         {
             TbCapRuCapApi.Enabled = RadCapRuCaptcha.Checked;
+
+            if (RadCapRuCaptcha.Checked)
+                Configuration.Captcha.Service = Enums.CaptchaService.RuCaptcha;
         }
 
         private void CbFwEnable_CheckedChanged(object sender, EventArgs e)
