@@ -448,10 +448,15 @@ namespace SteamAccCreator.Gui
 
         private void RadCapRuCaptcha_CheckedChanged(object sender, EventArgs e)
         {
-            TbCapRuCapApi.Enabled = RadCapRuCaptcha.Checked;
+            CbCapRuReportBad.Enabled = TbCapRuCapApi.Enabled = RadCapRuCaptcha.Checked;
 
             if (RadCapRuCaptcha.Checked)
                 Configuration.Captcha.Service = Enums.CaptchaService.RuCaptcha;
+        }
+
+        private void CbCapRuReportBad_CheckedChanged(object sender, EventArgs e)
+        {
+            Configuration.Captcha.RuCaptcha.ReportBad = CbCapRuReportBad.Checked;
         }
 
         private void CbFwEnable_CheckedChanged(object sender, EventArgs e)

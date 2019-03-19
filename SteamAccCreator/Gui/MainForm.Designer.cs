@@ -96,6 +96,7 @@ namespace SteamAccCreator.Gui
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.LinkHowToFindSubId = new System.Windows.Forms.LinkLabel();
+            this.CbCapRuReportBad = new System.Windows.Forms.CheckBox();
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -500,6 +501,7 @@ namespace SteamAccCreator.Gui
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.tabPage2.Controls.Add(this.CbCapRuReportBad);
             this.tabPage2.Controls.Add(this.label10);
             this.tabPage2.Controls.Add(this.label9);
             this.tabPage2.Controls.Add(this.label8);
@@ -934,6 +936,18 @@ namespace SteamAccCreator.Gui
             this.LinkHowToFindSubId.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.LinkHowToFindSubId.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkHowToFindSubId_LinkClicked);
             // 
+            // CbCapRuReportBad
+            // 
+            this.CbCapRuReportBad.AutoSize = true;
+            this.CbCapRuReportBad.ForeColor = System.Drawing.Color.White;
+            this.CbCapRuReportBad.Location = new System.Drawing.Point(170, 78);
+            this.CbCapRuReportBad.Name = "CbCapRuReportBad";
+            this.CbCapRuReportBad.Size = new System.Drawing.Size(139, 17);
+            this.CbCapRuReportBad.TabIndex = 10;
+            this.CbCapRuReportBad.Text = "Report if not recognized";
+            this.CbCapRuReportBad.UseVisualStyleBackColor = true;
+            this.CbCapRuReportBad.CheckedChanged += new System.EventHandler(this.CbCapRuReportBad_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1036,6 +1050,7 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.Button BtnAddGame;
         private System.Windows.Forms.Button BtnExportGames;
         private System.Windows.Forms.LinkLabel LinkHowToFindSubId;
+        private System.Windows.Forms.CheckBox CbCapRuReportBad;
     }
 }
 

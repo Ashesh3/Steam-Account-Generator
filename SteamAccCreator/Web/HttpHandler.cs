@@ -120,12 +120,12 @@ namespace SteamAccCreator.Web
             ServicePointManager.SecurityProtocol = securityProtocol;
         }
 
-        public bool TwoCaptchaReport(Models.RuCaptchaConfig config, Captcha.CaptchaSolution solution, bool good)
+        public bool TwoCaptchaReport(Captcha.CaptchaSolution solution, bool good)
         {
             var _reportResponse = TwoCaptcha("res.php",
                 new Dictionary<string, object>()
                 {
-                    { "key", config.ApiKey },
+                    { "key", solution.Config.RuCaptcha.ApiKey },
                     { "action", (good) ? "reportgood" : "reportbad" },
                     { "id", solution.Id },
                     { "json", "0" },
@@ -282,6 +282,13 @@ namespace SteamAccCreator.Web
             if (!bCaptchaMatches)
             {
                 updateStatus(Error.WRONG_CAPTCHA);
+
+
+                if (captcha.Config.Service == Enums.CaptchaService.RuCaptcha &&
+                    captcha.Config.RuCaptcha.ReportBad)
+                {
+                    TwoCaptchaReport(captcha, false);
+                }
                 return false;
             }
 
