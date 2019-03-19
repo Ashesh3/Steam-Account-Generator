@@ -19,6 +19,8 @@ Mass Steam Account generator features:
 - [x] Manual and auto captcha services:
   - Captchasolutions
   - 2Captcha/RuCaptcha
+  - Warning: Latest build can cause issues with auto captha services.
+  Open issue if you are expecting problems.
 - [x] Proxy support
 - [x] Save most settings in JSON file.
 
