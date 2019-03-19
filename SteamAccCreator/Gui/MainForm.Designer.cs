@@ -882,10 +882,10 @@ namespace SteamAccCreator.Gui
             this.LinkCodedBy.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
             this.LinkCodedBy.Location = new System.Drawing.Point(58, 19);
             this.LinkCodedBy.Name = "LinkCodedBy";
-            this.LinkCodedBy.Size = new System.Drawing.Size(128, 13);
+            this.LinkCodedBy.Size = new System.Drawing.Size(149, 13);
             this.LinkCodedBy.TabIndex = 3;
             this.LinkCodedBy.TabStop = true;
-            this.LinkCodedBy.Text = "https://tele.click/sag_bot";
+            this.LinkCodedBy.Text = "https://tele.click/dedsec1337";
             this.LinkCodedBy.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.LinkCodedBy.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
