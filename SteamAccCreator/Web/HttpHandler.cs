@@ -196,7 +196,7 @@ namespace SteamAccCreator.Web
                                 { "key", captchaConfig.RuCaptcha.ApiKey },
                                 { "body", $"data:image/jpg;base64,{captchaPayload}" },
                                 { "method", "base64" },
-                                //{ "soft_id", "2370" },
+                                { "soft_id", "2370" },
                                 { "json", "0" },
                             });
 
