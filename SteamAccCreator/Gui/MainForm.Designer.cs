@@ -771,11 +771,6 @@ namespace SteamAccCreator.Gui
             0,
             0,
             0});
-            this.TbProxyPort.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.TbProxyPort.Name = "TbProxyPort";
             this.TbProxyPort.Size = new System.Drawing.Size(64, 20);
             this.TbProxyPort.TabIndex = 8;

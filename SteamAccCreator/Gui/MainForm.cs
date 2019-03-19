@@ -68,7 +68,7 @@ namespace SteamAccCreator.Gui
 
             CbProxyEnabled.Checked = Configuration.Proxy.Enabled;
             TbProxyAddr.Text = Configuration.Proxy.Host;
-            TbProxyPort.Value = (Configuration.Proxy.Port < 1 || Configuration.Proxy.Port > 65535) ? Configuration.Proxy.Port = 1 : Configuration.Proxy.Port;
+            TbProxyPort.Value = (Configuration.Proxy.Port < 0 || Configuration.Proxy.Port > 65535) ? Configuration.Proxy.Port = 0 : Configuration.Proxy.Port;
         }
 
         public async void BtnCreateAccount_Click(object sender, EventArgs e)
