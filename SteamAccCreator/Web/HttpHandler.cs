@@ -37,6 +37,8 @@ namespace SteamAccCreator.Web
         private static readonly Uri CheckPasswordAvailUri = new Uri("https://store.steampowered.com/join/checkpasswordavail/");
         private static readonly Uri CreateAccountUri = new Uri("https://store.steampowered.com/join/createaccount/");
 
+        private static readonly Uri TwoCaptchaDomain = new Uri((Program.UseRuCaptchaDomain) ? "http://rucaptcha.com" : "http://2captcha.com");
+
         private static readonly Regex CaptchaRegex = new Regex(@"\/rendercaptcha\?gid=([0-9]+)\D");
         private static readonly Regex BoolRegex = new Regex(@"(true|false)");
 
@@ -68,7 +70,7 @@ namespace SteamAccCreator.Web
 
         private string[] TwoCaptcha(string resource, Dictionary<string, object> args)
         {
-            _client.BaseUrl = new Uri("http://rucaptcha.com");
+            _client.BaseUrl = TwoCaptchaDomain;
             var srequest = new RestRequest(resource, Method.POST);
             foreach (var key in args)
             {
