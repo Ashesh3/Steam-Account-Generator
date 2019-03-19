@@ -2,7 +2,7 @@
 {
     public class Error
     {
-        public const string WRONG_CAPTCHA = "Wrong captcha....Error";
+        public const string WRONG_CAPTCHA = "Wrong captcha... Error";
         public const string HTTP_FAILED = "HTTP Request failed";
         public const string EMAIL_ERROR = "Email error";
         public const string SIMILIAR_MAIL = "This e-mail address must be different from your own.";
