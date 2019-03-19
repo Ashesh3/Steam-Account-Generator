@@ -417,7 +417,8 @@ namespace SteamAccCreator.Gui
             if (Configuration.Captcha.Enabled = CbCapAuto.Checked)
             {
                 RadCapCaptchasolutions.Enabled =
-                    RadCapRuCaptcha.Enabled = true;
+                    RadCapRuCaptcha.Enabled =
+                    CbCapRuReportBad.Enabled = true;
 
                 RadCapCaptchasolutions_CheckedChanged(this, e);
                 RadCapRuCaptcha_CheckedChanged(this, e);
@@ -428,7 +429,8 @@ namespace SteamAccCreator.Gui
                     RadCapRuCaptcha.Enabled =
                     TbCapRuCapApi.Enabled =
                     TbCapSolutionsApi.Enabled =
-                    TbCapSolutionsSecret.Enabled = false;
+                    TbCapSolutionsSecret.Enabled =
+                    CbCapRuReportBad.Enabled = false;
             }
         }
 
