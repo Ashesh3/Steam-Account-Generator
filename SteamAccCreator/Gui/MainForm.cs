@@ -60,7 +60,8 @@ namespace SteamAccCreator.Gui
 
             CbFwEnable.Checked = Configuration.Output.Enabled;
             CbFwMail.Checked = Configuration.Output.WriteEmails;
-            LinkFwPath.Text = Configuration.Output.Path;
+            //LinkFwPath.Text = Configuration.Output.Path;
+            LinkFwPath.Text = Configuration.Output.GetVisualPath();
             CbFwOutType.SelectedIndex = (int)Configuration.Output.SaveType;
 
             CbProxyEnabled.Checked = Configuration.Proxy.Enabled;
@@ -200,7 +201,9 @@ namespace SteamAccCreator.Gui
 
         private void saveFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            LinkFwPath.Text = Configuration.Output.Path = saveFileDialog1.FileName;
+            Configuration.Output.Path = saveFileDialog1.FileName;
+
+            LinkFwPath.Text = Configuration.Output.GetVisualPath();
         }
 
         public static bool SocketConnect(string host, int port)
@@ -468,7 +471,7 @@ namespace SteamAccCreator.Gui
             else
                 Configuration.Output.Path = Path.ChangeExtension(Configuration.Output.Path, "txt");
 
-            LinkFwPath.Text = Configuration.Output.Path;
+            LinkFwPath.Text = Configuration.Output.GetVisualPath();
         }
 
         private void LinkFwPath_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
