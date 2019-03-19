@@ -95,6 +95,7 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.LinkHowToFindSubId = new System.Windows.Forms.LinkLabel();
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -305,6 +306,7 @@ namespace SteamAccCreator.Gui
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.tabPage1.Controls.Add(this.LinkHowToFindSubId);
             this.tabPage1.Controls.Add(this.BtnExportGames);
             this.tabPage1.Controls.Add(this.BtnClearGames);
             this.tabPage1.Controls.Add(this.BtnRemoveGame);
@@ -924,6 +926,19 @@ namespace SteamAccCreator.Gui
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // LinkHowToFindSubId
+            // 
+            this.LinkHowToFindSubId.AutoSize = true;
+            this.LinkHowToFindSubId.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.LinkHowToFindSubId.Location = new System.Drawing.Point(215, 95);
+            this.LinkHowToFindSubId.Name = "LinkHowToFindSubId";
+            this.LinkHowToFindSubId.Size = new System.Drawing.Size(95, 13);
+            this.LinkHowToFindSubId.TabIndex = 29;
+            this.LinkHowToFindSubId.TabStop = true;
+            this.LinkHowToFindSubId.Text = "How to find sub ID";
+            this.LinkHowToFindSubId.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.LinkHowToFindSubId.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkHowToFindSubId_LinkClicked);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1025,6 +1040,7 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.Button BtnRemoveGame;
         private System.Windows.Forms.Button BtnAddGame;
         private System.Windows.Forms.Button BtnExportGames;
+        private System.Windows.Forms.LinkLabel LinkHowToFindSubId;
     }
 }
 

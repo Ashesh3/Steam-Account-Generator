@@ -13,6 +13,8 @@ namespace SteamAccCreator.Gui
 {
     public partial class MainForm : Form
     {
+        const string URL_WIKI_FIND_SUBID = "https://github.com/EarsKilla/Steam-Account-Generator/wiki/Find-sub-ID";
+
         private static readonly string FILE_CONFIG = Path.Combine(Environment.CurrentDirectory, "config.json");
 
         public Models.Configuration Configuration { get; private set; } = new Models.Configuration();
@@ -403,6 +405,12 @@ namespace SteamAccCreator.Gui
         private void CbAddGames_CheckedChanged(object sender, EventArgs e)
         {
             Configuration.Games.AddGames = CbAddGames.Checked;
+        }
+
+        private void LinkHowToFindSubId_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(URL_WIKI_FIND_SUBID);
+            e.Link.Visited = true;
         }
 
         private void CbCapAuto_CheckedChanged(object sender, EventArgs e)
