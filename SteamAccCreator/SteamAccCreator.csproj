@@ -94,6 +94,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\CaptchaService.cs" />
+    <Compile Include="File\SaveType.cs" />
+    <Compile Include="Models\CaptchaSolutionsConfig.cs" />
+    <Compile Include="Models\CredentialConfig.cs" />
+    <Compile Include="Models\GameInfo.cs" />
+    <Compile Include="Gui\AddGameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\AddGameDialog.Designer.cs">
+      <DependentUpon>AddGameDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\CaptchaDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -114,11 +125,22 @@
       <DependentUpon>InputDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\AccountCreator.cs" />
+    <Compile Include="Models\CaptchaSolvingConfig.cs" />
+    <Compile Include="Models\Configuration.cs" />
+    <Compile Include="Models\GamesConfig.cs" />
+    <Compile Include="Models\MailConfig.cs" />
+    <Compile Include="Models\OutputConfig.cs" />
+    <Compile Include="Models\ProxyConfig.cs" />
+    <Compile Include="Models\RuCaptchaConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility.cs" />
     <Compile Include="Web\Error.cs" />
     <Compile Include="Web\HttpHandler.cs" />
     <Compile Include="Web\MailHandler.cs" />
+    <EmbeddedResource Include="Gui\AddGameDialog.resx">
+      <DependentUpon>AddGameDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Gui\CaptchaDialog.resx">
       <DependentUpon>CaptchaDialog.cs</DependentUpon>
     </EmbeddedResource>

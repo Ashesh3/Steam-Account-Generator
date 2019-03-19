@@ -1,82 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RestSharp;
+using System;
+using System.Text.RegularExpressions;
 
 namespace SteamAccCreator.Web
 {
     public class MailHandler
     {
-        private static readonly Random Random = new Random();
         private readonly RestClient _client = new RestClient();
         private readonly RestRequest _request = new RestRequest();
-        public static int GetRandomNumber(int min, int max)
-        {
-            lock (Random) // synchronize
-            {
-                return Random.Next(min, max);
-            }
-        }
-
 
         public static readonly Uri MailboxUri = new Uri("https://fapi.cloudaccess.host/mail.php");
         private static readonly Uri SteamUri = new Uri("https://store.steampowered.com/account/newaccountverification?");
 
-
-        //private static readonly Regex FromRegex = new Regex(@".Steam.*");
-        private static readonly Regex ConfirmMailRegex = new Regex("stoken=([^&]+).*creationid=([^\"]+)");
-
-        public static string Reverse(string s)
-        {
-            char[] charArray = s.ToCharArray();
-            Array.Reverse(charArray);
-            return new string(charArray);
-        }
-        public static string Base64Encode(string plainText)
-        {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
-        }
-        public static char cipher(char ch, int key)
-        {
-            if (!char.IsLetter(ch))
-            {
-
-                return ch;
-            }
-
-            char d = char.IsUpper(ch) ? 'A' : 'a';
-            return (char)((((ch + key) - d) % 26) + d);
-
-
-        }
-        public static string Encipher(string input, int key)
-        {
-            string output = string.Empty;
-
-            foreach (char ch in input)
-                output += cipher(ch, key);
-
-            return output;
-        }
-        private string GetMD5()
-        {
-            System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            System.IO.FileStream stream = new System.IO.FileStream(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-
-            md5.ComputeHash(stream);
-
-            stream.Close();
-
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            for (int i = 0; i < md5.Hash.Length; i++)
-                sb.Append(md5.Hash[i].ToString("x2"));
-
-            return sb.ToString().ToUpperInvariant();
-        }
         public void ConfirmMail(string address)
         {
             System.Threading.Thread.Sleep(5000);
@@ -106,11 +42,7 @@ namespace SteamAccCreator.Web
                 var tokenUri = "stoken=" + words9[0] + "&creationid=" + words2[0];
                 ConfirmSteamAccount(new Uri(SteamUri + tokenUri));
             }
-            catch (Exception)
-            {
-                // MessageBox.Show(e.ToString());
-                // MessageBox.Show(response.Content);
-            }
+            catch { }
         }
 
         private void ConfirmSteamAccount(Uri uri)

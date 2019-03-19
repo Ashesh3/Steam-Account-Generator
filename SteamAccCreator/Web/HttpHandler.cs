@@ -1,14 +1,14 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Windows.Forms;
 using Newtonsoft.Json;
 using RestSharp;
 using SteamAccCreator.Gui;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
 using Image = System.Drawing.Image;
 
 namespace SteamAccCreator.Web
@@ -20,12 +20,13 @@ namespace SteamAccCreator.Web
         private readonly RestClient _client = new RestClient();
 
         private readonly RestRequest _request = new RestRequest();
-        private readonly MainForm _formreq = new MainForm();
 
         private string _captchaGid = string.Empty;
         private string _sessionId = string.Empty;
 
         public bool UseProxy { get; set; }
+        public string ProxyHost { get; private set; }
+        public int ProxyPort { get; private set; }
 
         private static readonly Uri JoinUri = new Uri("https://store.steampowered.com/join/");
         private static readonly Uri CaptchaUri = new Uri("https://store.steampowered.com/login/rendercaptcha?gid=");
@@ -38,40 +39,14 @@ namespace SteamAccCreator.Web
 
         private static readonly Regex CaptchaRegex = new Regex(@"\/rendercaptcha\?gid=([0-9]+)\D");
         private static readonly Regex BoolRegex = new Regex(@"(true|false)");
-        public static char cipher(char ch, int key)
+
+        public HttpHandler(bool useProxy, string proxyHost, int proxyPort)
         {
-            if (!char.IsLetter(ch))
-            {
-
-                return ch;
-            }
-
-            char d = char.IsUpper(ch) ? 'A' : 'a';
-            return (char)((((ch + key) - d) % 26) + d);
-
-
+            UseProxy = useProxy;
+            ProxyHost = proxyHost;
+            ProxyPort = proxyPort;
         }
 
-        public static string Encipher(string input, int key)
-        {
-            string output = string.Empty;
-
-            foreach (char ch in input)
-                output += cipher(ch, key);
-
-            return output;
-        }
-        public static string Reverse(string s)
-        {
-            char[] charArray = s.ToCharArray();
-            Array.Reverse(charArray);
-            return new string(charArray);
-        }
-        public static string Base64Encode(string plainText)
-        {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
-        }
         public Image GetCaptchaImageraw()
         {
             //load Steam page
@@ -91,34 +66,39 @@ namespace SteamAccCreator.Web
             }
         }
 
-        private string GetMD5()
+        private string[] TwoCaptcha(string resource, Dictionary<string, object> args)
         {
-            System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            System.IO.FileStream stream = new System.IO.FileStream(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-
-            md5.ComputeHash(stream);
-
-            stream.Close();
-
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            for (int i = 0; i < md5.Hash.Length; i++)
-                sb.Append(md5.Hash[i].ToString("x2"));
-
-            return sb.ToString().ToUpperInvariant();
+            _client.BaseUrl = new Uri("http://2captcha.com");
+            var srequest = new RestRequest(resource, Method.POST);
+            foreach (var key in args)
+            {
+                srequest.AddParameter(key.Key, key.Value);
+            }
+            var responsecap = _client.Execute(srequest);
+            return responsecap.Content.Split(new string[] { "|" }, StringSplitOptions.None);
         }
-        public string[] GetCaptchaImage(ref string _status,bool usetwocap = false)
-        {
-            string[] sols = { "" };
 
+        private string Captchasolutions(string resource, Dictionary<string, object> args)
+        {
+            _client.BaseUrl = new Uri("http://api.captchasolutions.com/");
+            var srequest = new RestRequest(resource, Method.POST);
+            foreach (var key in args)
+            {
+                srequest.AddParameter(key.Key, key.Value);
+            }
+            var responsecap = _client.Execute(srequest);
+            return responsecap.Content;
+        }
+
+        public string[] GetCaptchaImage(ref string _status, Models.CaptchaSolvingConfig captchaConfig)
+        {
             _status = "Getting Captcha...";
-          //  mainForm.UpdateStatus();
 
             //load Steam page
             _client.BaseUrl = JoinUri;
-            if (_formreq.proxy == true)
-            {
-                _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
-            }
+            if (UseProxy)
+                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
             _request.Method = Method.GET;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             var response = _client.Execute(_request);
@@ -130,7 +110,6 @@ namespace SteamAccCreator.Web
             }
             catch (Exception e)
             {
-
                 MessageBox.Show(e.ToString());
                 MessageBox.Show(response.Content);
                 MessageBox.Show(response.ErrorException.ToString());
@@ -138,161 +117,148 @@ namespace SteamAccCreator.Web
             }
             //download and return captcha image
             _client.BaseUrl = new Uri(CaptchaUri + _captchaGid);
-            if (_formreq.proxy == true)
-            {
-                _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
-            }
-           
+            if (UseProxy)
+                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
             string finalpayload = "";
-            for(int i = 0;i<1;i++)
+            for (int i = 0; i < 1; i++)
             {
-                _status = "Getting Captcha.. "+(i/10)*100+"%";
-               // mainForm.UpdateStatus(_index, _status);
+                _status = "Getting Captcha.. " + (i / 10) * 100 + "%";
+                // mainForm.UpdateStatus(_index, _status);
 
                 var captchaResponse = _client.DownloadData(_request);
                 string cap1 = getbasefromimage(captchaResponse);
-     
-                    finalpayload = cap1;
+
+                finalpayload = cap1;
 
             }
             _status = "Recognizing Captcha!";
-            if (usetwocap)
+
+            switch (captchaConfig.Service)
             {
-                _client.BaseUrl = new Uri("http://2captcha.com");
-                var srequest = new RestSharp.RestRequest("in.php", RestSharp.Method.POST);
-                srequest.AddParameter("key", MainForm.twocapkey);
-                srequest.AddParameter("body", "data:image/jpg;base64," + finalpayload);
-                srequest.AddParameter("method", "base64");
-                srequest.AddParameter("soft_id", "2370");
-                srequest.AddParameter("json", "0");
-
-                var responsecapx = _client.Execute(srequest);
-                var respp = responsecapx.Content.Split(new string[] { "|" }, StringSplitOptions.None);
-                if (respp[0] != "OK")
-                {
-                    MessageBox.Show(responsecapx.Content);
-                    return sols;
-                }
-                else
-                {
-                    
-                    try
+                case Enums.CaptchaService.Captchasolutions:
                     {
-                        var id = respp[1];
-                        srequest.Parameters.Clear();
-                        Thread.Sleep(10000);
-                        _client.BaseUrl = new Uri("http://2captcha.com");
-                        srequest = new RestSharp.RestRequest("res.php", RestSharp.Method.POST);
-                        srequest.AddParameter("key", MainForm.twocapkey);
-                        srequest.AddParameter("action", "get");
-                        srequest.AddParameter("id",id);
-                        srequest.AddParameter("soft_id", "2370");
-                        srequest.AddParameter("json", "0");
-                        responsecapx = _client.Execute(srequest);
-                        respp = responsecapx.Content.Split(new string[] { "|" }, StringSplitOptions.None);
-                        if (respp[0] != "OK")
-                        {
-                            Thread.Sleep(6000);
-                            _client.BaseUrl = new Uri("http://2captcha.com");
-                            srequest = new RestSharp.RestRequest("res.php", RestSharp.Method.POST);
-                            srequest.AddParameter("key", MainForm.twocapkey);
-                            srequest.AddParameter("action", "get");
-                            srequest.AddParameter("id", id);
-                            srequest.AddParameter("soft_id", "2370");
-                            srequest.AddParameter("json", "0");
-                            responsecapx = _client.Execute(srequest);
-                            respp = responsecapx.Content.Split(new string[] { "|" }, StringSplitOptions.None);
-                            if (respp[0] != "OK")
+                        var _resp = Captchasolutions("solve",
+                            new Dictionary<string, object>()
                             {
-                                return sols;
-                            }
-                            else
-                            {
-                                sols[0] = respp[1];
-                                return sols;
-                            }
-                        }else
-                        {
-                           
-                            sols[0] = respp[1];
-                            return sols;
+                                { "p", "base64" },
+                                { "captcha", $"data:image/jpg;base64,{finalpayload}" },
+                                { "key", captchaConfig.CaptchaSolutions.ApiKey },
+                                { "secret", captchaConfig.CaptchaSolutions.ApiSecret },
+                                { "out", "txt" },
+                            });
 
+                        if (Regex.IsMatch(_resp, @"Error:\s(.+)", RegexOptions.IgnoreCase))
+                        {
+                            MessageBox.Show(_resp);
+                            return new[] { "" };
                         }
 
+                        return new[] { Regex.Replace(_resp, @"\t|\n|\r", "") };
                     }
-                    catch (Exception)
+                case Enums.CaptchaService.RuCaptcha:
                     {
-                        return sols;
+                        try
+                        {
+                            var _resp = TwoCaptcha("in.php",
+                                new Dictionary<string, object>()
+                                {
+                                { "key", captchaConfig.RuCaptcha.ApiKey },
+                                { "body", $"data:image/jpg;base64,{finalpayload}" },
+                                { "method", "base64" },
+                                { "soft_id", "2370" },
+                                { "json", "0" },
+                                });
+
+                            if (_resp[0] != "OK")
+                            {
+                                MessageBox.Show(string.Join("|", _resp));
+                                return new[] { "" };
+                            }
+
+                            Thread.Sleep(10000);
+                            _resp = TwoCaptcha("res.php",
+                                new Dictionary<string, object>()
+                                {
+                                { "key", captchaConfig.RuCaptcha.ApiKey },
+                                { "action", "get" },
+                                { "id", _resp[1] },
+                                { "soft_id", "2370" },
+                                { "json", "0" },
+                                });
+
+                            if (_resp[0] == "OK")
+                                return new[] { "" };
+
+                            Thread.Sleep(6000);
+                            _resp = TwoCaptcha("res.php",
+                                new Dictionary<string, object>()
+                                {
+                                { "key", captchaConfig.RuCaptcha.ApiKey },
+                                { "action", "get" },
+                                { "id", _resp[1] },
+                                { "soft_id", "2370" },
+                                { "json", "0" },
+                                });
+
+                            if (_resp[0] != "OK")
+                                return new string[0];
+
+                            return new[] { _resp[1] };
+                        }
+                        catch
+                        {
+                            return new[] { "" };
+                        }
                     }
-
-                }
-
-
-            }
-            else
-            {
-                _client.BaseUrl = new Uri("http://api.captchasolutions.com/");
-                var request = new RestSharp.RestRequest("solve", RestSharp.Method.POST);
-                request.AddParameter("p", "base64");
-                request.AddParameter("captcha", "data:image/jpg;base64," + finalpayload);
-                request.AddParameter("key", MainForm.apixkey);
-                request.AddParameter("secret", MainForm.secxkey);
-                request.AddParameter("out", "txt");
-
-
-                var responsecap = _client.Execute(request);
-                string replacement = Regex.Replace(responsecap.Content, @"\t|\n|\r", "");
-                if (responsecap.Content == "\n\t\t\t\t\t\t<captchasolutions>\n\t\t\t\t\t\t\t<decaptcha>\n\t\t\t\t\t\t\t\tError: You have 0 balance left in your account.\n\t\t\t\t\t\t\t</decaptcha>\n\t\t\t\t\t\t</captchasolutions>\n\t\t\t\t\t\n\t\n\n\n")
-                {
-                    MessageBox.Show(responsecap.Content);
-                    return sols;
-
-                }
-                sols[0] = replacement;
-                return sols;
+                case Enums.CaptchaService.Unknown:
+                default:
+                    {
+                        using (var dialog = new CaptchaDialog(this, ref _status, captchaConfig))
+                        {
+                            if (dialog.ShowDialog() == DialogResult.OK)
+                                return new[] { dialog.txtCaptcha.Text };
+                        }
+                    }
+                    break;
             }
 
-
+            return new[] { "" };
         }
 
         public string getbasefromimage(byte[] captcha)
         {
             using (var ms = new MemoryStream(captcha))
             {
-                using (Image image = Image.FromStream(ms))
+                using (var image = Image.FromStream(ms))
                 {
-                    using (MemoryStream m = new MemoryStream())
+                    using (var m = new MemoryStream())
                     {
                         image.Save(m, image.RawFormat);
-                        byte[] imageBytes = m.ToArray();
+                        var imageBytes = m.ToArray();
 
-                        // Convert byte[] to Base64 String
-                        string base64String = Convert.ToBase64String(imageBytes);
-                        return base64String;
+                        return Convert.ToBase64String(imageBytes);
                     }
                 }
             }
-
         }
 
-        public bool CreateAccount(string email, string[] captchaText, ref string status,int n)
+        public bool CreateAccount(string email, string[] captchaText, ref string status, int n, ref bool stop)
         {
-            ;
             _client.BaseUrl = VerifyCaptchaUri;
             if (captchaText == null)
                 return false;
             string scaptchaText = captchaText[n];
-            if (_formreq.proxy == true)
-            {
-                _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
-            }
+            if (UseProxy)
+                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
             _request.Method = Method.POST;
             _request.AddParameter("captchagid", _captchaGid);
             _request.AddParameter("captcha_text", scaptchaText);
             _request.AddParameter("email", email);
             _request.AddParameter("count", "1");
             var response = _client.Execute(_request);
-           
+
             _request.Parameters.Clear();
 
             if (!response.IsSuccessful)
@@ -308,32 +274,31 @@ namespace SteamAccCreator.Web
             if (!bCaptchaMatches)
             {
                 status = Error.WRONG_CAPTCHA;
-                if ((captchaText.Length-1) < (n+1))
+                if ((captchaText.Length - 1) < (n + 1))
                     return false;
                 else
-                     return CreateAccount(email, captchaText, ref status,n+1);
+                    return CreateAccount(email, captchaText, ref status, n + 1, ref stop);
             }
 
             if (!bEmailAvail)
             {
                 //seems to always return true even if email is already in use
                 status = Error.EMAIL_ERROR;
+                stop = true;
                 return false;
             }
 
             //Send request again
             _client.BaseUrl = AjaxVerifyCaptchaUri;
-            if (_formreq.proxy == true)
-            {
-                _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
-            }
+            if (UseProxy)
+                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
             _request.AddParameter("captchagid", _captchaGid);
             _request.AddParameter("captcha_text", scaptchaText);
             _request.AddParameter("email", email);
 
             response = _client.Execute(_request);
             _request.Parameters.Clear();
-            //dynamic jsonResponse;
             try
             {
                 dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
@@ -352,23 +317,16 @@ namespace SteamAccCreator.Web
                             break;
                         default:
                             status = Error.UNKNOWN;
+                            stop = true;
                             break;
                     }
                     return false;
                 }
-               
-            
-            
-           
 
-            _sessionId = jsonResponse.sessionid;
-            status = "Waiting for email to be verified";
-
+                _sessionId = jsonResponse.sessionid;
+                status = "Waiting for email to be verified";
             }
-            catch (Exception)
-            {
-                
-            }
+            catch { }
 
             return true;
         }
@@ -376,10 +334,9 @@ namespace SteamAccCreator.Web
         public bool CheckEmailVerified(ref string status)
         {
             _client.BaseUrl = AjaxCheckEmailVerifiedUri;
-            if (_formreq.proxy == true)
-            {
-                _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
-            }
+            if (UseProxy)
+                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
             _request.Method = Method.POST;
             _request.AddParameter("creationid", _sessionId);
 
@@ -391,7 +348,7 @@ namespace SteamAccCreator.Web
             {
                 case "1":
                     status = "Email confirmed..Done!";
- 
+
                     return true;
 
                 case "42":
@@ -416,18 +373,17 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        public bool CompleteSignup(string alias, string password, ref string status, ref long steamId,bool addcsgo)
+        public bool CompleteSignup(string alias, string password, Action<string> updateStatus, ref long steamId, ref int gamesNotAdded, IEnumerable<Models.GameInfo> addThisGames)
         {
-            if (!CheckAlias(alias, ref status))
+            if (!CheckAlias(alias, updateStatus))
                 return false;
-            if (!CheckPassword(password, alias, ref status))
+            if (!CheckPassword(password, alias, updateStatus))
                 return false;
 
             _client.BaseUrl = CreateAccountUri;
-            if (_formreq.proxy == true)
-            {
-                _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
-            }
+            if (UseProxy)
+                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
             _request.Method = Method.POST;
             _request.AddParameter("accountname", alias);
             _request.AddParameter("password", password);
@@ -441,21 +397,20 @@ namespace SteamAccCreator.Web
             {
                 _cookieJar.Add(new Cookie(sessionCookie.Name, sessionCookie.Value, sessionCookie.Path, sessionCookie.Domain));
             }
-            
+
             _request.Parameters.Clear();
 
             dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
             if (jsonResponse.bSuccess == "true")
             {
-                status = "Account created";
+                updateStatus?.Invoke("Account created");
                 //disable guard
                 _client.FollowRedirects = false;
                 _client.CookieContainer = _cookieJar;
                 _client.BaseUrl = new Uri("https://store.steampowered.com/twofactor/manage_action");
-                if (_formreq.proxy == true)
-                {
-                    _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
-                }
+                if (UseProxy)
+                    _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
                 _request.Method = Method.POST;
                 _request.AddParameter("action", "actuallynone");
                 _request.AddParameter("sessionid", _sessionId);
@@ -470,10 +425,9 @@ namespace SteamAccCreator.Web
                 _request.Parameters.Clear();
                 _client.CookieContainer = _cookieJar;
                 _client.BaseUrl = new Uri("https://store.steampowered.com/twofactor/manage_action");
-                if (_formreq.proxy == true)
-                {
-                    _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
-                }
+                if (UseProxy)
+                    _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
                 _request.Method = Method.POST;
                 _request.AddParameter("action", "actuallynone");
                 _request.AddParameter("sessionid", sess);
@@ -486,28 +440,40 @@ namespace SteamAccCreator.Web
                     steamId = long.Parse(_steamRegex.Groups[1].Value);
 
                 _request.Parameters.Clear();
-                if (addcsgo)
+                gamesNotAdded = 0;
+                foreach (var game in addThisGames)
                 {
-                    _client.BaseUrl = new Uri("https://store.steampowered.com/checkout/addfreelicense");
-                    if (_formreq.proxy == true)
+                    if (game == null)
+                        continue;
+
+                    try
                     {
-                        _client.Proxy = new WebProxy(_formreq.proxyval, _formreq.proxyport);
+                        _client.BaseUrl = new Uri("https://store.steampowered.com/checkout/addfreelicense");
+                        if (UseProxy)
+                            _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
+
+                        updateStatus($"Adding game: {game.Name}");
+
+                        _request.Method = Method.POST;
+                        _request.AddParameter("action", "add_to_cart");
+                        _request.AddParameter("subid", game.SubId);
+                        _request.AddParameter("sessionid", sess);
+                        var responce111 = _client.Execute(_request);
+                        _client.FollowRedirects = true;
                     }
-                    _request.Method = Method.POST;
-                    _request.AddParameter("action", "add_to_cart");
-                    _request.AddParameter("subid", 303386);
-                    _request.AddParameter("sessionid", sess);
-                    var responce111 = _client.Execute(_request);
-                    _client.FollowRedirects = true;
+                    catch { gamesNotAdded++; }
+
+                    if (game != addThisGames.Last())
+                        Thread.Sleep(500);
                 }
 
                 return true;
             }
-            status = jsonResponse.details;
+            updateStatus?.Invoke(jsonResponse.details);
             return false;
         }
 
-        private static bool CheckAlias(string alias, ref string status)
+        private static bool CheckAlias(string alias, Action<string> statusUpdate)
         {
             var tempClient = new RestClient(CheckAvailUri);
             var tempRequest = new RestRequest(Method.POST);
@@ -519,11 +485,12 @@ namespace SteamAccCreator.Web
 
             if (jsonResponse.bAvailable == "true")
                 return true;
-            status = Error.ALIAS_UNAVAILABLE;
+
+            statusUpdate?.Invoke(Error.ALIAS_UNAVAILABLE);
             return false;
         }
 
-        private static bool CheckPassword(string password, string alias, ref string status)
+        private static bool CheckPassword(string password, string alias, Action<string> updateStatus)
         {
             var tempClient = new RestClient(CheckPasswordAvailUri);
             var tempRequest = new RestRequest(Method.POST);
@@ -536,10 +503,9 @@ namespace SteamAccCreator.Web
 
             if (jsonResponse.bAvailable == "true")
                 return true;
-            status = Error.PASSWORD_UNSAFE;
+
+            updateStatus?.Invoke(Error.PASSWORD_UNSAFE);
             return false;
         }
-
-
     }
 }
