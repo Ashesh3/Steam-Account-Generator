@@ -28,6 +28,7 @@ namespace SteamAccCreator.Gui
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.txtEmail = new System.Windows.Forms.TextBox();
             this.btnCreateAccount = new System.Windows.Forms.Button();
@@ -46,6 +47,7 @@ namespace SteamAccCreator.Gui
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.LinkHowToFindSubId = new System.Windows.Forms.LinkLabel();
             this.BtnExportGames = new System.Windows.Forms.Button();
             this.BtnClearGames = new System.Windows.Forms.Button();
             this.BtnRemoveGame = new System.Windows.Forms.Button();
@@ -61,6 +63,7 @@ namespace SteamAccCreator.Gui
             this.NumAccountsCount = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.CbCapRuReportBad = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -79,13 +82,17 @@ namespace SteamAccCreator.Gui
             this.CbFwMail = new System.Windows.Forms.CheckBox();
             this.CbFwEnable = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.LabProxyStatus = new System.Windows.Forms.Label();
-            this.BtnProxyTest = new System.Windows.Forms.Button();
-            this.TbProxyPort = new System.Windows.Forms.NumericUpDown();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
+            this.LabProxyTotal = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.TbProxyAddr = new System.Windows.Forms.TextBox();
+            this.LabProxyDisabled = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.LabProxyGood = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.LabProxyBad = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.BtnProxyLoad = new System.Windows.Forms.Button();
+            this.DgvProxyList = new System.Windows.Forms.DataGridView();
+            this.BtnProxyTest = new System.Windows.Forms.Button();
             this.CbProxyEnabled = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.LinkSmthBy = new System.Windows.Forms.LinkLabel();
@@ -95,8 +102,12 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.LinkHowToFindSubId = new System.Windows.Forms.LinkLabel();
-            this.CbCapRuReportBad = new System.Windows.Forms.CheckBox();
+            this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -105,8 +116,9 @@ namespace SteamAccCreator.Gui
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TbProxyPort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).BeginInit();
             this.tabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // txtEmail
@@ -287,10 +299,6 @@ namespace SteamAccCreator.Gui
             this.colStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colStatus.Width = 651;
             // 
-            // saveFileDialog1
-            // 
-            this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
-            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
@@ -328,6 +336,19 @@ namespace SteamAccCreator.Gui
             this.tabPage1.Size = new System.Drawing.Size(316, 296);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Settings";
+            // 
+            // LinkHowToFindSubId
+            // 
+            this.LinkHowToFindSubId.AutoSize = true;
+            this.LinkHowToFindSubId.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.LinkHowToFindSubId.Location = new System.Drawing.Point(215, 95);
+            this.LinkHowToFindSubId.Name = "LinkHowToFindSubId";
+            this.LinkHowToFindSubId.Size = new System.Drawing.Size(95, 13);
+            this.LinkHowToFindSubId.TabIndex = 29;
+            this.LinkHowToFindSubId.TabStop = true;
+            this.LinkHowToFindSubId.Text = "How to find sub ID";
+            this.LinkHowToFindSubId.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.LinkHowToFindSubId.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkHowToFindSubId_LinkClicked);
             // 
             // BtnExportGames
             // 
@@ -519,6 +540,18 @@ namespace SteamAccCreator.Gui
             this.tabPage2.Size = new System.Drawing.Size(316, 296);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Captcha";
+            // 
+            // CbCapRuReportBad
+            // 
+            this.CbCapRuReportBad.AutoSize = true;
+            this.CbCapRuReportBad.ForeColor = System.Drawing.Color.White;
+            this.CbCapRuReportBad.Location = new System.Drawing.Point(170, 78);
+            this.CbCapRuReportBad.Name = "CbCapRuReportBad";
+            this.CbCapRuReportBad.Size = new System.Drawing.Size(139, 17);
+            this.CbCapRuReportBad.TabIndex = 10;
+            this.CbCapRuReportBad.Text = "Report if not recognized";
+            this.CbCapRuReportBad.UseVisualStyleBackColor = true;
+            this.CbCapRuReportBad.CheckedChanged += new System.EventHandler(this.CbCapRuReportBad_CheckedChanged);
             // 
             // label10
             // 
@@ -726,13 +759,17 @@ namespace SteamAccCreator.Gui
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.tabPage4.Controls.Add(this.LabProxyStatus);
-            this.tabPage4.Controls.Add(this.BtnProxyTest);
-            this.tabPage4.Controls.Add(this.TbProxyPort);
-            this.tabPage4.Controls.Add(this.label14);
-            this.tabPage4.Controls.Add(this.label13);
+            this.tabPage4.Controls.Add(this.LabProxyTotal);
             this.tabPage4.Controls.Add(this.label12);
-            this.tabPage4.Controls.Add(this.TbProxyAddr);
+            this.tabPage4.Controls.Add(this.LabProxyDisabled);
+            this.tabPage4.Controls.Add(this.label5);
+            this.tabPage4.Controls.Add(this.LabProxyGood);
+            this.tabPage4.Controls.Add(this.label3);
+            this.tabPage4.Controls.Add(this.LabProxyBad);
+            this.tabPage4.Controls.Add(this.label1);
+            this.tabPage4.Controls.Add(this.BtnProxyLoad);
+            this.tabPage4.Controls.Add(this.DgvProxyList);
+            this.tabPage4.Controls.Add(this.BtnProxyTest);
             this.tabPage4.Controls.Add(this.CbProxyEnabled);
             this.tabPage4.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
@@ -742,91 +779,138 @@ namespace SteamAccCreator.Gui
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Proxy";
             // 
-            // LabProxyStatus
+            // LabProxyTotal
             // 
-            this.LabProxyStatus.AutoSize = true;
-            this.LabProxyStatus.ForeColor = System.Drawing.Color.White;
-            this.LabProxyStatus.Location = new System.Drawing.Point(126, 7);
-            this.LabProxyStatus.Name = "LabProxyStatus";
-            this.LabProxyStatus.Size = new System.Drawing.Size(13, 13);
-            this.LabProxyStatus.TabIndex = 10;
-            this.LabProxyStatus.Text = "?";
+            this.LabProxyTotal.AutoSize = true;
+            this.LabProxyTotal.ForeColor = System.Drawing.Color.White;
+            this.LabProxyTotal.Location = new System.Drawing.Point(54, 276);
+            this.LabProxyTotal.Name = "LabProxyTotal";
+            this.LabProxyTotal.Size = new System.Drawing.Size(13, 13);
+            this.LabProxyTotal.TabIndex = 20;
+            this.LabProxyTotal.Text = "0";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.ForeColor = System.Drawing.Color.White;
+            this.label12.Location = new System.Drawing.Point(23, 276);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(34, 13);
+            this.label12.TabIndex = 19;
+            this.label12.Text = "Total:";
+            // 
+            // LabProxyDisabled
+            // 
+            this.LabProxyDisabled.AutoSize = true;
+            this.LabProxyDisabled.ForeColor = System.Drawing.Color.Gold;
+            this.LabProxyDisabled.Location = new System.Drawing.Point(54, 263);
+            this.LabProxyDisabled.Name = "LabProxyDisabled";
+            this.LabProxyDisabled.Size = new System.Drawing.Size(13, 13);
+            this.LabProxyDisabled.TabIndex = 18;
+            this.LabProxyDisabled.Text = "0";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.White;
+            this.label5.Location = new System.Drawing.Point(6, 263);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(51, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "Disabled:";
+            // 
+            // LabProxyGood
+            // 
+            this.LabProxyGood.AutoSize = true;
+            this.LabProxyGood.ForeColor = System.Drawing.Color.Chartreuse;
+            this.LabProxyGood.Location = new System.Drawing.Point(54, 249);
+            this.LabProxyGood.Name = "LabProxyGood";
+            this.LabProxyGood.Size = new System.Drawing.Size(13, 13);
+            this.LabProxyGood.TabIndex = 16;
+            this.LabProxyGood.Text = "0";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.Location = new System.Drawing.Point(21, 249);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(36, 13);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "Good:";
+            // 
+            // LabProxyBad
+            // 
+            this.LabProxyBad.AutoSize = true;
+            this.LabProxyBad.ForeColor = System.Drawing.Color.Red;
+            this.LabProxyBad.Location = new System.Drawing.Point(54, 236);
+            this.LabProxyBad.Name = "LabProxyBad";
+            this.LabProxyBad.Size = new System.Drawing.Size(13, 13);
+            this.LabProxyBad.TabIndex = 14;
+            this.LabProxyBad.Text = "0";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(28, 236);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 13);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Bad:";
+            // 
+            // BtnProxyLoad
+            // 
+            this.BtnProxyLoad.Location = new System.Drawing.Point(172, 6);
+            this.BtnProxyLoad.Name = "BtnProxyLoad";
+            this.BtnProxyLoad.Size = new System.Drawing.Size(94, 23);
+            this.BtnProxyLoad.TabIndex = 12;
+            this.BtnProxyLoad.Text = "Load from file";
+            this.BtnProxyLoad.UseVisualStyleBackColor = true;
+            this.BtnProxyLoad.Click += new System.EventHandler(this.BtnProxyLoad_Click);
+            // 
+            // DgvProxyList
+            // 
+            this.DgvProxyList.AllowUserToAddRows = false;
+            this.DgvProxyList.AllowUserToDeleteRows = false;
+            this.DgvProxyList.AllowUserToResizeRows = false;
+            this.DgvProxyList.AutoGenerateColumns = false;
+            this.DgvProxyList.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.DgvProxyList.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.DgvProxyList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.DgvProxyList.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            this.DgvProxyList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.DgvProxyList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvProxyList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.enabledDataGridViewCheckBoxColumn,
+            this.Status,
+            this.hostDataGridViewTextBoxColumn,
+            this.portDataGridViewTextBoxColumn,
+            this.proxyTypeDataGridViewTextBoxColumn});
+            this.DgvProxyList.DataSource = this.proxyItemBindingSource;
+            this.DgvProxyList.Location = new System.Drawing.Point(8, 35);
+            this.DgvProxyList.MultiSelect = false;
+            this.DgvProxyList.Name = "DgvProxyList";
+            this.DgvProxyList.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.DgvProxyList.RowHeadersVisible = false;
+            this.DgvProxyList.Size = new System.Drawing.Size(302, 195);
+            this.DgvProxyList.TabIndex = 11;
             // 
             // BtnProxyTest
             // 
-            this.BtnProxyTest.Location = new System.Drawing.Point(264, 26);
+            this.BtnProxyTest.Location = new System.Drawing.Point(272, 6);
             this.BtnProxyTest.Name = "BtnProxyTest";
-            this.BtnProxyTest.Size = new System.Drawing.Size(46, 20);
+            this.BtnProxyTest.Size = new System.Drawing.Size(38, 23);
             this.BtnProxyTest.TabIndex = 9;
             this.BtnProxyTest.Text = "Test";
             this.BtnProxyTest.UseVisualStyleBackColor = true;
             this.BtnProxyTest.Click += new System.EventHandler(this.BtnProxyTest_Click);
             // 
-            // TbProxyPort
-            // 
-            this.TbProxyPort.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProxyPort.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbProxyPort.ForeColor = System.Drawing.Color.White;
-            this.TbProxyPort.Location = new System.Drawing.Point(194, 26);
-            this.TbProxyPort.Maximum = new decimal(new int[] {
-            65535,
-            0,
-            0,
-            0});
-            this.TbProxyPort.Name = "TbProxyPort";
-            this.TbProxyPort.Size = new System.Drawing.Size(64, 20);
-            this.TbProxyPort.TabIndex = 8;
-            this.TbProxyPort.Value = new decimal(new int[] {
-            65535,
-            0,
-            0,
-            0});
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label14.Location = new System.Drawing.Point(79, 7);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(50, 13);
-            this.label14.TabIndex = 7;
-            this.label14.Text = "Working:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label13.Location = new System.Drawing.Point(166, 29);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(29, 13);
-            this.label13.TabIndex = 6;
-            this.label13.Text = "Port:";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label12.Location = new System.Drawing.Point(5, 29);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(48, 13);
-            this.label12.TabIndex = 5;
-            this.label12.Text = "Address:";
-            // 
-            // TbProxyAddr
-            // 
-            this.TbProxyAddr.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProxyAddr.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbProxyAddr.ForeColor = System.Drawing.Color.White;
-            this.TbProxyAddr.Location = new System.Drawing.Point(60, 26);
-            this.TbProxyAddr.Name = "TbProxyAddr";
-            this.TbProxyAddr.Size = new System.Drawing.Size(100, 20);
-            this.TbProxyAddr.TabIndex = 3;
-            // 
             // CbProxyEnabled
             // 
             this.CbProxyEnabled.AutoSize = true;
             this.CbProxyEnabled.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.CbProxyEnabled.Location = new System.Drawing.Point(8, 6);
+            this.CbProxyEnabled.Location = new System.Drawing.Point(8, 10);
             this.CbProxyEnabled.Name = "CbProxyEnabled";
             this.CbProxyEnabled.Size = new System.Drawing.Size(65, 17);
             this.CbProxyEnabled.TabIndex = 2;
@@ -923,30 +1007,51 @@ namespace SteamAccCreator.Gui
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // LinkHowToFindSubId
+            // proxyItemBindingSource
             // 
-            this.LinkHowToFindSubId.AutoSize = true;
-            this.LinkHowToFindSubId.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.LinkHowToFindSubId.Location = new System.Drawing.Point(215, 95);
-            this.LinkHowToFindSubId.Name = "LinkHowToFindSubId";
-            this.LinkHowToFindSubId.Size = new System.Drawing.Size(95, 13);
-            this.LinkHowToFindSubId.TabIndex = 29;
-            this.LinkHowToFindSubId.TabStop = true;
-            this.LinkHowToFindSubId.Text = "How to find sub ID";
-            this.LinkHowToFindSubId.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.LinkHowToFindSubId.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkHowToFindSubId_LinkClicked);
+            this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
             // 
-            // CbCapRuReportBad
+            // enabledDataGridViewCheckBoxColumn
             // 
-            this.CbCapRuReportBad.AutoSize = true;
-            this.CbCapRuReportBad.ForeColor = System.Drawing.Color.White;
-            this.CbCapRuReportBad.Location = new System.Drawing.Point(170, 78);
-            this.CbCapRuReportBad.Name = "CbCapRuReportBad";
-            this.CbCapRuReportBad.Size = new System.Drawing.Size(139, 17);
-            this.CbCapRuReportBad.TabIndex = 10;
-            this.CbCapRuReportBad.Text = "Report if not recognized";
-            this.CbCapRuReportBad.UseVisualStyleBackColor = true;
-            this.CbCapRuReportBad.CheckedChanged += new System.EventHandler(this.CbCapRuReportBad_CheckedChanged);
+            this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.enabledDataGridViewCheckBoxColumn.DataPropertyName = "Enabled";
+            this.enabledDataGridViewCheckBoxColumn.FillWeight = 32F;
+            this.enabledDataGridViewCheckBoxColumn.HeaderText = "Use";
+            this.enabledDataGridViewCheckBoxColumn.MinimumWidth = 32;
+            this.enabledDataGridViewCheckBoxColumn.Name = "enabledDataGridViewCheckBoxColumn";
+            this.enabledDataGridViewCheckBoxColumn.Width = 32;
+            // 
+            // Status
+            // 
+            this.Status.DataPropertyName = "Status";
+            this.Status.HeaderText = "Status";
+            this.Status.Name = "Status";
+            this.Status.ReadOnly = true;
+            this.Status.Width = 62;
+            // 
+            // hostDataGridViewTextBoxColumn
+            // 
+            this.hostDataGridViewTextBoxColumn.DataPropertyName = "Host";
+            this.hostDataGridViewTextBoxColumn.HeaderText = "Host";
+            this.hostDataGridViewTextBoxColumn.Name = "hostDataGridViewTextBoxColumn";
+            this.hostDataGridViewTextBoxColumn.ReadOnly = true;
+            this.hostDataGridViewTextBoxColumn.Width = 54;
+            // 
+            // portDataGridViewTextBoxColumn
+            // 
+            this.portDataGridViewTextBoxColumn.DataPropertyName = "Port";
+            this.portDataGridViewTextBoxColumn.HeaderText = "Port";
+            this.portDataGridViewTextBoxColumn.Name = "portDataGridViewTextBoxColumn";
+            this.portDataGridViewTextBoxColumn.ReadOnly = true;
+            this.portDataGridViewTextBoxColumn.Width = 51;
+            // 
+            // proxyTypeDataGridViewTextBoxColumn
+            // 
+            this.proxyTypeDataGridViewTextBoxColumn.DataPropertyName = "ProxyType";
+            this.proxyTypeDataGridViewTextBoxColumn.HeaderText = "Type";
+            this.proxyTypeDataGridViewTextBoxColumn.Name = "proxyTypeDataGridViewTextBoxColumn";
+            this.proxyTypeDataGridViewTextBoxColumn.ReadOnly = true;
+            this.proxyTypeDataGridViewTextBoxColumn.Width = 56;
             // 
             // MainForm
             // 
@@ -975,9 +1080,10 @@ namespace SteamAccCreator.Gui
             this.tabPage3.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TbProxyPort)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1028,13 +1134,8 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.CheckBox CbFwMail;
         private System.Windows.Forms.CheckBox CbFwEnable;
         private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox TbProxyAddr;
         private System.Windows.Forms.CheckBox CbProxyEnabled;
         private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.NumericUpDown TbProxyPort;
         private System.Windows.Forms.LinkLabel LinkSmthBy;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.LinkLabel LinkCodedBy;
@@ -1043,7 +1144,6 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Button BtnLoadIds;
         private System.Windows.Forms.Button BtnProxyTest;
-        private System.Windows.Forms.Label LabProxyStatus;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button BtnClearGames;
         private System.Windows.Forms.Button BtnRemoveGame;
@@ -1051,6 +1151,22 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.Button BtnExportGames;
         private System.Windows.Forms.LinkLabel LinkHowToFindSubId;
         private System.Windows.Forms.CheckBox CbCapRuReportBad;
+        private System.Windows.Forms.DataGridView DgvProxyList;
+        private System.Windows.Forms.BindingSource proxyItemBindingSource;
+        private System.Windows.Forms.Button BtnProxyLoad;
+        private System.Windows.Forms.Label LabProxyTotal;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label LabProxyDisabled;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label LabProxyGood;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label LabProxyBad;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn enabledDataGridViewCheckBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Status;
+        private System.Windows.Forms.DataGridViewTextBoxColumn hostDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn portDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn proxyTypeDataGridViewTextBoxColumn;
     }
 }
 

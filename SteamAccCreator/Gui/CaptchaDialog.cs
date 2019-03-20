@@ -37,6 +37,7 @@ namespace SteamAccCreator.Gui
 
         private void BtnConfirm_Click(object sender, EventArgs e)
         {
+            Solution = new Web.Captcha.CaptchaSolution(txtCaptcha.Text, null, Config);
             DialogResult = DialogResult.OK;
             Close();
         }

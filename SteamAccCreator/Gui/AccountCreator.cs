@@ -307,7 +307,7 @@ namespace SteamAccCreator.Gui
 
             TableIndex = _mainForm.AddToTable(Mail, Login, Password, SteamId, Status);
 
-            _httpHandler = new HttpHandler(Config.Proxy.Enabled, Config.Proxy.Host, Config.Proxy.Port);
+            _httpHandler = new HttpHandler(_mainForm, config.Proxy);
         }
 
         public async void Run()
@@ -398,9 +398,12 @@ namespace SteamAccCreator.Gui
             do
             {
                 VerifyMail();
-                verified = CheckIfMailIsVerified();
-                UpdateStatus(Status);
-                tries--;
+
+                var bShouldRetry = false;
+                verified = CheckIfMailIsVerified(ref bShouldRetry);
+                if (!verified && !bShouldRetry)
+                    tries--;
+
                 await Task.Delay(2000).ConfigureAwait(false);
             }
             while (!verified && tries > 0);
@@ -457,10 +460,8 @@ namespace SteamAccCreator.Gui
                 _mailHandler.ConfirmMail(Mail);
         }
 
-        private bool CheckIfMailIsVerified()
-        {
-            return _httpHandler.CheckEmailVerified(ref Status);
-        }
+        private bool CheckIfMailIsVerified(ref bool shouldRetry)
+            => _httpHandler.CheckEmailVerified((s) => UpdateStatus(s), ref shouldRetry);
 
         private void FinishCreation()
         {

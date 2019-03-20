@@ -77,6 +77,9 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="pYove, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\pYove.1.0.0\lib\netstandard2.0\pYove.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp, Version=106.5.4.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.5.4\lib\net452\RestSharp.dll</HintPath>
     </Reference>
@@ -96,6 +99,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\CaptchaService.cs" />
+    <Compile Include="Enums\ProxyStatus.cs" />
+    <Compile Include="Enums\ProxyType.cs" />
     <Compile Include="File\SaveType.cs" />
     <Compile Include="Models\CaptchaSolutionsConfig.cs" />
     <Compile Include="Models\CredentialConfig.cs" />
@@ -132,6 +137,7 @@
     <Compile Include="Models\MailConfig.cs" />
     <Compile Include="Models\OutputConfig.cs" />
     <Compile Include="Models\ProxyConfig.cs" />
+    <Compile Include="Models\ProxyItem.cs" />
     <Compile Include="Models\RuCaptchaConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -163,6 +169,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\SteamAccCreator.Models.ProxyItem.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
