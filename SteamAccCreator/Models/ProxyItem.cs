@@ -19,6 +19,7 @@ namespace SteamAccCreator.Models
         public string UserName { get; set; }
         public string Password { get; set; }
 
+        public ProxyItem() { }
         public ProxyItem(string plain)
         {
             var match = Regex.Match(plain, @"((http[s]?|socks[45]?)\:\/\/)?(([^:]+)\:([^@]+)\@)?([^:]+)\:(\d+)[\/$]?", RegexOptions.IgnoreCase);
