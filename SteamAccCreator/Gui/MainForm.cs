@@ -18,6 +18,16 @@ namespace SteamAccCreator.Gui
         private static readonly string FILE_CONFIG = Path.Combine(Environment.CurrentDirectory, "config.json");
 
         public Models.Configuration Configuration { get; private set; } = new Models.Configuration();
+        private Models.ProxyItem _CurrentProxy = null;
+        private object _CurrentProxySync = new object();
+        public IWebProxy CurrentProxy
+        {
+            get
+            {
+                lock (_CurrentProxySync)
+                    return _CurrentProxy?.ToWebProxy();
+            }
+        }
 
         public MainForm()
         {
@@ -67,8 +77,44 @@ namespace SteamAccCreator.Gui
             CbFwOutType.SelectedIndex = (int)Configuration.Output.SaveType;
 
             CbProxyEnabled.Checked = Configuration.Proxy.Enabled;
-            TbProxyAddr.Text = Configuration.Proxy.Host;
-            TbProxyPort.Value = (Configuration.Proxy.Port < 0 || Configuration.Proxy.Port > 65535) ? Configuration.Proxy.Port = 0 : Configuration.Proxy.Port;
+            DgvProxyList.DataSource = Configuration.Proxy.List;
+        }
+
+        public bool UpdateProxy()
+        {
+            if (!Configuration.Proxy.Enabled)
+                return false;
+
+            lock (_CurrentProxySync)
+            {
+                var proxies = ((DgvProxyList.DataSource as IEnumerable<Models.ProxyItem>) ?? new Models.ProxyItem[0]).ToList();
+                if (_CurrentProxy != null)
+                {
+                    var currentIndex = proxies.FindIndex(_base =>
+                    {
+                        if (_base == null)
+                            return false;
+
+                        if (_base.ProxyType != _CurrentProxy.ProxyType &&
+                            _base.Host != _CurrentProxy.Host &&
+                            _base.Port != _CurrentProxy.Port)
+                            return false;
+
+                        return true;
+                    });
+                    if (currentIndex > -1)
+                    {
+                        proxies[currentIndex].Enabled = false;
+                        proxies[currentIndex].Status = Enums.ProxyStatus.Broken;
+
+                        Invoke(new Action(() => { DgvProxyList.DataSource = proxies; }));
+                    }
+                }
+
+                var working = proxies.Where(p => p.Enabled && p.Status != Enums.ProxyStatus.Broken);
+                _CurrentProxy = working?.FirstOrDefault();
+                return _CurrentProxy != null;
+            }
         }
 
         public async void BtnCreateAccount_Click(object sender, EventArgs e)
@@ -112,11 +158,8 @@ namespace SteamAccCreator.Gui
             }
 
             Configuration.Proxy.Enabled = CbProxyEnabled.Checked;
-            if (Configuration.Proxy.Enabled)
-            {
-                Configuration.Proxy.Host = TbProxyAddr.Text;
-                Configuration.Proxy.Port = (int)TbProxyPort.Value;
-            }
+            if (Configuration.Proxy.Enabled && _CurrentProxy == null)
+                UpdateProxy();
 
             if (CbFwEnable.Checked == true && string.IsNullOrEmpty(Configuration.Output.Path))
                 Configuration.Output.Path = Path.Combine(Environment.CurrentDirectory, $"Accounts.{((CbFwOutType.SelectedIndex == 2) ? "csv" : "txt")}");
@@ -200,37 +243,6 @@ namespace SteamAccCreator.Gui
             CbFwEnable.AutoCheck = !shouldForce;
         }
 
-        private void saveFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Configuration.Output.Path = saveFileDialog1.FileName;
-
-            LinkFwPath.Text = Configuration.Output.GetVisualPath();
-        }
-
-        public static bool SocketConnect(string host, int port)
-        {
-            var is_success = false;
-            try
-            {
-                var connsock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                connsock.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 200);
-                Thread.Sleep(500);
-                var hip = IPAddress.Parse(host);
-                var ipep = new IPEndPoint(hip, port);
-                connsock.Connect(ipep);
-                if (connsock.Connected)
-                {
-                    is_success = true;
-                }
-                connsock.Close();
-            }
-            catch (Exception)
-            {
-                is_success = false;
-            }
-            return is_success;
-        }
-
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             var link = sender as LinkLabel;
@@ -276,6 +288,7 @@ namespace SteamAccCreator.Gui
         private void BtnLoadIds_Click(object sender, EventArgs e)
         {
             openFileDialog1.Filter = "All supported|*.txt;*.json|Text file|*.txt|JSON file|*.json|Try to parse from any type|*.*";
+            openFileDialog1.Title = "Load game sub IDs";
 
             if (openFileDialog1.ShowDialog() != DialogResult.OK)
                 return;
@@ -417,7 +430,8 @@ namespace SteamAccCreator.Gui
             if (Configuration.Captcha.Enabled = CbCapAuto.Checked)
             {
                 RadCapCaptchasolutions.Enabled =
-                    RadCapRuCaptcha.Enabled = true;
+                    RadCapRuCaptcha.Enabled =
+                    CbCapRuReportBad.Enabled = true;
 
                 RadCapCaptchasolutions_CheckedChanged(this, e);
                 RadCapRuCaptcha_CheckedChanged(this, e);
@@ -428,7 +442,8 @@ namespace SteamAccCreator.Gui
                     RadCapRuCaptcha.Enabled =
                     TbCapRuCapApi.Enabled =
                     TbCapSolutionsApi.Enabled =
-                    TbCapSolutionsSecret.Enabled = false;
+                    TbCapSolutionsSecret.Enabled =
+                    CbCapRuReportBad.Enabled = false;
             }
         }
 
@@ -448,10 +463,15 @@ namespace SteamAccCreator.Gui
 
         private void RadCapRuCaptcha_CheckedChanged(object sender, EventArgs e)
         {
-            TbCapRuCapApi.Enabled = RadCapRuCaptcha.Checked;
+            CbCapRuReportBad.Enabled = TbCapRuCapApi.Enabled = RadCapRuCaptcha.Checked;
 
             if (RadCapRuCaptcha.Checked)
                 Configuration.Captcha.Service = Enums.CaptchaService.RuCaptcha;
+        }
+
+        private void CbCapRuReportBad_CheckedChanged(object sender, EventArgs e)
+        {
+            Configuration.Captcha.RuCaptcha.ReportBad = CbCapRuReportBad.Checked;
         }
 
         private void CbFwEnable_CheckedChanged(object sender, EventArgs e)
@@ -467,12 +487,20 @@ namespace SteamAccCreator.Gui
         private void BtnFwChangeFolder_Click(object sender, EventArgs e)
         {
             saveFileDialog1.Filter = "Text File|*.txt|KeePass CSV|*.csv";
-            saveFileDialog1.Title = "Save Files To";
+            saveFileDialog1.Title = "Where to save accounts";
 
             saveFileDialog1.CheckPathExists = true;
             saveFileDialog1.OverwritePrompt = true;
 
-            saveFileDialog1.ShowDialog();
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                Configuration.Output.Path = saveFileDialog1.FileName;
+
+                if (saveFileDialog1.FilterIndex == 2)
+                    CbFwOutType.SelectedIndex = (int)File.SaveType.KeepassCsv;
+
+                LinkFwPath.Text = Configuration.Output.GetVisualPath();
+            }
         }
 
         private void CbFwOutType_SelectedIndexChanged(object sender, EventArgs e)
@@ -501,14 +529,61 @@ namespace SteamAccCreator.Gui
             Configuration.Proxy.Enabled = CbProxyEnabled.Checked;
         }
 
-        private void BtnProxyTest_Click(object sender, EventArgs e)
+        private async void BtnProxyTest_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(TbProxyAddr.Text))
-                return;
+            await Task.Factory.StartNew(() =>
+            {
+                int good = 0, bad = 0, disabled = 0;
+                var proxies = (DgvProxyList.DataSource as IEnumerable<Models.ProxyItem>) ?? new Models.ProxyItem[0];
+                void RefreshCounters()
+                    => Invoke(new Action(() =>
+                    {
+                        LabProxyBad.Text = $"{bad}";
+                        LabProxyGood.Text = $"{good}";
+                        LabProxyDisabled.Text = $"{disabled}";
+                        LabProxyTotal.Text = $"{proxies.Count()}";
+                    }));
 
-            LabProxyStatus.Text = "Testing...";
+                RefreshCounters();
 
-            LabProxyStatus.Text = (SocketConnect(TbProxyAddr.Text, (int)TbProxyPort.Value) == true) ? "True" : "False";
+                var client = new RestSharp.RestClient("https://store.steampowered.com/login/");
+                foreach (var proxy in proxies)
+                {
+                    if (!proxy.Enabled)
+                    {
+                        disabled++;
+                        RefreshCounters();
+                        continue;
+                    }
+
+                    client.Proxy = proxy.ToWebProxy();
+                    var request = new RestSharp.RestRequest("", RestSharp.Method.GET);
+                    var response = client.Execute(request);
+
+                    if (!response.IsSuccessful)
+                    {
+                        bad++;
+                        proxy.Enabled = false;
+                        proxy.Status = Enums.ProxyStatus.Broken;
+                        RefreshCounters();
+                        continue;
+                    }
+
+                    if (Regex.IsMatch(response.Content, @"(steamcommunity\.com|steampowered\.com)", RegexOptions.IgnoreCase))
+                    {
+                        good++;
+                        proxy.Status = Enums.ProxyStatus.Working;
+                    }
+                    else
+                    {
+                        proxy.Enabled = false;
+                        bad++;
+                        proxy.Status = Enums.ProxyStatus.Broken;
+                    }
+
+                    RefreshCounters();
+                }
+            });
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -534,6 +609,44 @@ namespace SteamAccCreator.Gui
         private void txtPass_TextChanged(object sender, EventArgs e)
         {
             Configuration.Password.Value = txtPass.Text;
+        }
+
+        private void BtnProxyLoad_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Text file|*.txt";
+            openFileDialog1.Title = "Load proxy list";
+
+            if (openFileDialog1.ShowDialog() != DialogResult.OK)
+                return;
+
+            var data = System.IO.File.ReadAllLines(openFileDialog1.FileName);
+            var proxies = new List<Models.ProxyItem>();
+            var proxiesOld = (DgvProxyList.DataSource as IEnumerable<Models.ProxyItem>) ?? new Models.ProxyItem[0];
+
+            if (proxiesOld.Count() > 0)
+            {
+                switch (MessageBox.Show(this, "Merge with current proxies?", "Proxy loading...", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                {
+                    case DialogResult.Yes:
+                        proxies.AddRange(proxiesOld);
+                        break;
+                    case DialogResult.No:
+                        break;
+                    default:
+                        return;
+                }
+            }
+
+            foreach (var line in data)
+            {
+                try
+                {
+                    proxies.Add(new Models.ProxyItem(line));
+                }
+                catch { }
+            }
+
+            DgvProxyList.DataSource = Configuration.Proxy.List = proxies;
         }
     }
 }

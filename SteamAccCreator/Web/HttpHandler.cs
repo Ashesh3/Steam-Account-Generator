@@ -18,15 +18,13 @@ namespace SteamAccCreator.Web
         public CookieContainer _cookieJar = new CookieContainer();
 
         private readonly RestClient _client = new RestClient();
-
         private readonly RestRequest _request = new RestRequest();
 
         private string _captchaGid = string.Empty;
         private string _sessionId = string.Empty;
 
-        public bool UseProxy { get; set; }
-        public string ProxyHost { get; private set; }
-        public int ProxyPort { get; private set; }
+        private readonly MainForm FormMain;
+        private readonly Models.ProxyConfig ProxyConfig;
 
         private static readonly Uri JoinUri = new Uri("https://store.steampowered.com/join/");
         private static readonly Uri CaptchaUri = new Uri("https://store.steampowered.com/login/rendercaptcha?gid=");
@@ -37,14 +35,15 @@ namespace SteamAccCreator.Web
         private static readonly Uri CheckPasswordAvailUri = new Uri("https://store.steampowered.com/join/checkpasswordavail/");
         private static readonly Uri CreateAccountUri = new Uri("https://store.steampowered.com/join/createaccount/");
 
+        private static readonly Uri TwoCaptchaDomain = new Uri((Program.UseRuCaptchaDomain) ? "http://rucaptcha.com" : "http://2captcha.com");
+
         private static readonly Regex CaptchaRegex = new Regex(@"\/rendercaptcha\?gid=([0-9]+)\D");
         private static readonly Regex BoolRegex = new Regex(@"(true|false)");
 
-        public HttpHandler(bool useProxy, string proxyHost, int proxyPort)
+        public HttpHandler(MainForm main, Models.ProxyConfig proxyConfig)
         {
-            UseProxy = useProxy;
-            ProxyHost = proxyHost;
-            ProxyPort = proxyPort;
+            FormMain = main;
+            ProxyConfig = proxyConfig;
         }
 
         public Image GetCaptchaImageraw()
@@ -68,7 +67,7 @@ namespace SteamAccCreator.Web
 
         private string[] TwoCaptcha(string resource, Dictionary<string, object> args)
         {
-            _client.BaseUrl = new Uri("http://rucaptcha.com");
+            _client.BaseUrl = TwoCaptchaDomain;
             var srequest = new RestRequest(resource, Method.POST);
             foreach (var key in args)
             {
@@ -115,17 +114,17 @@ namespace SteamAccCreator.Web
                 _request.Parameters.Clear();
 
             _client.BaseUrl = uri;
-            _client.Proxy = (UseProxy) ? new WebProxy(ProxyHost, ProxyPort) : default(IWebProxy);
+            _client.Proxy = (ProxyConfig.Enabled) ? FormMain.CurrentProxy : default(IWebProxy);
             _request.Method = method;
             ServicePointManager.SecurityProtocol = securityProtocol;
         }
 
-        public bool TwoCaptchaReport(Models.RuCaptchaConfig config, Captcha.CaptchaSolution solution, bool good)
+        public bool TwoCaptchaReport(Captcha.CaptchaSolution solution, bool good)
         {
             var _reportResponse = TwoCaptcha("res.php",
                 new Dictionary<string, object>()
                 {
-                    { "key", config.ApiKey },
+                    { "key", solution.Config.RuCaptcha.ApiKey },
                     { "action", (good) ? "reportgood" : "reportbad" },
                     { "id", solution.Id },
                     { "json", "0" },
@@ -196,7 +195,7 @@ namespace SteamAccCreator.Web
                                 { "key", captchaConfig.RuCaptcha.ApiKey },
                                 { "body", $"data:image/jpg;base64,{captchaPayload}" },
                                 { "method", "base64" },
-                                //{ "soft_id", "2370" },
+                                { "soft_id", "2370" },
                                 { "json", "0" },
                             });
 
@@ -282,6 +281,13 @@ namespace SteamAccCreator.Web
             if (!bCaptchaMatches)
             {
                 updateStatus(Error.WRONG_CAPTCHA);
+
+                if (captcha.Config != null &&
+                    captcha.Config.Service == Enums.CaptchaService.RuCaptcha &&
+                    captcha.Config.RuCaptcha.ReportBad)
+                {
+                    TwoCaptchaReport(captcha, false);
+                }
                 return false;
             }
 
@@ -294,10 +300,7 @@ namespace SteamAccCreator.Web
             }
 
             //Send request again
-            _client.BaseUrl = AjaxVerifyCaptchaUri;
-            if (UseProxy)
-                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
-
+            SetConfig(AjaxVerifyCaptchaUri, Method.POST);
             _request.AddParameter("captchagid", _captchaGid);
             _request.AddParameter("captcha_text", captcha.Solution);
             _request.AddParameter("email", email);
@@ -322,7 +325,7 @@ namespace SteamAccCreator.Web
                             break;
                         default:
                             updateStatus(Error.UNKNOWN);
-                            stop = true;
+                            stop = !FormMain.UpdateProxy();
                             break;
                     }
                     return false;
@@ -336,43 +339,31 @@ namespace SteamAccCreator.Web
             return true;
         }
 
-        public bool CheckEmailVerified(ref string status)
+        public bool CheckEmailVerified(Action<string> updateStatus, ref bool shouldRetry)
         {
-            _client.BaseUrl = AjaxCheckEmailVerifiedUri;
-            if (UseProxy)
-                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
-
-            _request.Method = Method.POST;
+            SetConfig(AjaxCheckEmailVerifiedUri, Method.POST);
             _request.AddParameter("creationid", _sessionId);
 
             var response = _client.Execute(_request);
-
-            _request.Parameters.Clear();
-
             switch (response.Content)
             {
                 case "1":
-                    status = "Email confirmed..Done!";
-
+                    updateStatus?.Invoke("Email confirmed..Done!");
                     return true;
-
                 case "42":
                 case "29":
-                    //CheckEmailVerified(ref status);
-                    status = Error.REGISTRATION;
+                    updateStatus?.Invoke(Error.REGISTRATION);
                     break;
-
                 case "27":
-                    status = Error.TIMEOUT;
+                    updateStatus?.Invoke(Error.TIMEOUT);
                     break;
-
                 case "36":
                 case "10":
-                    status = Error.MAIL_UNVERIFIED;
+                    updateStatus?.Invoke(Error.MAIL_UNVERIFIED);
                     break;
-
                 default:
-                    status = Error.UNKNOWN;
+                    updateStatus?.Invoke(Error.UNKNOWN);
+                    shouldRetry = FormMain.UpdateProxy();
                     break;
             }
             return false;
@@ -385,11 +376,7 @@ namespace SteamAccCreator.Web
             if (!CheckPassword(password, alias, updateStatus))
                 return false;
 
-            _client.BaseUrl = CreateAccountUri;
-            if (UseProxy)
-                _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
-
-            _request.Method = Method.POST;
+            SetConfig(CreateAccountUri, Method.POST);
             _request.AddParameter("accountname", alias);
             _request.AddParameter("password", password);
             _request.AddParameter("creation_sessionid", _sessionId);
@@ -412,10 +399,7 @@ namespace SteamAccCreator.Web
                 //disable guard
                 _client.FollowRedirects = false;
                 _client.CookieContainer = _cookieJar;
-                _client.BaseUrl = new Uri("https://store.steampowered.com/twofactor/manage_action");
-                if (UseProxy)
-                    _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
-
+                SetConfig("https://store.steampowered.com/twofactor/manage_action", Method.POST);
                 _request.Method = Method.POST;
                 _request.AddParameter("action", "actuallynone");
                 _request.AddParameter("sessionid", _sessionId);
@@ -429,11 +413,7 @@ namespace SteamAccCreator.Web
                 }
                 _request.Parameters.Clear();
                 _client.CookieContainer = _cookieJar;
-                _client.BaseUrl = new Uri("https://store.steampowered.com/twofactor/manage_action");
-                if (UseProxy)
-                    _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
-
-                _request.Method = Method.POST;
+                SetConfig("https://store.steampowered.com/twofactor/manage_action", Method.POST);
                 _request.AddParameter("action", "actuallynone");
                 _request.AddParameter("sessionid", sess);
                 _request.AddParameter("none_authenticator_check", "on");
@@ -453,18 +433,17 @@ namespace SteamAccCreator.Web
 
                     try
                     {
-                        _client.BaseUrl = new Uri("https://store.steampowered.com/checkout/addfreelicense");
-                        if (UseProxy)
-                            _client.Proxy = new WebProxy(ProxyHost, ProxyPort);
-
                         updateStatus($"Adding game: {game.Name}");
 
-                        _request.Method = Method.POST;
+                        SetConfig("https://store.steampowered.com/checkout/addfreelicense", Method.POST);
                         _request.AddParameter("action", "add_to_cart");
                         _request.AddParameter("subid", game.SubId);
                         _request.AddParameter("sessionid", sess);
                         var responce111 = _client.Execute(_request);
                         _client.FollowRedirects = true;
+
+                        if (Regex.IsMatch(responce111.Content, @"problem\sadding\sthis\sproduct", RegexOptions.IgnoreCase))
+                            gamesNotAdded++;
                     }
                     catch { gamesNotAdded++; }
 

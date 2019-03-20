@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using SteamAccCreator.Gui;
@@ -11,10 +12,10 @@ namespace SteamAccCreator
         /// </summary>
         /// 
         private static Mutex mutex = null;
+        public static bool UseRuCaptchaDomain = false;
         [STAThread]
         static void Main()
         {
-            
             const string appName = "StmAccGen";
             bool createdNew;
 
@@ -25,6 +26,8 @@ namespace SteamAccCreator
                 //app is already running! Exiting the application  
                 return;
             }
+
+            UseRuCaptchaDomain = Environment.GetCommandLineArgs().Any(x => x?.ToLower() == "-rucaptcha");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
