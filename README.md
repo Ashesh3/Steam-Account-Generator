@@ -25,7 +25,7 @@ Mass Steam Account generator features:
 - [x] Save most settings in JSON file.
 
 # Download
-[Steam-Account-Generator/releases](/EarsKilla/Steam-Account-Generator/releases)
+[Steam-Account-Generator/releases](https://github.com/EarsKilla/Steam-Account-Generator/releases)
 
 # Requirements
 [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net472)
