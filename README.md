@@ -12,7 +12,7 @@ Mass Steam Account generator features:
 - [x] Auto generate password
 - [x] Can add free games to account
   - [x] Export/import this list
-  - Note: [How to find sub ID](/EarsKilla/Steam-Account-Generator/wiki/Find-sub-ID)
+  - Note: [How to find sub ID]((https://github.com/EarsKilla/Steam-Account-Generator/wiki/Find-sub-ID)
 - [x] Resolve Steam ID
 - [x] Auto save to text file
   - Can be saved in CSV format and imported in KeePass
@@ -25,7 +25,7 @@ Mass Steam Account generator features:
 - [x] Save most settings in JSON file.
 
 # Download
-[Steam-Account-Generator/releases](/EarsKilla/Steam-Account-Generator/releases)
+[Steam-Account-Generator/releases](https://github.com/EarsKilla/Steam-Account-Generator/releases)
 
 # Requirements
 [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net472)
