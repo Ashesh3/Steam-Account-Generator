@@ -12,7 +12,7 @@ Mass Steam Account generator features:
 - [x] Auto generate password
 - [x] Can add free games to account
   - [x] Export/import this list
-  - Note: [How to find sub ID]((https://github.com/EarsKilla/Steam-Account-Generator/wiki/Find-sub-ID)
+  - Note: [How to find sub ID](https://github.com/EarsKilla/Steam-Account-Generator/wiki/Find-sub-ID)
 - [x] Resolve Steam ID
 - [x] Auto save to text file
   - Can be saved in CSV format and imported in KeePass
