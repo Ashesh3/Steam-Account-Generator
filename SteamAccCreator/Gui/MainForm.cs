@@ -101,6 +101,10 @@ namespace SteamAccCreator.Gui
             Logger.Trace("Setting properties for proxy...");
             CbProxyEnabled.Checked = Configuration.Proxy.Enabled;
             DgvProxyList.DataSource = Configuration.Proxy.List;
+
+            CbUpdateChannel.SelectedIndex = (int)Program.UpdaterHandler.UpdateChannel;
+            CbUpdateChannel_SelectedIndexChanged(this, null);
+            CbUpdateChannel.SelectedIndexChanged += CbUpdateChannel_SelectedIndexChanged;
         }
 
         public bool UpdateProxy()
@@ -756,6 +760,49 @@ namespace SteamAccCreator.Gui
             DgvProxyList.DataSource = Configuration.Proxy.List = proxies;
 
             Logger.Trace("Loading proxies done.");
+        }
+
+        private void CbUpdateChannel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (sender != this)
+                Program.UpdaterHandler.Refresh((Web.Updater.Enums.UpdateChannelEnum)CbUpdateChannel.SelectedIndex);
+#if PRE_RELEASE
+            LbCurrentversionStr.Text = $"{Web.Updater.UpdaterHandler.CurrentVersion.ToString(3)}-pre{Web.Updater.UpdaterHandler.PreRelease}";
+#else
+            LbCurrentversionStr.Text = Web.Updater.UpdaterHandler.CurrentVersion.ToString(3);
+#endif
+            LbServerVersionStr.Text = (Program.UpdaterHandler.UpdateChannel == Web.Updater.Enums.UpdateChannelEnum.PreRelease) ?
+                $"{Program.UpdaterHandler.VersionInfo.Version.ToString(3)}-pre{Program.UpdaterHandler.VersionInfo.PreRelease}" :
+                $"{Program.UpdaterHandler.VersionInfo.Version.ToString(3)}";
+
+            if (Program.UpdaterHandler.IsCanBeUpdated && sender == this)
+                tabControl.SelectedTab = tabUpdates;
+
+            BtnDlLatestBuild.Visible = Program.UpdaterHandler.IsCanBeUpdated;
+        }
+
+        private void BtnDlLatestBuild_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(Program.UpdaterHandler.VersionInfo.Downloads.Windows);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error while opening update download.", ex);
+            }
+        }
+
+        private void BtnUpdateNotes_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(Program.UpdaterHandler.VersionInfo.ReleaseNotes);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error while opening update download.", ex);
+            }
         }
     }
 }

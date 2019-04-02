@@ -8,7 +8,13 @@ using System.Runtime.InteropServices;
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("SteamAccountGenerator")]
 [assembly: AssemblyDescription("Steam Account Generator")]
-[assembly: AssemblyConfiguration("")]
+#if DEBUG
+[assembly: AssemblyConfiguration("DEBUG")]
+#elif PRE_RELEASE
+[assembly: AssemblyConfiguration("PRE-RELEASE")]
+#else
+[assembly: AssemblyConfiguration("RELEASE")]
+#endif
 [assembly: AssemblyCompany("@DedSec1337")]
 [assembly: AssemblyProduct("Steam Account Generator")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
@@ -33,7 +39,7 @@ using System.Runtime.InteropServices;
 // Sie können alle Werte angeben oder Standardwerte für die Build- und Revisionsnummern verwenden,
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("99.0.0.0")]
-[assembly: AssemblyFileVersion("99.0.0.0")]
+[assembly: AssemblyVersion("1.1.2")]
+[assembly: AssemblyFileVersion("1.1.2.0")]
 [assembly: NeutralResourcesLanguage("en")]
 

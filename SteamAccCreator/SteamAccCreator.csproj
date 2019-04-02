@@ -74,6 +74,15 @@
     <ManifestKeyFile>
     </ManifestKeyFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Pre-Release|AnyCPU'">
+    <OutputPath>bin\Pre-Release\</OutputPath>
+    <DefineConstants>TRACE;IS_GUI_APP,LOGGER_TRACE,PRE_RELEASE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -155,6 +164,13 @@
     <Compile Include="Web\Error.cs" />
     <Compile Include="Web\HttpHandler.cs" />
     <Compile Include="Web\MailHandler.cs" />
+    <Compile Include="Web\Updater\Enums\UpdateChannelEnum.cs" />
+    <Compile Include="Web\Updater\Models\DownloadLinks.cs" />
+    <Compile Include="Web\Updater\Models\Misc.cs" />
+    <Compile Include="Web\Updater\Models\Updates.cs" />
+    <Compile Include="Web\Updater\Models\VersionInfo.cs" />
+    <Compile Include="Web\Updater\UpdateInfo.cs" />
+    <Compile Include="Web\Updater\UpdaterHandler.cs" />
     <EmbeddedResource Include="Gui\AddGameDialog.resx">
       <DependentUpon>AddGameDialog.cs</DependentUpon>
     </EmbeddedResource>

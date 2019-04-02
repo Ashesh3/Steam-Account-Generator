@@ -9,12 +9,16 @@ namespace SteamAccCreator
 {
     static class Program
     {
+        public const string DEFAULT_URL_MAILBOX = "https://newemailsrv.now.sh/index.php";
+        public const string DEFAULT_URL_UPDATE = "https://earskilla.github.io/SteamAccountGenerator-memes/update.json";
+
         /// <summary>
         /// Der Haupteinstiegspunkt für die Anwendung.
         /// </summary>
         /// 
         private static Mutex mutex = null;
         public static bool UseRuCaptchaDomain = false;
+        public static readonly Web.Updater.UpdaterHandler UpdaterHandler = new Web.Updater.UpdaterHandler();
         [STAThread]
         static void Main()
         {
@@ -51,6 +55,8 @@ Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generat
                 return;
             }
 
+            UpdaterHandler.Refresh();
+
             UseRuCaptchaDomain = Utility.HasStartOption("-rucaptcha");
             if (UseRuCaptchaDomain)
                 Logger.Info("Option '-rucaptcha' detected. Switched from 2captcha.com to rucaptcha.com");
@@ -65,7 +71,9 @@ Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generat
 
             Web.MailHandler.MailboxUri = Utility.GetStartOption(@"-mailBox[:=](.*)",
                 (m) => Utility.MakeUri(m.Groups[1].Value),
-                new Uri("https://newemailsrv.now.sh/index.php"));
+                Web.MailHandler.MailboxUri);
+            Web.MailHandler.IsMailBoxCustom = Utility.GetStartOption(@"-mailBox[:=](.*)",
+                (m) => m.Success, false);
 
             if (!Utility.HasStartOption("-nostyles"))
             {
