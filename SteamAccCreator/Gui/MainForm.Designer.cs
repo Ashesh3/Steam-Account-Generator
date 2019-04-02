@@ -92,6 +92,12 @@ namespace SteamAccCreator.Gui
             this.label1 = new System.Windows.Forms.Label();
             this.BtnProxyLoad = new System.Windows.Forms.Button();
             this.DgvProxyList = new System.Windows.Forms.DataGridView();
+            this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.BtnProxyTest = new System.Windows.Forms.Button();
             this.CbProxyEnabled = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
@@ -102,12 +108,6 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hostDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -117,8 +117,8 @@ namespace SteamAccCreator.Gui
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).BeginInit();
-            this.tabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).BeginInit();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtEmail
@@ -896,6 +896,52 @@ namespace SteamAccCreator.Gui
             this.DgvProxyList.Size = new System.Drawing.Size(302, 195);
             this.DgvProxyList.TabIndex = 11;
             // 
+            // enabledDataGridViewCheckBoxColumn
+            // 
+            this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.enabledDataGridViewCheckBoxColumn.DataPropertyName = "Enabled";
+            this.enabledDataGridViewCheckBoxColumn.FillWeight = 32F;
+            this.enabledDataGridViewCheckBoxColumn.HeaderText = "Use";
+            this.enabledDataGridViewCheckBoxColumn.MinimumWidth = 32;
+            this.enabledDataGridViewCheckBoxColumn.Name = "enabledDataGridViewCheckBoxColumn";
+            this.enabledDataGridViewCheckBoxColumn.Width = 32;
+            // 
+            // Status
+            // 
+            this.Status.DataPropertyName = "Status";
+            this.Status.HeaderText = "Status";
+            this.Status.Name = "Status";
+            this.Status.ReadOnly = true;
+            this.Status.Width = 62;
+            // 
+            // hostDataGridViewTextBoxColumn
+            // 
+            this.hostDataGridViewTextBoxColumn.DataPropertyName = "Host";
+            this.hostDataGridViewTextBoxColumn.HeaderText = "Host";
+            this.hostDataGridViewTextBoxColumn.Name = "hostDataGridViewTextBoxColumn";
+            this.hostDataGridViewTextBoxColumn.ReadOnly = true;
+            this.hostDataGridViewTextBoxColumn.Width = 54;
+            // 
+            // portDataGridViewTextBoxColumn
+            // 
+            this.portDataGridViewTextBoxColumn.DataPropertyName = "Port";
+            this.portDataGridViewTextBoxColumn.HeaderText = "Port";
+            this.portDataGridViewTextBoxColumn.Name = "portDataGridViewTextBoxColumn";
+            this.portDataGridViewTextBoxColumn.ReadOnly = true;
+            this.portDataGridViewTextBoxColumn.Width = 51;
+            // 
+            // proxyTypeDataGridViewTextBoxColumn
+            // 
+            this.proxyTypeDataGridViewTextBoxColumn.DataPropertyName = "ProxyType";
+            this.proxyTypeDataGridViewTextBoxColumn.HeaderText = "Type";
+            this.proxyTypeDataGridViewTextBoxColumn.Name = "proxyTypeDataGridViewTextBoxColumn";
+            this.proxyTypeDataGridViewTextBoxColumn.ReadOnly = true;
+            this.proxyTypeDataGridViewTextBoxColumn.Width = 56;
+            // 
+            // proxyItemBindingSource
+            // 
+            this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
+            // 
             // BtnProxyTest
             // 
             this.BtnProxyTest.Location = new System.Drawing.Point(272, 6);
@@ -1007,52 +1053,6 @@ namespace SteamAccCreator.Gui
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // proxyItemBindingSource
-            // 
-            this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
-            // 
-            // enabledDataGridViewCheckBoxColumn
-            // 
-            this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.enabledDataGridViewCheckBoxColumn.DataPropertyName = "Enabled";
-            this.enabledDataGridViewCheckBoxColumn.FillWeight = 32F;
-            this.enabledDataGridViewCheckBoxColumn.HeaderText = "Use";
-            this.enabledDataGridViewCheckBoxColumn.MinimumWidth = 32;
-            this.enabledDataGridViewCheckBoxColumn.Name = "enabledDataGridViewCheckBoxColumn";
-            this.enabledDataGridViewCheckBoxColumn.Width = 32;
-            // 
-            // Status
-            // 
-            this.Status.DataPropertyName = "Status";
-            this.Status.HeaderText = "Status";
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
-            this.Status.Width = 62;
-            // 
-            // hostDataGridViewTextBoxColumn
-            // 
-            this.hostDataGridViewTextBoxColumn.DataPropertyName = "Host";
-            this.hostDataGridViewTextBoxColumn.HeaderText = "Host";
-            this.hostDataGridViewTextBoxColumn.Name = "hostDataGridViewTextBoxColumn";
-            this.hostDataGridViewTextBoxColumn.ReadOnly = true;
-            this.hostDataGridViewTextBoxColumn.Width = 54;
-            // 
-            // portDataGridViewTextBoxColumn
-            // 
-            this.portDataGridViewTextBoxColumn.DataPropertyName = "Port";
-            this.portDataGridViewTextBoxColumn.HeaderText = "Port";
-            this.portDataGridViewTextBoxColumn.Name = "portDataGridViewTextBoxColumn";
-            this.portDataGridViewTextBoxColumn.ReadOnly = true;
-            this.portDataGridViewTextBoxColumn.Width = 51;
-            // 
-            // proxyTypeDataGridViewTextBoxColumn
-            // 
-            this.proxyTypeDataGridViewTextBoxColumn.DataPropertyName = "ProxyType";
-            this.proxyTypeDataGridViewTextBoxColumn.HeaderText = "Type";
-            this.proxyTypeDataGridViewTextBoxColumn.Name = "proxyTypeDataGridViewTextBoxColumn";
-            this.proxyTypeDataGridViewTextBoxColumn.ReadOnly = true;
-            this.proxyTypeDataGridViewTextBoxColumn.Width = 56;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1081,9 +1081,9 @@ namespace SteamAccCreator.Gui
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }

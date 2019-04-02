@@ -13,6 +13,8 @@ namespace SteamAccCreator.Gui
 
         public CaptchaDialog(HttpHandler httpHandler, Action<string> updateStatus, Models.CaptchaSolvingConfig config)
         {
+            Logger.Debug("Init. solving captcha...");
+
             Solution = new Web.Captcha.CaptchaSolution(false, "Something went wrong...", config);
 
             _httpHandler = httpHandler;
@@ -25,9 +27,15 @@ namespace SteamAccCreator.Gui
         private void LoadCaptcha(Action<string> updateStatus, Models.CaptchaSolvingConfig config)
         {
             if (config.Enabled)
+            {
+                Logger.Debug("Solving captcha using services...");
                 Solution = _httpHandler.SolveCaptcha(updateStatus, config);
+            }
             else
+            {
+                Logger.Debug("Solving captcha using dialog box...");
                 boxCaptcha.Image = _httpHandler.GetCaptchaImageraw();
+            }
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -40,6 +48,7 @@ namespace SteamAccCreator.Gui
             Solution = new Web.Captcha.CaptchaSolution(txtCaptcha.Text, null, Config);
             DialogResult = DialogResult.OK;
             Close();
+            Logger.Debug($"Captcha solution: {Solution.Solution}");
         }
 
         private void TxtCaptcha_KeyDown(object sender, KeyEventArgs e)

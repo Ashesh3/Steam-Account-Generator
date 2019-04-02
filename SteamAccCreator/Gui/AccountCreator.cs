@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -290,6 +291,7 @@ namespace SteamAccCreator.Gui
 
         public AccountCreator(MainForm mainForm, Models.Configuration config)
         {
+            Logger.Trace("Creating account: init...");
             CaptchaSolved = new Web.Captcha.CaptchaSolution(false, "Something went wrong...", config.Captcha);
 
             Status = "Init...";
@@ -308,10 +310,12 @@ namespace SteamAccCreator.Gui
             TableIndex = _mainForm.AddToTable(Mail, Login, Password, SteamId, Status);
 
             _httpHandler = new HttpHandler(_mainForm, config.Proxy);
+            Logger.Trace("Creating account: init done");
         }
 
         public async void Run()
         {
+            Logger.Trace("Creating account: starting...");
             if (Config.Login.Random)
             {
                 if (Config.Login.Neat)
@@ -331,6 +335,12 @@ namespace SteamAccCreator.Gui
             {
                 if (Config.Password.Neat)
                 {
+                    string neatOffline()
+                        => Adj.RandomElement().ToTitleCase() +
+                            Adj.RandomElement().ToTitleCase() +
+                            Adj.RandomElement().ToTitleCase() +
+                            Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
+
                     Password = Utility.GetRandomString(24) + Utility.GetRandomNumber(100, 1000);
 
                     try
@@ -339,14 +349,15 @@ namespace SteamAccCreator.Gui
                         var request21 = new RestSharp.RestRequest("api/v1/passphrase/plain?pc=1&wc=3&sp=n&maxCh=30", RestSharp.Method.GET);
                         var queryResult1 = _client21.Execute(request21);
                         var neatPasw = queryResult1.Content.Trim();
-                        Password = neatPasw + Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
+                        if (Regex.IsMatch(neatPasw, @"automatically\swithin\s(\d+)\shour", RegexOptions.IgnoreCase))
+                            Password = neatOffline();
+                        else
+                            Password = neatPasw + Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        Password = Adj.RandomElement().ToTitleCase() +
-                            Adj.RandomElement().ToTitleCase() +
-                            Adj.RandomElement().ToTitleCase() +
-                            Utility.GetRandomString(2) + Utility.GetRandomNumber(100, 1000);
+                        Logger.Error("Neat password error", ex);
+                        Password = neatOffline();
                     }
                 }
                 else
@@ -367,6 +378,7 @@ namespace SteamAccCreator.Gui
                 string Provider = providerResult.Content;
                 if (!Provider.StartsWith("@"))
                 {
+                    Logger.Warn($"Creating account: temp. mail service error: {Provider}");
                     UpdateStatus("No email service... Try again (later)?...");
                     return;
                 }
@@ -377,6 +389,7 @@ namespace SteamAccCreator.Gui
 
                 if (mailCheckResult.Content != "ok")
                 {
+                    Logger.Warn($"Creating account: Something went wrong with temp. mail service...\nResponse: {mailCheckResult.Content}\n---------\nHTTP Status-Code: {mailCheckResult.StatusCode}\n====== END ======");
                     UpdateStatus($"Something went wrong... HTTP Status-Code: {mailCheckResult.StatusCode}");
                     return;
                 }
@@ -404,6 +417,8 @@ namespace SteamAccCreator.Gui
                 if (!verified && !bShouldRetry)
                     tries--;
 
+                Logger.Debug($"Creating account: mail verified = {verified}, should retry = {bShouldRetry}, tries left = {tries}");
+
                 await Task.Delay(2000).ConfigureAwait(false);
             }
             while (!verified && tries > 0);
@@ -414,10 +429,14 @@ namespace SteamAccCreator.Gui
 
                 WriteAccountIntoFile();
 
+                Logger.Debug("Creating account: DONE!");
                 UpdateStatus($"Finished{(((Config.Games.AddGames) ? $" | Games skipped: {GamesNotAdded}" : ""))}");
             }
             else
+            {
+                Logger.Debug("Creating account: Error, email not verified.");
                 UpdateStatus("No Email Received.. Try again!");
+            }
         }
 
         private void StartCreation()
@@ -434,6 +453,8 @@ namespace SteamAccCreator.Gui
                 CaptchaSolved = ShowCaptchaDialog(_httpHandler, (s) => UpdateStatus(s), Config.Captcha);
                 if (!CaptchaSolved.Solved)
                 {
+                    Logger.Warn($"Captcha solving: Error: {CaptchaSolved.Message}");
+
                     if (CaptchaSolved.RetryAvailable)
                     {
                         UpdateStatus($"{CaptchaSolved.Message} | Retrying...");
@@ -465,17 +486,19 @@ namespace SteamAccCreator.Gui
 
         private void FinishCreation()
         {
-            while (!_httpHandler.CompleteSignup(Login, Password, (s) => UpdateStatus(s), ref SteamId, ref GamesNotAdded, AddThisGames))
+            var _status = "";
+            while (!_httpHandler.CompleteSignup(Login, Password, (s) => UpdateStatus(_status = s), ref SteamId, ref GamesNotAdded, AddThisGames))
             {
-                UpdateStatus(Status);
-                switch (Status)
+                switch (_status)
                 {
                     case Error.PASSWORD_UNSAFE:
-                        Password = ShowUpdateInfoBox(Status);
+                        Logger.Warn($"Creating account: {Error.PASSWORD_UNSAFE}");
+                        Password = ShowUpdateInfoBox(_status);
                         UpdateStatusFull();
                         break;
                     case Error.ALIAS_UNAVAILABLE:
-                        Login = ShowUpdateInfoBox(Status);
+                        Logger.Warn($"Creating account: {Error.ALIAS_UNAVAILABLE}");
+                        Login = ShowUpdateInfoBox(_status);
                         UpdateStatusFull();
                         break;
                     default:

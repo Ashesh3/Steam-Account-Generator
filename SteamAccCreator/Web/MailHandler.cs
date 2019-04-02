@@ -15,6 +15,8 @@ namespace SteamAccCreator.Web
 
         public void ConfirmMail(string address)
         {
+            Logger.Trace($"Confirming mail: {address}");
+
             System.Threading.Thread.Sleep(5000);
             _client.BaseUrl = MailboxUri;
 
@@ -27,9 +29,19 @@ namespace SteamAccCreator.Web
             {
                 jsonResponse = JsonConvert.DeserializeObject(response.Content);
             }
-            catch (Exception)
+            catch (JsonException jEx)
             {
+                Logger.Error("Confirming mail: JSON deserialize error.", jEx);
+
                 jsonResponse = "";
+                return;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Confirming mail: Error.", ex);
+
+                jsonResponse = "";
+                return;
             }
             _request.Parameters.Clear();
             try
@@ -41,8 +53,13 @@ namespace SteamAccCreator.Web
                 string[] words2 = Regex.Split(words1[1], " ");
                 var tokenUri = "stoken=" + words9[0] + "&creationid=" + words2[0];
                 ConfirmSteamAccount(new Uri(SteamUri + tokenUri));
+
+                Logger.Trace("Confirming mail: done?");
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Error($"Confirming mail: Error", ex);
+            }
         }
 
         private void ConfirmSteamAccount(Uri uri)

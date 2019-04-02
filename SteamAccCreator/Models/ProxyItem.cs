@@ -91,5 +91,8 @@ namespace SteamAccCreator.Models
                     return new WebProxy(Host, Port) { Credentials = credentials };
             }
         }
+
+        public override string ToString()
+            => $"{ProxyType.ToString().ToLower()}://{Host}:{Port}";
     }
 }
