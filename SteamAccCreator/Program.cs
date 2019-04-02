@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using SteamAccCreator.Gui;
@@ -32,8 +33,8 @@ namespace SteamAccCreator
                 => Logger.Warn("FIRST_CHANCE_EXCEPTION", e.Exception);
 #endif
 
-            Logger.SuppressErrorDialogs = HasStartOption("-suppressErrors");
-            Logger.SuppressAllErrorDialogs = HasStartOption("-suppressAllErrors");
+            Logger.SuppressErrorDialogs = Utility.HasStartOption("-suppressErrors");
+            Logger.SuppressAllErrorDialogs = Utility.HasStartOption("-suppressAllErrors");
 
             Logger.Warn(@"Coded by:
 https://github.com/Ashesh3
@@ -50,16 +51,28 @@ Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generat
                 return;
             }
 
-            UseRuCaptchaDomain = HasStartOption("-rucaptcha");
+            UseRuCaptchaDomain = Utility.HasStartOption("-rucaptcha");
             if (UseRuCaptchaDomain)
                 Logger.Info("Option '-rucaptcha' detected. Switched from 2captcha.com to rucaptcha.com");
 
-            if (!HasStartOption("-nostyles"))
+            Web.HttpHandler.TwoCaptchaDomain = Utility.GetStartOption(@"-(two|ru)captchaDomain[:=](.*)",
+                (m) => Utility.MakeUri(m.Groups[2].Value),
+                new Uri((UseRuCaptchaDomain) ? "http://rucaptcha.com" : "http://2captcha.com"));
+
+            Web.HttpHandler.CaptchasolutionsDomain = Utility.GetStartOption(@"-captchasolutionsDomain[:=](.*)",
+                (m) => Utility.MakeUri(m.Groups[1].Value),
+                new Uri("http://api.captchasolutions.com/"));
+
+            Web.MailHandler.MailboxUri = Utility.GetStartOption(@"-mailBox[:=](.*)",
+                (m) => Utility.MakeUri(m.Groups[1].Value),
+                new Uri("https://newemailsrv.now.sh/index.php"));
+
+            if (!Utility.HasStartOption("-nostyles"))
             {
                 Logger.Trace("Enabling visual styles...");
                 Application.EnableVisualStyles();
             }
-            if (!HasStartOption("-defaultTextRendering"))
+            if (!Utility.HasStartOption("-defaultTextRendering"))
             {
                 Logger.Trace($"{nameof(Application.SetCompatibleTextRenderingDefault)}(false)...");
                 Application.SetCompatibleTextRenderingDefault(false);
@@ -68,8 +81,7 @@ Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generat
             Application.Run(new MainForm());
         }
 
-        private static bool HasStartOption(string option)
-            => Environment.GetCommandLineArgs().Any(x => x?.ToLower() == option.ToLower());
+
     }
 
 }

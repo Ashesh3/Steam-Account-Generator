@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SteamAccCreator
@@ -61,6 +62,35 @@ namespace SteamAccCreator
             var _file = $"{((_isFileOk) ? $"{_filePart1}...{_filePart2}" : _filePart1)}{fileExt}";
 
             return Path.Combine(_dir, _file);
+        }
+
+        public static bool HasStartOption(string option)
+            => Environment.GetCommandLineArgs().Any(x => x?.ToLower() == option.ToLower());
+
+        public static T GetStartOption<T>(string pattern, Func<Match, T> formatFunc, T defaultValue = default(T))
+        {
+            if (formatFunc == null)
+                return defaultValue;
+
+            var args = Environment.GetCommandLineArgs();
+            foreach (var arg in args)
+            {
+                var regex = Regex.Match(arg, pattern, RegexOptions.IgnoreCase);
+                if (!regex.Success)
+                    continue;
+
+                return formatFunc.Invoke(regex);
+            }
+
+            return defaultValue;
+        }
+
+        public static Uri MakeUri(string url)
+        {
+            if (Regex.IsMatch(url, @"https?\:\/\/(.*)", RegexOptions.IgnoreCase))
+                return new Uri(url);
+            else
+                return new Uri($"http://{url}");
         }
 
         public static T RandomElement<T>(this IEnumerable<T> collection)
