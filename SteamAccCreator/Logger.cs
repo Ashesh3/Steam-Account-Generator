@@ -71,13 +71,13 @@ namespace SteamAccCreator
             {
                 var msg = $"{message}:\nError in trace:\n{ex}";
 #if IS_GUI_APP
-                if (SuppressErrorDialogs)
+                if (SuppressErrorDialogs || SuppressAllErrorDialogs)
                     return;
 
                 System.Windows.Forms.MessageBox.Show(msg, "Trace",
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 #else // IS_GUI_APP
-                if (SuppressErrorConsole)
+                if (SuppressErrorConsole || SuppressAllErrorConsole)
                     return;
 
                 Console.WriteLine(msg);
@@ -102,13 +102,13 @@ namespace SteamAccCreator
             {
                 var msg = $"{message}:\nError in debug:\n{ex}";
 #if IS_GUI_APP
-                if (SuppressErrorDialogs)
+                if (SuppressErrorDialogs || SuppressAllErrorDialogs)
                     return;
 
                 System.Windows.Forms.MessageBox.Show(msg, "Debug",
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 #else // IS_GUI_APP
-                if (SuppressErrorConsole)
+                if (SuppressErrorConsole || SuppressAllErrorConsole)
                     return;
 
                 Console.WriteLine(msg);
@@ -133,13 +133,13 @@ namespace SteamAccCreator
             {
                 var msg = $"{message}:\nError in info:\n{ex}";
 #if IS_GUI_APP
-                if (SuppressErrorDialogs)
+                if (SuppressErrorDialogs || SuppressAllErrorDialogs)
                     return;
 
                 System.Windows.Forms.MessageBox.Show(msg, "Info",
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 #else // IS_GUI_APP
-                if (SuppressErrorConsole)
+                if (SuppressErrorConsole || SuppressAllErrorConsole)
                     return;
 
                 Console.WriteLine(msg);
@@ -164,13 +164,13 @@ namespace SteamAccCreator
             {
                 var msg = $"{message}:\nError in warning:\n{ex}";
 #if IS_GUI_APP
-                if (SuppressErrorDialogs)
+                if (SuppressErrorDialogs || SuppressAllErrorDialogs)
                     return;
 
                 System.Windows.Forms.MessageBox.Show(msg, "Warn",
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 #else // IS_GUI_APP
-                if (SuppressErrorConsole)
+                if (SuppressErrorConsole || SuppressAllErrorConsole)
                     return;
 
                 Console.WriteLine(msg);
@@ -193,13 +193,13 @@ namespace SteamAccCreator
             {
                 var msg = $"{message}:\n{exception}\n\nError in warning (lol):\n{ex}";
 #if IS_GUI_APP
-                if (SuppressErrorDialogs)
+                if (SuppressErrorDialogs || SuppressAllErrorDialogs)
                     return;
 
                 System.Windows.Forms.MessageBox.Show(msg, "Warn",
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 #else
-                if (SuppressErrorConsole)
+                if (SuppressErrorConsole || SuppressAllErrorConsole)
                     return;
 
                 Console.WriteLine(msg);
