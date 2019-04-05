@@ -45,7 +45,7 @@ namespace SteamAccCreator.Gui
             this.colSteamId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.LinkHowToFindSubId = new System.Windows.Forms.LinkLabel();
             this.BtnExportGames = new System.Windows.Forms.Button();
@@ -94,6 +94,14 @@ namespace SteamAccCreator.Gui
             this.DgvProxyList = new System.Windows.Forms.DataGridView();
             this.BtnProxyTest = new System.Windows.Forms.Button();
             this.CbProxyEnabled = new System.Windows.Forms.CheckBox();
+            this.tabUpdates = new System.Windows.Forms.TabPage();
+            this.LbCurrentversionStr = new System.Windows.Forms.Label();
+            this.LbServerVersionStr = new System.Windows.Forms.Label();
+            this.BtnDlLatestBuild = new System.Windows.Forms.Button();
+            this.LbCurrentVersion = new System.Windows.Forms.Label();
+            this.LbServerVersion = new System.Windows.Forms.Label();
+            this.CbUpdateChannel = new System.Windows.Forms.ComboBox();
+            this.LbUpdateChannel = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.LinkSmthBy = new System.Windows.Forms.LinkLabel();
             this.label17 = new System.Windows.Forms.Label();
@@ -102,21 +110,23 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hostDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.BtnUpdateNotes = new System.Windows.Forms.Button();
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
-            this.tabControl1.SuspendLayout();
+            this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumAccountsCount)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).BeginInit();
+            this.tabUpdates.SuspendLayout();
             this.tabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -299,18 +309,19 @@ namespace SteamAccCreator.Gui
             this.colStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colStatus.Width = 651;
             // 
-            // tabControl1
+            // tabControl
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Controls.Add(this.tabPage5);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(324, 322);
-            this.tabControl1.TabIndex = 26;
+            this.tabControl.Controls.Add(this.tabPage1);
+            this.tabControl.Controls.Add(this.tabPage2);
+            this.tabControl.Controls.Add(this.tabPage3);
+            this.tabControl.Controls.Add(this.tabPage4);
+            this.tabControl.Controls.Add(this.tabUpdates);
+            this.tabControl.Controls.Add(this.tabPage5);
+            this.tabControl.Location = new System.Drawing.Point(12, 12);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(324, 322);
+            this.tabControl.TabIndex = 26;
             // 
             // tabPage1
             // 
@@ -918,6 +929,94 @@ namespace SteamAccCreator.Gui
             this.CbProxyEnabled.UseVisualStyleBackColor = true;
             this.CbProxyEnabled.CheckedChanged += new System.EventHandler(this.CbProxyEnabled_CheckedChanged);
             // 
+            // tabUpdates
+            // 
+            this.tabUpdates.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.tabUpdates.Controls.Add(this.BtnUpdateNotes);
+            this.tabUpdates.Controls.Add(this.LbCurrentversionStr);
+            this.tabUpdates.Controls.Add(this.LbServerVersionStr);
+            this.tabUpdates.Controls.Add(this.BtnDlLatestBuild);
+            this.tabUpdates.Controls.Add(this.LbCurrentVersion);
+            this.tabUpdates.Controls.Add(this.LbServerVersion);
+            this.tabUpdates.Controls.Add(this.CbUpdateChannel);
+            this.tabUpdates.Controls.Add(this.LbUpdateChannel);
+            this.tabUpdates.ForeColor = System.Drawing.Color.White;
+            this.tabUpdates.Location = new System.Drawing.Point(4, 22);
+            this.tabUpdates.Name = "tabUpdates";
+            this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
+            this.tabUpdates.Size = new System.Drawing.Size(316, 296);
+            this.tabUpdates.TabIndex = 5;
+            this.tabUpdates.Text = "Updates";
+            // 
+            // LbCurrentversionStr
+            // 
+            this.LbCurrentversionStr.AutoSize = true;
+            this.LbCurrentversionStr.Location = new System.Drawing.Point(100, 43);
+            this.LbCurrentversionStr.Name = "LbCurrentversionStr";
+            this.LbCurrentversionStr.Size = new System.Drawing.Size(22, 13);
+            this.LbCurrentversionStr.TabIndex = 6;
+            this.LbCurrentversionStr.Text = "-.-.-";
+            // 
+            // LbServerVersionStr
+            // 
+            this.LbServerVersionStr.AutoSize = true;
+            this.LbServerVersionStr.Location = new System.Drawing.Point(100, 30);
+            this.LbServerVersionStr.Name = "LbServerVersionStr";
+            this.LbServerVersionStr.Size = new System.Drawing.Size(22, 13);
+            this.LbServerVersionStr.TabIndex = 5;
+            this.LbServerVersionStr.Text = "-.-.-";
+            // 
+            // BtnDlLatestBuild
+            // 
+            this.BtnDlLatestBuild.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.BtnDlLatestBuild.Location = new System.Drawing.Point(187, 63);
+            this.BtnDlLatestBuild.Name = "BtnDlLatestBuild";
+            this.BtnDlLatestBuild.Size = new System.Drawing.Size(123, 23);
+            this.BtnDlLatestBuild.TabIndex = 7;
+            this.BtnDlLatestBuild.Text = "Download";
+            this.BtnDlLatestBuild.UseVisualStyleBackColor = true;
+            this.BtnDlLatestBuild.Visible = false;
+            this.BtnDlLatestBuild.Click += new System.EventHandler(this.BtnDlLatestBuild_Click);
+            // 
+            // LbCurrentVersion
+            // 
+            this.LbCurrentVersion.AutoSize = true;
+            this.LbCurrentVersion.Location = new System.Drawing.Point(16, 43);
+            this.LbCurrentVersion.Name = "LbCurrentVersion";
+            this.LbCurrentVersion.Size = new System.Drawing.Size(81, 13);
+            this.LbCurrentVersion.TabIndex = 3;
+            this.LbCurrentVersion.Text = "Current version:";
+            // 
+            // LbServerVersion
+            // 
+            this.LbServerVersion.AutoSize = true;
+            this.LbServerVersion.Location = new System.Drawing.Point(19, 30);
+            this.LbServerVersion.Name = "LbServerVersion";
+            this.LbServerVersion.Size = new System.Drawing.Size(78, 13);
+            this.LbServerVersion.TabIndex = 2;
+            this.LbServerVersion.Text = "Server version:";
+            // 
+            // CbUpdateChannel
+            // 
+            this.CbUpdateChannel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CbUpdateChannel.FormattingEnabled = true;
+            this.CbUpdateChannel.Items.AddRange(new object[] {
+            "Stable",
+            "Pre-Release"});
+            this.CbUpdateChannel.Location = new System.Drawing.Point(103, 6);
+            this.CbUpdateChannel.Name = "CbUpdateChannel";
+            this.CbUpdateChannel.Size = new System.Drawing.Size(207, 21);
+            this.CbUpdateChannel.TabIndex = 1;
+            // 
+            // LbUpdateChannel
+            // 
+            this.LbUpdateChannel.AutoSize = true;
+            this.LbUpdateChannel.Location = new System.Drawing.Point(6, 9);
+            this.LbUpdateChannel.Name = "LbUpdateChannel";
+            this.LbUpdateChannel.Size = new System.Drawing.Size(91, 13);
+            this.LbUpdateChannel.TabIndex = 0;
+            this.LbUpdateChannel.Text = "Updates channel:";
+            // 
             // tabPage5
             // 
             this.tabPage5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
@@ -938,7 +1037,7 @@ namespace SteamAccCreator.Gui
             // 
             this.LinkSmthBy.AutoSize = true;
             this.LinkSmthBy.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.LinkSmthBy.Location = new System.Drawing.Point(120, 32);
+            this.LinkSmthBy.Location = new System.Drawing.Point(122, 32);
             this.LinkSmthBy.Name = "LinkSmthBy";
             this.LinkSmthBy.Size = new System.Drawing.Size(140, 13);
             this.LinkSmthBy.TabIndex = 5;
@@ -953,9 +1052,9 @@ namespace SteamAccCreator.Gui
             this.label17.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label17.Location = new System.Drawing.Point(6, 32);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(117, 13);
+            this.label17.Size = new System.Drawing.Size(119, 13);
             this.label17.TabIndex = 4;
-            this.label17.Text = "Redesigin and smth by:";
+            this.label17.Text = "Redesigin and code by:";
             // 
             // LinkCodedBy
             // 
@@ -1007,10 +1106,6 @@ namespace SteamAccCreator.Gui
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // proxyItemBindingSource
-            // 
-            this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
-            // 
             // enabledDataGridViewCheckBoxColumn
             // 
             this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -1053,13 +1148,28 @@ namespace SteamAccCreator.Gui
             this.proxyTypeDataGridViewTextBoxColumn.ReadOnly = true;
             this.proxyTypeDataGridViewTextBoxColumn.Width = 56;
             // 
+            // proxyItemBindingSource
+            // 
+            this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
+            // 
+            // BtnUpdateNotes
+            // 
+            this.BtnUpdateNotes.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.BtnUpdateNotes.Location = new System.Drawing.Point(9, 63);
+            this.BtnUpdateNotes.Name = "BtnUpdateNotes";
+            this.BtnUpdateNotes.Size = new System.Drawing.Size(172, 23);
+            this.BtnUpdateNotes.TabIndex = 4;
+            this.BtnUpdateNotes.Text = "Release notes";
+            this.BtnUpdateNotes.UseVisualStyleBackColor = true;
+            this.BtnUpdateNotes.Click += new System.EventHandler(this.BtnUpdateNotes_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
             this.ClientSize = new System.Drawing.Size(784, 489);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControl);
             this.Controls.Add(this.dataAccounts);
             this.Controls.Add(this.pnlCreation);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1070,7 +1180,7 @@ namespace SteamAccCreator.Gui
             this.pnlCreation.ResumeLayout(false);
             this.pnlCreation.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).EndInit();
-            this.tabControl1.ResumeLayout(false);
+            this.tabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumAccountsCount)).EndInit();
@@ -1081,6 +1191,8 @@ namespace SteamAccCreator.Gui
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).EndInit();
+            this.tabUpdates.ResumeLayout(false);
+            this.tabUpdates.PerformLayout();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
@@ -1104,7 +1216,7 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.DataGridViewTextBoxColumn colSteamId;
         private System.Windows.Forms.DataGridViewTextBoxColumn colStatus;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.ListBox ListGames;
         private System.Windows.Forms.CheckBox CbAddGames;
@@ -1167,6 +1279,15 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.DataGridViewTextBoxColumn hostDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn portDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn proxyTypeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.TabPage tabUpdates;
+        private System.Windows.Forms.Label LbServerVersion;
+        private System.Windows.Forms.ComboBox CbUpdateChannel;
+        private System.Windows.Forms.Label LbUpdateChannel;
+        private System.Windows.Forms.Label LbCurrentVersion;
+        private System.Windows.Forms.Label LbCurrentversionStr;
+        private System.Windows.Forms.Label LbServerVersionStr;
+        private System.Windows.Forms.Button BtnDlLatestBuild;
+        private System.Windows.Forms.Button BtnUpdateNotes;
     }
 }
 

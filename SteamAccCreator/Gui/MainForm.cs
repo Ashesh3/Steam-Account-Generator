@@ -31,24 +31,44 @@ namespace SteamAccCreator.Gui
 
         public MainForm()
         {
+            Logger.Trace($"{nameof(InitializeComponent)}()...");
             InitializeComponent();
 
-            // load config here
+            Logger.Trace($"Loading config: {FILE_CONFIG}");
             try
             {
                 if (System.IO.File.Exists(FILE_CONFIG))
                 {
+                    Logger.Trace("Reading config file...");
                     var configData = System.IO.File.ReadAllText(FILE_CONFIG);
+                    Logger.Trace("Deserializing config from JSON...");
                     Configuration = Newtonsoft.Json.JsonConvert.DeserializeObject<Models.Configuration>(configData);
+                    Logger.Trace("Config data has been loaded.");
                 }
+                else
+                    Logger.Trace("Config file does not exists. Using defaults...");
             }
-            catch { Configuration = new Models.Configuration(); }
+            catch (Newtonsoft.Json.JsonException jEx)
+            {
+                Logger.Error("Probabply deserializing error...", jEx);
+                Configuration = new Models.Configuration();
+                Logger.Trace("Using defaults...");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Config load or deserializing error or something else.", ex);
+                Configuration = new Models.Configuration();
+                Logger.Trace("Using defaults...");
+            }
 
+            Logger.Trace("Fixing NULL elements...");
             Configuration.FixNulls();
 
+            Logger.Trace("Checking out file...");
             if (string.IsNullOrEmpty(Configuration.Output.Path))
                 Configuration.Output.Path = Path.Combine(Environment.CurrentDirectory, "accounts.txt");
 
+            Logger.Trace("Setting properties for base settings (mail, login, password, etc)...");
             CbRandomMail.Checked = Configuration.Mail.Random;
             txtEmail.Text = Configuration.Mail.Value;
 
@@ -63,6 +83,7 @@ namespace SteamAccCreator.Gui
             CbAddGames.Checked = Configuration.Games.AddGames;
             ListGames.Items.AddRange(Configuration.Games.GamesToAdd ?? new Models.GameInfo[0]);
 
+            Logger.Trace("Setting properties for captcha...");
             RadCapCaptchasolutions.Checked = Configuration.Captcha.Service == Enums.CaptchaService.Captchasolutions;
             RadCapRuCaptcha.Checked = Configuration.Captcha.Service == Enums.CaptchaService.RuCaptcha;
             CbCapAuto.Checked = Configuration.Captcha.Enabled;
@@ -71,13 +92,19 @@ namespace SteamAccCreator.Gui
             TbCapSolutionsSecret.Text = Configuration.Captcha.CaptchaSolutions.ApiSecret;
             TbCapRuCapApi.Text = Configuration.Captcha.RuCaptcha.ApiKey;
 
+            Logger.Trace("Setting properties for file writing...");
             CbFwEnable.Checked = Configuration.Output.Enabled;
             CbFwMail.Checked = Configuration.Output.WriteEmails;
             LinkFwPath.Text = Configuration.Output.GetVisualPath();
             CbFwOutType.SelectedIndex = (int)Configuration.Output.SaveType;
 
+            Logger.Trace("Setting properties for proxy...");
             CbProxyEnabled.Checked = Configuration.Proxy.Enabled;
             DgvProxyList.DataSource = Configuration.Proxy.List;
+
+            CbUpdateChannel.SelectedIndex = (int)Program.UpdaterHandler.UpdateChannel;
+            CbUpdateChannel_SelectedIndexChanged(this, null);
+            CbUpdateChannel.SelectedIndexChanged += CbUpdateChannel_SelectedIndexChanged;
         }
 
         public bool UpdateProxy()
@@ -85,11 +112,16 @@ namespace SteamAccCreator.Gui
             if (!Configuration.Proxy.Enabled)
                 return false;
 
+            Logger.Trace("Updating proxy...");
+
             lock (_CurrentProxySync)
             {
+                Logger.Trace($"{_CurrentProxy} was locked...");
+
                 var proxies = ((DgvProxyList.DataSource as IEnumerable<Models.ProxyItem>) ?? new Models.ProxyItem[0]).ToList();
                 if (_CurrentProxy != null)
                 {
+                    Logger.Trace($"Trying to find index of {_CurrentProxy} ({_CurrentProxy.Host}:{_CurrentProxy.Port})...");
                     var currentIndex = proxies.FindIndex(_base =>
                     {
                         if (_base == null)
@@ -102,8 +134,10 @@ namespace SteamAccCreator.Gui
 
                         return true;
                     });
+                    Logger.Trace($"Index of {_CurrentProxy} is {currentIndex}");
                     if (currentIndex > -1)
                     {
+                        Logger.Trace($"Disabling {_CurrentProxy} and mark it as broken.");
                         proxies[currentIndex].Enabled = false;
                         proxies[currentIndex].Status = Enums.ProxyStatus.Broken;
 
@@ -111,22 +145,34 @@ namespace SteamAccCreator.Gui
                     }
                 }
 
+                Logger.Trace("Looking for proxy...");
                 var working = proxies.Where(p => p.Enabled && p.Status != Enums.ProxyStatus.Broken);
                 _CurrentProxy = working?.FirstOrDefault();
-                return _CurrentProxy != null;
+                if (_CurrentProxy == null)
+                    Logger.Trace("No proxies...");
+                else
+                    Logger.Trace($"Proxy is found. {_CurrentProxy.Host}:{_CurrentProxy.Port}");
             }
+            Logger.Trace($"{_CurrentProxy} was unlocked...");
+
+            return _CurrentProxy != null;
         }
 
         public async void BtnCreateAccount_Click(object sender, EventArgs e)
         {
+            Logger.Trace($"{nameof(btnCreateAccount)} was clicked...");
+
             if (NumAccountsCount.Value > 100)
                 NumAccountsCount.Value = 100;
             else if (NumAccountsCount.Value < 1)
                 NumAccountsCount.Value = 1;
 
+            Logger.Trace($"Accounts to create: {NumAccountsCount}.");
+
             Configuration.Captcha.Enabled = CbCapAuto.Checked && CbCapAuto.Enabled;
             if (Configuration.Captcha.Enabled)
             {
+                Logger.Trace("Auto captcha is enabled.");
                 switch (Configuration.Captcha.Service)
                 {
                     case Enums.CaptchaService.Captchasolutions:
@@ -134,10 +180,12 @@ namespace SteamAccCreator.Gui
                             if (string.IsNullOrEmpty(TbCapSolutionsApi.Text) ||
                                 string.IsNullOrEmpty(TbCapSolutionsSecret.Text))
                             {
+                                Logger.Trace("Captchasolutions cannot be used. API and secret keys is empty! Auto captcha was disabled.");
                                 CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
                             }
                             else
                             {
+                                Logger.Trace("Using Captchasolutions...");
                                 Configuration.Captcha.CaptchaSolutions.ApiKey = TbCapSolutionsApi.Text;
                                 Configuration.Captcha.CaptchaSolutions.ApiSecret = TbCapSolutionsSecret.Text;
                             }
@@ -146,9 +194,15 @@ namespace SteamAccCreator.Gui
                     case Enums.CaptchaService.RuCaptcha:
                         {
                             if (string.IsNullOrEmpty(TbCapRuCapApi.Text))
+                            {
+                                Logger.Trace("TwoCaptcha/RuCaptcha cannot be used. API key is empty! Auto captcha was disabled.");
                                 CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
+                            }
                             else
+                            {
+                                Logger.Trace("Using TwoCaptcha/RuCaptcha...");
                                 Configuration.Captcha.RuCaptcha.ApiKey = TbCapRuCapApi.Text;
+                            }
                         }
                         break;
                     default:
@@ -161,8 +215,11 @@ namespace SteamAccCreator.Gui
             if (Configuration.Proxy.Enabled && _CurrentProxy == null)
                 UpdateProxy();
 
-            if (CbFwEnable.Checked == true && string.IsNullOrEmpty(Configuration.Output.Path))
+            if (CbFwEnable.Checked && string.IsNullOrEmpty(Configuration.Output.Path))
                 Configuration.Output.Path = Path.Combine(Environment.CurrentDirectory, $"Accounts.{((CbFwOutType.SelectedIndex == 2) ? "csv" : "txt")}");
+
+            if (CbFwEnable.Checked)
+                Logger.Info($"File writing is enabled and file will be here: {Configuration.Output.Path}.");
 
             var slowCaptchaMode = Configuration.Captcha.HandMode = CbCapHandMode.Checked;
             if (slowCaptchaMode)
@@ -170,13 +227,16 @@ namespace SteamAccCreator.Gui
 
             for (var i = 0; i < NumAccountsCount.Value; i++)
             {
+                Logger.Trace($"Account {i + 1} of {NumAccountsCount}.");
                 var accCreator = new AccountCreator(this, Configuration.Clone());
                 if (slowCaptchaMode)
                 {
+                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Strting in async/await thread...");
                     await Task.Run(() => accCreator.Run());
                 }
                 else
                 {
+                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Strting in new thread...");
                     var thread = new Thread(accCreator.Run);
                     thread.Start();
                 }
@@ -202,11 +262,13 @@ namespace SteamAccCreator.Gui
                     }
                 });
             }));
+            Logger.Trace($"int index({index}) = {nameof(AddToTable)}(\"{mail}\", \"{alias}\", \"****** PASSWORD ******\", \"{steamId}\", \"{status}\");");
             return index;
         }
 
         public void UpdateStatus(int i, string status, long steamId)
         {
+            Logger.Trace($"void {nameof(UpdateStatus)}(\"{i}\", \"{status}\", \"{steamId}\");");
             Invoke(new Action(() =>
             {
                 UpdateStatus(i,
@@ -222,6 +284,7 @@ namespace SteamAccCreator.Gui
             => UpdateStatus(i, mail, alias, password, $"{steamId}", status);
         public void UpdateStatus(int i, string mail, string alias, string password, string steamId, string status)
         {
+            Logger.Trace($"void {nameof(UpdateStatus)}(\"{i}\", \"{mail}\", \"{alias}\", \"****** PASSWORD ******\", \"{steamId}\", \"{status}\");");
             Invoke(new Action(() =>
             {
                 try
@@ -238,13 +301,16 @@ namespace SteamAccCreator.Gui
 
         private void ToggleForceWriteIntoFile()
         {
+            Logger.Trace($"void {nameof(ToggleForceWriteIntoFile)}();");
             var shouldForce = CbRandomMail.Checked || CbRandomPassword.Checked || CbRandomLogin.Checked;
+            Logger.Trace($"void {nameof(ToggleForceWriteIntoFile)}();###var {nameof(shouldForce)} = {shouldForce}");
             CbFwEnable.Checked = shouldForce;
             CbFwEnable.AutoCheck = !shouldForce;
         }
 
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            Logger.Trace($"void {nameof(LinkClicked)}();");
             var link = sender as LinkLabel;
             if (link == null)
                 return;
@@ -253,8 +319,9 @@ namespace SteamAccCreator.Gui
             {
                 System.Diagnostics.Process.Start(link.Text);
                 e.Link.Visited = true;
+                Logger.Trace($"void {nameof(LinkClicked)}();###var {nameof(link.Text)} = {link.Text}");
             }
-            catch { }
+            catch (Exception ex) { Logger.Error("Exception thrown while opening link...", ex); }
         }
 
         private void CbRandomMail_CheckedChanged(object sender, EventArgs e)
@@ -287,11 +354,15 @@ namespace SteamAccCreator.Gui
 
         private void BtnLoadIds_Click(object sender, EventArgs e)
         {
+            Logger.Trace($"void {nameof(BtnLoadIds_Click)}();");
+
             openFileDialog1.Filter = "All supported|*.txt;*.json|Text file|*.txt|JSON file|*.json|Try to parse from any type|*.*";
             openFileDialog1.Title = "Load game sub IDs";
 
             if (openFileDialog1.ShowDialog() != DialogResult.OK)
                 return;
+
+            Logger.Trace($"Selected id's file: {openFileDialog1.FileName}");
 
             var fileData = System.IO.File.ReadAllText(openFileDialog1.FileName);
             Configuration.Games.GamesToAdd = Configuration.Games.GamesToAdd ?? new Models.GameInfo[0];
@@ -305,48 +376,66 @@ namespace SteamAccCreator.Gui
 
                 Configuration.Games.GamesToAdd = _temp;
             }
-            catch
+            catch (Newtonsoft.Json.JsonException jEx)
             {
-                var matches = Regex.Matches(fileData, @"(\d+):(.*)", RegexOptions.IgnoreCase);
-                foreach (Match match in matches)
+                Logger.Error("JSON exception was thrown... It's probably file don't contains JSON data. Trying to parse it...", jEx);
+                try
                 {
-                    try
+                    var matches = Regex.Matches(fileData, @"(\d+):(.*)", RegexOptions.IgnoreCase);
+                    foreach (Match match in matches)
                     {
-                        var game = new Models.GameInfo()
+                        try
                         {
-                            SubId = int.Parse(match.Groups[1].Value),
-                            Name = match.Groups[2].Value
-                        };
+                            var game = new Models.GameInfo()
+                            {
+                                SubId = int.Parse(match.Groups[1].Value),
+                                Name = match.Groups[2].Value
+                            };
 
-                        if (!Configuration.Games.GamesToAdd.Any(x => x.Equals(game)))
-                            Configuration.Games.GamesToAdd = Configuration.Games.GamesToAdd.Append(game);
+                            if (!Configuration.Games.GamesToAdd.Any(x => x.Equals(game)))
+                                Configuration.Games.GamesToAdd = Configuration.Games.GamesToAdd.Append(game);
+                        }
+                        catch (Exception cEx) { Logger.Error("Parsing error (in foreach)!", cEx); }
                     }
-                    catch { }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Parsing via regexp. error!", ex);
                 }
             }
+            catch (Exception ex)
+            {
+                Logger.Error("Parsing error!", ex);
+            }
 
+            Logger.Trace($"Updating {nameof(ListGames)}... Count of games: {Configuration.Games.GamesToAdd.Count()}");
             ListGames.UpdateItems(Configuration.Games.GamesToAdd);
         }
 
         private void BtnAddGame_Click(object sender, EventArgs e)
         {
+            Logger.Trace($"{nameof(BtnAddGame_Click)}(..., ...);");
             using (var dialog = new AddGameDialog())
             {
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     Configuration.Games.GamesToAdd = Configuration.Games.GamesToAdd.Append(dialog.GameInfo);
                     ListGames.UpdateItems(Configuration.Games.GamesToAdd);
+                    Logger.Debug($"{dialog.GameInfo.SubId}:{dialog.GameInfo.Name} added.");
                 }
             }
         }
 
         private void BtnRemoveGame_Click(object sender, EventArgs e)
         {
+            Logger.Trace($"{nameof(BtnRemoveGame_Click)}(..., ...);");
             var index = ListGames.SelectedIndex;
             if (index < 0 || index >= ListGames.Items.Count)
                 return;
 
             var _temp = Configuration.Games.GamesToAdd.ToList();
+            var _game = _temp.ElementAtOrDefault(index);
+            Logger.Debug($"{(_game?.SubId)?.ToString() ?? "NULL"}:{_game?.Name ?? "NULL"} removed.");
             _temp.RemoveAt(index);
             Configuration.Games.GamesToAdd = _temp;
             ListGames.UpdateItems(Configuration.Games.GamesToAdd);
@@ -354,6 +443,7 @@ namespace SteamAccCreator.Gui
 
         private void BtnClearGames_Click(object sender, EventArgs e)
         {
+            Logger.Trace($"{nameof(BtnClearGames_Click)}(..., ...);");
             Configuration.Games.GamesToAdd = new Models.GameInfo[0];
             ListGames.Items.Clear();
         }
@@ -376,6 +466,7 @@ namespace SteamAccCreator.Gui
 
         private void ListGames_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            Logger.Trace($"{nameof(ListGames_MouseDoubleClick)}(..., ...);");
             var index = ListGames.SelectedIndex;
             if (index < 0 || index >= ListGames.Items.Count)
                 return;
@@ -388,6 +479,7 @@ namespace SteamAccCreator.Gui
                     var _temp = Configuration.Games.GamesToAdd.ToList();
                     ListGames.Items[index] = _temp[index] = game;
                     Configuration.Games.GamesToAdd = _temp;
+                    Logger.Debug($"{game.SubId}:{game.Name} edited.");
                 }
             }
         }
@@ -496,6 +588,8 @@ namespace SteamAccCreator.Gui
             {
                 Configuration.Output.Path = saveFileDialog1.FileName;
 
+                Logger.Debug($"Save path was changed to: {Configuration.Output.Path}");
+
                 if (saveFileDialog1.FilterIndex == 2)
                     CbFwOutType.SelectedIndex = (int)File.SaveType.KeepassCsv;
 
@@ -581,6 +675,8 @@ namespace SteamAccCreator.Gui
                         proxy.Status = Enums.ProxyStatus.Broken;
                     }
 
+                    Logger.Debug($"Proxy({proxy.Host}:{proxy.Port}): {proxy.Status.ToString()}");
+
                     RefreshCounters();
                 }
             });
@@ -590,10 +686,18 @@ namespace SteamAccCreator.Gui
         {
             try
             {
+                Logger.Info("Shutting down...");
+
                 var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
                 System.IO.File.WriteAllText(FILE_CONFIG, confData);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Error("Shutdown error...", ex);
+
+                Logger.Info("Shutting down force...");
+                Environment.Exit(0);
+            }
         }
 
         private void txtEmail_TextChanged(object sender, EventArgs e)
@@ -619,6 +723,8 @@ namespace SteamAccCreator.Gui
             if (openFileDialog1.ShowDialog() != DialogResult.OK)
                 return;
 
+            Logger.Trace("Loading proxies...");
+
             var data = System.IO.File.ReadAllLines(openFileDialog1.FileName);
             var proxies = new List<Models.ProxyItem>();
             var proxiesOld = (DgvProxyList.DataSource as IEnumerable<Models.ProxyItem>) ?? new Models.ProxyItem[0];
@@ -637,16 +743,66 @@ namespace SteamAccCreator.Gui
                 }
             }
 
+            Logger.Trace($"Proxies file have {data.Count()} line(s).");
+
             foreach (var line in data)
             {
                 try
                 {
                     proxies.Add(new Models.ProxyItem(line));
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Adding proxy error. Line: {line}", ex);
+                }
             }
 
             DgvProxyList.DataSource = Configuration.Proxy.List = proxies;
+
+            Logger.Trace("Loading proxies done.");
+        }
+
+        private void CbUpdateChannel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (sender != this)
+                Program.UpdaterHandler.Refresh((Web.Updater.Enums.UpdateChannelEnum)CbUpdateChannel.SelectedIndex);
+#if PRE_RELEASE
+            LbCurrentversionStr.Text = $"{Web.Updater.UpdaterHandler.CurrentVersion.ToString(3)}-pre{Web.Updater.UpdaterHandler.PreRelease}";
+#else
+            LbCurrentversionStr.Text = Web.Updater.UpdaterHandler.CurrentVersion.ToString(3);
+#endif
+            LbServerVersionStr.Text = (Program.UpdaterHandler.UpdateChannel == Web.Updater.Enums.UpdateChannelEnum.PreRelease) ?
+                $"{Program.UpdaterHandler.VersionInfo.Version.ToString(3)}-pre{Program.UpdaterHandler.VersionInfo.PreRelease}" :
+                $"{Program.UpdaterHandler.VersionInfo.Version.ToString(3)}";
+
+            if (Program.UpdaterHandler.IsCanBeUpdated && sender == this)
+                tabControl.SelectedTab = tabUpdates;
+
+            BtnDlLatestBuild.Visible = Program.UpdaterHandler.IsCanBeUpdated;
+        }
+
+        private void BtnDlLatestBuild_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(Program.UpdaterHandler.VersionInfo.Downloads.Windows);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error while opening update download.", ex);
+            }
+        }
+
+        private void BtnUpdateNotes_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(Program.UpdaterHandler.VersionInfo.ReleaseNotes);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error while opening update download.", ex);
+            }
         }
     }
 }
