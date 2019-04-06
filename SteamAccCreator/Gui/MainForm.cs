@@ -611,10 +611,19 @@ namespace SteamAccCreator.Gui
 
         private void LinkFwPath_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (Environment.OSVersion.Platform != PlatformID.Win32NT)
-                return;
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.MacOSX:
+                case PlatformID.Unix:
+                    System.Diagnostics.Process.Start($"file://{Path.GetDirectoryName(Configuration.Output.Path)}");
+                    break;
+                case PlatformID.Win32NT:
+                    System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{Configuration.Output.Path}\"");
+                    break;
+                default:
+                    return;
+            }
 
-            System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{Configuration.Output.Path}\"");
             e.Link.Visited = true;
         }
 
