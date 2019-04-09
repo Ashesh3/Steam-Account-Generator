@@ -214,7 +214,7 @@ namespace SteamAccCreator.Web
 
                         var solution = Regex.Replace(_resp, @"\t|\n|\r", "");
                         Logger.Debug($"Captchasolutions: {solution}");
-                        return new Captcha.CaptchaSolution(true, solution, null);
+                        return new Captcha.CaptchaSolution(solution, null, captchaConfig);
                     }
                 case Enums.CaptchaService.RuCaptcha:
                     {
