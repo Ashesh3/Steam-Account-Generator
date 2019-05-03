@@ -70,10 +70,29 @@ Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generat
                 new Uri("http://api.captchasolutions.com/"));
 
             Web.MailHandler.MailboxUri = Utility.GetStartOption(@"-mailBox[:=](.*)",
-                (m) => Utility.MakeUri(m.Groups[1].Value),
+                (m) =>
+                {
+                    Web.MailHandler.IsMailBoxCustom = true;
+                    return Utility.MakeUri(m.Groups[1].Value);
+                },
                 Web.MailHandler.MailboxUri);
-            Web.MailHandler.IsMailBoxCustom = Utility.GetStartOption(@"-mailBox[:=](.*)",
-                (m) => m.Success, false);
+
+            Web.MailHandler.CheckUserMailVerifyCount = Utility.GetStartOption(@"-mailUserChecks[:=](\d+)",
+                (m) =>
+                {
+                    if (!int.TryParse(m.Groups[1].Value, out int val))
+                        return Web.MailHandler.CheckUserMailVerifyCount;
+
+                    return val;
+                }, Web.MailHandler.CheckUserMailVerifyCount);
+            Web.MailHandler.CheckRandomMailVerifyCount = Utility.GetStartOption(@"-mailBoxChecks[:=](\d+)",
+                (m) =>
+                {
+                    if (!int.TryParse(m.Groups[1].Value, out int val))
+                        return Web.MailHandler.CheckRandomMailVerifyCount;
+
+                    return val;
+                }, Web.MailHandler.CheckRandomMailVerifyCount);
 
             if (!Utility.HasStartOption("-nostyles"))
             {

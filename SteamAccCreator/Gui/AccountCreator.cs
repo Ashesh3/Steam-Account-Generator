@@ -406,8 +406,11 @@ namespace SteamAccCreator.Gui
 
             StartCreation();
 
-            bool verified;
-            int tries = 5;
+            var verified = false;
+            var tries = (Config.Mail.Random)
+                ? MailHandler.CheckRandomMailVerifyCount
+                : MailHandler.CheckUserMailVerifyCount;
+
             do
             {
                 VerifyMail();
