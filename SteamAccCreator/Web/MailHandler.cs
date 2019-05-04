@@ -14,6 +14,9 @@ namespace SteamAccCreator.Web
         public static bool IsMailBoxCustom = false;
         private static readonly Uri SteamUri = new Uri("https://store.steampowered.com/account/newaccountverification?");
 
+        public static int CheckUserMailVerifyCount = 300;
+        public static int CheckRandomMailVerifyCount = 5;
+
         public void ConfirmMail(string address)
         {
             Logger.Trace($"Confirming mail: {address}");
