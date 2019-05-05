@@ -490,7 +490,11 @@ namespace SteamAccCreator.Gui
         private void FinishCreation()
         {
             var _status = "";
-            while (!_httpHandler.CompleteSignup(Login, Password, (s) => UpdateStatus(_status = s), ref SteamId, ref GamesNotAdded, AddThisGames))
+            while (!_httpHandler.CompleteSignup(Login, Password,
+                (s) => UpdateStatus(_status = s),
+                ref SteamId, ref GamesNotAdded,
+                AddThisGames,
+                Config.Profile))
             {
                 switch (_status)
                 {
