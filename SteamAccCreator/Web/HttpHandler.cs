@@ -430,7 +430,11 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        public bool CompleteSignup(string alias, string password, Action<string> updateStatus, ref long steamId, ref int gamesNotAdded, IEnumerable<Models.GameInfo> addThisGames)
+        public bool CompleteSignup(string alias, string password,
+            Action<string> updateStatus,
+            ref long steamId, ref int gamesNotAdded,
+            IEnumerable<Models.GameInfo> addThisGames,
+            Models.ProfileConfig profileConfig)
         {
             Logger.Trace("Creating account: compliting signup...");
 
@@ -451,7 +455,13 @@ namespace SteamAccCreator.Web
             if (sessionCookie != null)
             {
                 Logger.Trace("Creating account: Session cookie found.");
-                _cookieJar.Add(new Cookie(sessionCookie.Name, sessionCookie.Value, sessionCookie.Path, sessionCookie.Domain));
+                foreach (var coockie in response.Cookies)
+                {
+                    _cookieJar.Add(new Cookie(coockie.Name, coockie.Value, coockie.Path, coockie.Domain));
+                    if (!coockie.Domain.ToLower().Contains("steamcommunity.com"))
+                        _cookieJar.Add(new Cookie(coockie.Name, coockie.Value, coockie.Path, ".steamcommunity.com"));
+                }
+                //_cookieJar.Add(new Cookie(sessionCookie.Name, sessionCookie.Value, sessionCookie.Path, sessionCookie.Domain));
             }
 
             dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
@@ -472,7 +482,12 @@ namespace SteamAccCreator.Web
                 if (sessionCookie != null)
                 {
                     Logger.Trace("Creating account: SessionID cookie found.");
-                    _cookieJar.Add(new Cookie(sessionCookie.Name, sessionCookie.Value, sessionCookie.Path, sessionCookie.Domain));
+                    foreach (var coockie in response1.Cookies)
+                    {
+                        _cookieJar.Add(new Cookie(coockie.Name, coockie.Value, coockie.Path, coockie.Domain));
+                        if (!coockie.Domain.ToLower().Contains("steamcommunity.com"))
+                            _cookieJar.Add(new Cookie(coockie.Name, coockie.Value, coockie.Path, ".steamcommunity.com"));
+                    }
                     sess = sessionCookie.Value;
                 }
                 _client.CookieContainer = _cookieJar;
@@ -523,6 +538,60 @@ namespace SteamAccCreator.Web
 
                     if (game != addThisGames.Last())
                         Thread.Sleep(500);
+                }
+
+                if ((profileConfig?.Enabled ?? false) && steamId > 0)
+                {
+                    Logger.Debug("Updating profile info...");
+                    updateStatus("Updating profile info...");
+
+                    var profCli = new RestClient("https://steamcommunity.com")
+                    {
+                        CookieContainer = _cookieJar
+                    };
+                    var profReq = new RestRequest($"/profiles/{steamId}/edit", Method.POST);
+                    profReq.AddHeader("Referer", $"https://steamcommunity.com/profiles/{steamId}/edit?welcomed=1");
+                    profReq.AddParameter("sessionID", sess);
+                    profReq.AddParameter("type", "profileSave");
+                    profReq.AddParameter("personaName", profileConfig.Name);
+                    profReq.AddParameter("real_name", profileConfig.RealName);
+                    profReq.AddParameter("country", profileConfig.Country);
+                    profReq.AddParameter("state", profileConfig.State);
+                    profReq.AddParameter("city", profileConfig.City);
+                    if (profileConfig.Url)
+                        profReq.AddParameter("customURL", alias);
+                    profReq.AddParameter("summary", profileConfig.Bio);
+
+                    profCli.Execute(profReq);
+
+                    var imageInfo = new FileInfo(profileConfig.Image);
+                    if (imageInfo.Exists && imageInfo.Length <= MainForm.PHOTO_MAX_SIZE)
+                    {
+                        Logger.Debug("Uploading image...");
+                        updateStatus("Uploading image...");
+
+                        var photoReq = new RestRequest("/actions/FileUploader", Method.POST, DataFormat.Json)
+                        {
+                            JsonSerializer = new RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer()
+                        };
+
+                        photoReq.AddParameter("MAX_FILE_SIZE", $"{MainForm.PHOTO_MAX_SIZE}");
+                        photoReq.AddParameter("type", "player_avatar_image");
+                        photoReq.AddParameter("sId", $"{steamId}");
+                        photoReq.AddParameter("sessionid", $"{sess}");
+                        photoReq.AddParameter("doSub", "1");
+                        photoReq.AddParameter("json", "1");
+                        photoReq.AddFile("avatar", imageInfo.FullName);
+
+                        var resp = profCli.Execute<Models.Steam.UploadProfileImage>(photoReq);
+                        var imgUploadOk = resp?.Data?.Success ?? false;
+                        if (imgUploadOk)
+                            Logger.Debug("Uploading image done!");
+                        else
+                            Logger.Debug("Something went wrong with uloading image");
+                    }
+
+                    Logger.Debug("Updating profile info done!");
                 }
 
                 Logger.Debug("Creating account: done!");

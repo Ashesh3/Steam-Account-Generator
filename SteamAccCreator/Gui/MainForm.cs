@@ -14,6 +14,7 @@ namespace SteamAccCreator.Gui
     public partial class MainForm : Form
     {
         const string URL_WIKI_FIND_SUBID = "https://github.com/EarsKilla/Steam-Account-Generator/wiki/Find-sub-ID";
+        public const long PHOTO_MAX_SIZE = 1048576;
 
         private static readonly string FILE_CONFIG = Path.Combine(Environment.CurrentDirectory, "config.json");
 
@@ -101,6 +102,9 @@ namespace SteamAccCreator.Gui
             Logger.Trace("Setting properties for proxy...");
             CbProxyEnabled.Checked = Configuration.Proxy.Enabled;
             DgvProxyList.DataSource = Configuration.Proxy.List;
+
+            Logger.Trace("Setting properties for profile...");
+            profileConfigBindingSource.DataSource = Configuration.Profile;
 
             CbUpdateChannel.SelectedIndex = (int)Program.UpdaterHandler.UpdateChannel;
             CbUpdateChannel_SelectedIndexChanged(this, null);
@@ -812,6 +816,26 @@ namespace SteamAccCreator.Gui
             {
                 Logger.Error("Error while opening update download.", ex);
             }
+        }
+
+        private void BtnProfileSelectImg_Click(object sender, EventArgs e)
+        {
+            var openDialog = new OpenFileDialog()
+            {
+                Filter = "Image files|*.png;*.jpg;*.jpeg;*.gif|All files|*.*",
+            };
+
+            if (openDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            var fileInfo = new FileInfo(openDialog.FileName);
+            if (fileInfo.Length > PHOTO_MAX_SIZE)
+            {
+                MessageBox.Show(this, "Cannot use this file. It cannot be larger than 1024kb.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            TbProfileImagePath.Text = openDialog.FileName;
         }
     }
 }
