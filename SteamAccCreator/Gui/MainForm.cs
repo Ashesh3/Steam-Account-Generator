@@ -226,27 +226,22 @@ namespace SteamAccCreator.Gui
                 Logger.Info($"File writing is enabled and file will be here: {Configuration.Output.Path}.");
 
             var slowCaptchaMode = Configuration.Captcha.HandMode = CbCapHandMode.Checked;
-            if (slowCaptchaMode)
-                CbCapHandMode.Enabled = false;
-
             for (var i = 0; i < NumAccountsCount.Value; i++)
             {
                 Logger.Trace($"Account {i + 1} of {NumAccountsCount}.");
                 var accCreator = new AccountCreator(this, Configuration.Clone());
                 if (slowCaptchaMode)
                 {
-                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Strting in async/await thread...");
+                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Starting in async/await thread...");
                     await Task.Run(() => accCreator.Run());
                 }
                 else
                 {
-                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Strting in new thread...");
+                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Starting in new thread...");
                     var thread = new Thread(accCreator.Run);
                     thread.Start();
                 }
             }
-
-            CbCapHandMode.Enabled = true;
         }
 
         public int AddToTable(string mail, string alias, string pass, long steamId, string status)
