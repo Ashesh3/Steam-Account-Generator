@@ -45,6 +45,11 @@ https://github.com/Ashesh3
 https://github.com/EarsKilla
 
 Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generator/releases");
+#if PRE_RELEASE
+            Logger.Warn($"Version: {Web.Updater.UpdaterHandler.CurrentVersion}-pre{Web.Updater.UpdaterHandler.PreRelease}");
+#else
+            Logger.Warn($"Version: {Web.Updater.UpdaterHandler.CurrentVersion}");
+#endif
 
             Logger.Trace("Starting...");
 
