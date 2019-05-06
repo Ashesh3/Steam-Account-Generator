@@ -832,5 +832,10 @@ namespace SteamAccCreator.Gui
 
             TbProfileImagePath.Text = openDialog.FileName;
         }
+
+        private void BtnProfileRmImg_Click(object sender, EventArgs e)
+        {
+            TbProfileImagePath.Text = "";
+        }
     }
 }
