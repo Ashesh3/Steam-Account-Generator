@@ -111,6 +111,21 @@ namespace SteamAccCreator.Gui
             CbUpdateChannel.SelectedIndexChanged += CbUpdateChannel_SelectedIndexChanged;
         }
 
+        private void SaveConfig()
+        {
+            try
+            {
+                Logger.Info("Saving config...");
+                var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
+                System.IO.File.WriteAllText(FILE_CONFIG, confData);
+                Logger.Info("Saving config done!");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Saving config error!", ex);
+            }
+        }
+
         public bool UpdateProxy()
         {
             if (!Configuration.Proxy.Enabled)
@@ -224,6 +239,8 @@ namespace SteamAccCreator.Gui
 
             if (CbFwEnable.Checked)
                 Logger.Info($"File writing is enabled and file will be here: {Configuration.Output.Path}.");
+
+            SaveConfig();
 
             var slowCaptchaMode = Configuration.Captcha.HandMode = CbCapHandMode.Checked;
             for (var i = 0; i < NumAccountsCount.Value; i++)
@@ -692,20 +709,8 @@ namespace SteamAccCreator.Gui
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try
-            {
-                Logger.Info("Shutting down...");
-
-                var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
-                System.IO.File.WriteAllText(FILE_CONFIG, confData);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Shutdown error...", ex);
-
-                Logger.Info("Shutting down force...");
-                Environment.Exit(0);
-            }
+            SaveConfig();
+            Logger.Info("Shutting down...");
         }
 
         private void txtEmail_TextChanged(object sender, EventArgs e)
