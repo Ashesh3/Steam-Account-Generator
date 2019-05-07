@@ -62,6 +62,25 @@ namespace SteamAccCreator.Gui
             this.CbRandomMail = new System.Windows.Forms.CheckBox();
             this.NumAccountsCount = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
+            this.tabProfile = new System.Windows.Forms.TabPage();
+            this.CbProfileEnabled = new System.Windows.Forms.CheckBox();
+            this.CbProfileUrl = new System.Windows.Forms.CheckBox();
+            this.TbProfileCity = new System.Windows.Forms.TextBox();
+            this.TbProfileState = new System.Windows.Forms.TextBox();
+            this.TbProfileCountry = new System.Windows.Forms.TextBox();
+            this.LabProfileCity = new System.Windows.Forms.Label();
+            this.LabProfileState = new System.Windows.Forms.Label();
+            this.LabProfileCountry = new System.Windows.Forms.Label();
+            this.TbProfileImagePath = new System.Windows.Forms.TextBox();
+            this.BtnProfileSelectImg = new System.Windows.Forms.Button();
+            this.LabProfileImage = new System.Windows.Forms.Label();
+            this.PbProfile = new System.Windows.Forms.PictureBox();
+            this.TbProfileBio = new System.Windows.Forms.TextBox();
+            this.LabProfileBio = new System.Windows.Forms.Label();
+            this.TbProfileRealName = new System.Windows.Forms.TextBox();
+            this.LabProfileRealName = new System.Windows.Forms.Label();
+            this.TbProfileName = new System.Windows.Forms.TextBox();
+            this.LabProfileName = new System.Windows.Forms.Label();
             this.tabCaptcha = new System.Windows.Forms.TabPage();
             this.CbCapRuReportBad = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -111,25 +130,6 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.tabProfile = new System.Windows.Forms.TabPage();
-            this.LabProfileName = new System.Windows.Forms.Label();
-            this.TbProfileName = new System.Windows.Forms.TextBox();
-            this.TbProfileRealName = new System.Windows.Forms.TextBox();
-            this.LabProfileRealName = new System.Windows.Forms.Label();
-            this.LabProfileBio = new System.Windows.Forms.Label();
-            this.TbProfileBio = new System.Windows.Forms.TextBox();
-            this.PbProfile = new System.Windows.Forms.PictureBox();
-            this.LabProfileImage = new System.Windows.Forms.Label();
-            this.BtnProfileSelectImg = new System.Windows.Forms.Button();
-            this.TbProfileImagePath = new System.Windows.Forms.TextBox();
-            this.LabProfileCountry = new System.Windows.Forms.Label();
-            this.LabProfileState = new System.Windows.Forms.Label();
-            this.LabProfileCity = new System.Windows.Forms.Label();
-            this.TbProfileCountry = new System.Windows.Forms.TextBox();
-            this.TbProfileState = new System.Windows.Forms.TextBox();
-            this.TbProfileCity = new System.Windows.Forms.TextBox();
-            this.CbProfileUrl = new System.Windows.Forms.CheckBox();
-            this.CbProfileEnabled = new System.Windows.Forms.CheckBox();
             this.profileConfigBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -137,19 +137,20 @@ namespace SteamAccCreator.Gui
             this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.BtnProfileRmImg = new System.Windows.Forms.Button();
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabConfig.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumAccountsCount)).BeginInit();
+            this.tabProfile.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PbProfile)).BeginInit();
             this.tabCaptcha.SuspendLayout();
             this.tabFileWriting.SuspendLayout();
             this.tabProxy.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).BeginInit();
             this.tabUpdates.SuspendLayout();
             this.tabAbout.SuspendLayout();
-            this.tabProfile.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PbProfile)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -553,6 +554,242 @@ namespace SteamAccCreator.Gui
             this.label7.Size = new System.Drawing.Size(100, 13);
             this.label7.TabIndex = 0;
             this.label7.Text = "Accounts to create:";
+            // 
+            // tabProfile
+            // 
+            this.tabProfile.AutoScroll = true;
+            this.tabProfile.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.tabProfile.Controls.Add(this.BtnProfileRmImg);
+            this.tabProfile.Controls.Add(this.CbProfileEnabled);
+            this.tabProfile.Controls.Add(this.CbProfileUrl);
+            this.tabProfile.Controls.Add(this.TbProfileCity);
+            this.tabProfile.Controls.Add(this.TbProfileState);
+            this.tabProfile.Controls.Add(this.TbProfileCountry);
+            this.tabProfile.Controls.Add(this.LabProfileCity);
+            this.tabProfile.Controls.Add(this.LabProfileState);
+            this.tabProfile.Controls.Add(this.LabProfileCountry);
+            this.tabProfile.Controls.Add(this.TbProfileImagePath);
+            this.tabProfile.Controls.Add(this.BtnProfileSelectImg);
+            this.tabProfile.Controls.Add(this.LabProfileImage);
+            this.tabProfile.Controls.Add(this.PbProfile);
+            this.tabProfile.Controls.Add(this.TbProfileBio);
+            this.tabProfile.Controls.Add(this.LabProfileBio);
+            this.tabProfile.Controls.Add(this.TbProfileRealName);
+            this.tabProfile.Controls.Add(this.LabProfileRealName);
+            this.tabProfile.Controls.Add(this.TbProfileName);
+            this.tabProfile.Controls.Add(this.LabProfileName);
+            this.tabProfile.ForeColor = System.Drawing.Color.White;
+            this.tabProfile.Location = new System.Drawing.Point(4, 22);
+            this.tabProfile.Name = "tabProfile";
+            this.tabProfile.Padding = new System.Windows.Forms.Padding(3);
+            this.tabProfile.Size = new System.Drawing.Size(316, 296);
+            this.tabProfile.TabIndex = 6;
+            this.tabProfile.Text = "Profile";
+            // 
+            // CbProfileEnabled
+            // 
+            this.CbProfileEnabled.AutoSize = true;
+            this.CbProfileEnabled.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.profileConfigBindingSource, "Enabled", true));
+            this.CbProfileEnabled.Location = new System.Drawing.Point(9, 6);
+            this.CbProfileEnabled.Name = "CbProfileEnabled";
+            this.CbProfileEnabled.Size = new System.Drawing.Size(59, 17);
+            this.CbProfileEnabled.TabIndex = 0;
+            this.CbProfileEnabled.Text = "Enable";
+            this.CbProfileEnabled.UseVisualStyleBackColor = true;
+            // 
+            // CbProfileUrl
+            // 
+            this.CbProfileUrl.AutoSize = true;
+            this.CbProfileUrl.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.profileConfigBindingSource, "Url", true));
+            this.CbProfileUrl.Location = new System.Drawing.Point(9, 81);
+            this.CbProfileUrl.Name = "CbProfileUrl";
+            this.CbProfileUrl.Size = new System.Drawing.Size(230, 17);
+            this.CbProfileUrl.TabIndex = 5;
+            this.CbProfileUrl.Text = "Url: https://steamcommunity.com/id/{login}";
+            this.CbProfileUrl.UseVisualStyleBackColor = true;
+            // 
+            // TbProfileCity
+            // 
+            this.TbProfileCity.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TbProfileCity.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbProfileCity.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbProfileCity.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "City", true));
+            this.TbProfileCity.ForeColor = System.Drawing.Color.White;
+            this.TbProfileCity.Location = new System.Drawing.Point(187, 260);
+            this.TbProfileCity.MaxLength = 10;
+            this.TbProfileCity.Name = "TbProfileCity";
+            this.TbProfileCity.Size = new System.Drawing.Size(123, 20);
+            this.TbProfileCity.TabIndex = 17;
+            // 
+            // TbProfileState
+            // 
+            this.TbProfileState.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbProfileState.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbProfileState.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "State", true));
+            this.TbProfileState.ForeColor = System.Drawing.Color.White;
+            this.TbProfileState.Location = new System.Drawing.Point(58, 260);
+            this.TbProfileState.MaxLength = 10;
+            this.TbProfileState.Name = "TbProfileState";
+            this.TbProfileState.Size = new System.Drawing.Size(124, 20);
+            this.TbProfileState.TabIndex = 15;
+            // 
+            // TbProfileCountry
+            // 
+            this.TbProfileCountry.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbProfileCountry.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbProfileCountry.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "Country", true));
+            this.TbProfileCountry.ForeColor = System.Drawing.Color.White;
+            this.TbProfileCountry.Location = new System.Drawing.Point(9, 260);
+            this.TbProfileCountry.MaxLength = 10;
+            this.TbProfileCountry.Name = "TbProfileCountry";
+            this.TbProfileCountry.Size = new System.Drawing.Size(43, 20);
+            this.TbProfileCountry.TabIndex = 13;
+            // 
+            // LabProfileCity
+            // 
+            this.LabProfileCity.AutoSize = true;
+            this.LabProfileCity.Location = new System.Drawing.Point(184, 244);
+            this.LabProfileCity.Name = "LabProfileCity";
+            this.LabProfileCity.Size = new System.Drawing.Size(27, 13);
+            this.LabProfileCity.TabIndex = 16;
+            this.LabProfileCity.Text = "City:";
+            // 
+            // LabProfileState
+            // 
+            this.LabProfileState.AutoSize = true;
+            this.LabProfileState.Location = new System.Drawing.Point(58, 244);
+            this.LabProfileState.Name = "LabProfileState";
+            this.LabProfileState.Size = new System.Drawing.Size(124, 13);
+            this.LabProfileState.TabIndex = 14;
+            this.LabProfileState.Text = "State/Province/City/etc:";
+            // 
+            // LabProfileCountry
+            // 
+            this.LabProfileCountry.AutoSize = true;
+            this.LabProfileCountry.Location = new System.Drawing.Point(6, 244);
+            this.LabProfileCountry.Name = "LabProfileCountry";
+            this.LabProfileCountry.Size = new System.Drawing.Size(46, 13);
+            this.LabProfileCountry.TabIndex = 12;
+            this.LabProfileCountry.Text = "Country:";
+            // 
+            // TbProfileImagePath
+            // 
+            this.TbProfileImagePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TbProfileImagePath.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbProfileImagePath.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TbProfileImagePath.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "Image", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged, "none selected"));
+            this.TbProfileImagePath.ForeColor = System.Drawing.Color.White;
+            this.TbProfileImagePath.Location = new System.Drawing.Point(9, 199);
+            this.TbProfileImagePath.Name = "TbProfileImagePath";
+            this.TbProfileImagePath.ReadOnly = true;
+            this.TbProfileImagePath.Size = new System.Drawing.Size(231, 13);
+            this.TbProfileImagePath.TabIndex = 9;
+            this.TbProfileImagePath.Text = "~/home/meme.png";
+            // 
+            // BtnProfileSelectImg
+            // 
+            this.BtnProfileSelectImg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnProfileSelectImg.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.BtnProfileSelectImg.Location = new System.Drawing.Point(9, 218);
+            this.BtnProfileSelectImg.Name = "BtnProfileSelectImg";
+            this.BtnProfileSelectImg.Size = new System.Drawing.Size(121, 23);
+            this.BtnProfileSelectImg.TabIndex = 10;
+            this.BtnProfileSelectImg.Text = "Select image";
+            this.BtnProfileSelectImg.UseVisualStyleBackColor = true;
+            this.BtnProfileSelectImg.Click += new System.EventHandler(this.BtnProfileSelectImg_Click);
+            // 
+            // LabProfileImage
+            // 
+            this.LabProfileImage.AutoSize = true;
+            this.LabProfileImage.Location = new System.Drawing.Point(6, 183);
+            this.LabProfileImage.Name = "LabProfileImage";
+            this.LabProfileImage.Size = new System.Drawing.Size(39, 13);
+            this.LabProfileImage.TabIndex = 8;
+            this.LabProfileImage.Text = "Image:";
+            // 
+            // PbProfile
+            // 
+            this.PbProfile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PbProfile.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PbProfile.DataBindings.Add(new System.Windows.Forms.Binding("ImageLocation", this.profileConfigBindingSource, "Image", true));
+            this.PbProfile.ImageLocation = "";
+            this.PbProfile.Location = new System.Drawing.Point(246, 177);
+            this.PbProfile.Name = "PbProfile";
+            this.PbProfile.Size = new System.Drawing.Size(64, 64);
+            this.PbProfile.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.PbProfile.TabIndex = 8;
+            this.PbProfile.TabStop = false;
+            // 
+            // TbProfileBio
+            // 
+            this.TbProfileBio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TbProfileBio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbProfileBio.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbProfileBio.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "Bio", true));
+            this.TbProfileBio.ForeColor = System.Drawing.Color.White;
+            this.TbProfileBio.Location = new System.Drawing.Point(37, 101);
+            this.TbProfileBio.Multiline = true;
+            this.TbProfileBio.Name = "TbProfileBio";
+            this.TbProfileBio.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.TbProfileBio.Size = new System.Drawing.Size(273, 70);
+            this.TbProfileBio.TabIndex = 7;
+            // 
+            // LabProfileBio
+            // 
+            this.LabProfileBio.AutoSize = true;
+            this.LabProfileBio.Location = new System.Drawing.Point(6, 101);
+            this.LabProfileBio.Name = "LabProfileBio";
+            this.LabProfileBio.Size = new System.Drawing.Size(25, 13);
+            this.LabProfileBio.TabIndex = 6;
+            this.LabProfileBio.Text = "Bio:";
+            // 
+            // TbProfileRealName
+            // 
+            this.TbProfileRealName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TbProfileRealName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbProfileRealName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbProfileRealName.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "RealName", true));
+            this.TbProfileRealName.ForeColor = System.Drawing.Color.White;
+            this.TbProfileRealName.Location = new System.Drawing.Point(73, 55);
+            this.TbProfileRealName.Name = "TbProfileRealName";
+            this.TbProfileRealName.Size = new System.Drawing.Size(237, 20);
+            this.TbProfileRealName.TabIndex = 4;
+            // 
+            // LabProfileRealName
+            // 
+            this.LabProfileRealName.AutoSize = true;
+            this.LabProfileRealName.Location = new System.Drawing.Point(6, 58);
+            this.LabProfileRealName.Name = "LabProfileRealName";
+            this.LabProfileRealName.Size = new System.Drawing.Size(61, 13);
+            this.LabProfileRealName.TabIndex = 3;
+            this.LabProfileRealName.Text = "Real name:";
+            // 
+            // TbProfileName
+            // 
+            this.TbProfileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TbProfileName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbProfileName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbProfileName.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "Name", true));
+            this.TbProfileName.ForeColor = System.Drawing.Color.White;
+            this.TbProfileName.Location = new System.Drawing.Point(50, 29);
+            this.TbProfileName.Name = "TbProfileName";
+            this.TbProfileName.Size = new System.Drawing.Size(260, 20);
+            this.TbProfileName.TabIndex = 2;
+            // 
+            // LabProfileName
+            // 
+            this.LabProfileName.AutoSize = true;
+            this.LabProfileName.Location = new System.Drawing.Point(6, 31);
+            this.LabProfileName.Name = "LabProfileName";
+            this.LabProfileName.Size = new System.Drawing.Size(38, 13);
+            this.LabProfileName.TabIndex = 1;
+            this.LabProfileName.Text = "Name:";
             // 
             // tabCaptcha
             // 
@@ -1141,241 +1378,6 @@ namespace SteamAccCreator.Gui
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // tabProfile
-            // 
-            this.tabProfile.AutoScroll = true;
-            this.tabProfile.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.tabProfile.Controls.Add(this.CbProfileEnabled);
-            this.tabProfile.Controls.Add(this.CbProfileUrl);
-            this.tabProfile.Controls.Add(this.TbProfileCity);
-            this.tabProfile.Controls.Add(this.TbProfileState);
-            this.tabProfile.Controls.Add(this.TbProfileCountry);
-            this.tabProfile.Controls.Add(this.LabProfileCity);
-            this.tabProfile.Controls.Add(this.LabProfileState);
-            this.tabProfile.Controls.Add(this.LabProfileCountry);
-            this.tabProfile.Controls.Add(this.TbProfileImagePath);
-            this.tabProfile.Controls.Add(this.BtnProfileSelectImg);
-            this.tabProfile.Controls.Add(this.LabProfileImage);
-            this.tabProfile.Controls.Add(this.PbProfile);
-            this.tabProfile.Controls.Add(this.TbProfileBio);
-            this.tabProfile.Controls.Add(this.LabProfileBio);
-            this.tabProfile.Controls.Add(this.TbProfileRealName);
-            this.tabProfile.Controls.Add(this.LabProfileRealName);
-            this.tabProfile.Controls.Add(this.TbProfileName);
-            this.tabProfile.Controls.Add(this.LabProfileName);
-            this.tabProfile.ForeColor = System.Drawing.Color.White;
-            this.tabProfile.Location = new System.Drawing.Point(4, 22);
-            this.tabProfile.Name = "tabProfile";
-            this.tabProfile.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProfile.Size = new System.Drawing.Size(316, 296);
-            this.tabProfile.TabIndex = 6;
-            this.tabProfile.Text = "Profile";
-            // 
-            // LabProfileName
-            // 
-            this.LabProfileName.AutoSize = true;
-            this.LabProfileName.Location = new System.Drawing.Point(6, 31);
-            this.LabProfileName.Name = "LabProfileName";
-            this.LabProfileName.Size = new System.Drawing.Size(38, 13);
-            this.LabProfileName.TabIndex = 0;
-            this.LabProfileName.Text = "Name:";
-            // 
-            // TbProfileName
-            // 
-            this.TbProfileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TbProfileName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProfileName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbProfileName.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "Name", true));
-            this.TbProfileName.ForeColor = System.Drawing.Color.White;
-            this.TbProfileName.Location = new System.Drawing.Point(50, 29);
-            this.TbProfileName.Name = "TbProfileName";
-            this.TbProfileName.Size = new System.Drawing.Size(260, 20);
-            this.TbProfileName.TabIndex = 1;
-            // 
-            // TbProfileRealName
-            // 
-            this.TbProfileRealName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TbProfileRealName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProfileRealName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbProfileRealName.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "RealName", true));
-            this.TbProfileRealName.ForeColor = System.Drawing.Color.White;
-            this.TbProfileRealName.Location = new System.Drawing.Point(73, 55);
-            this.TbProfileRealName.Name = "TbProfileRealName";
-            this.TbProfileRealName.Size = new System.Drawing.Size(237, 20);
-            this.TbProfileRealName.TabIndex = 3;
-            // 
-            // LabProfileRealName
-            // 
-            this.LabProfileRealName.AutoSize = true;
-            this.LabProfileRealName.Location = new System.Drawing.Point(6, 58);
-            this.LabProfileRealName.Name = "LabProfileRealName";
-            this.LabProfileRealName.Size = new System.Drawing.Size(61, 13);
-            this.LabProfileRealName.TabIndex = 2;
-            this.LabProfileRealName.Text = "Real name:";
-            // 
-            // LabProfileBio
-            // 
-            this.LabProfileBio.AutoSize = true;
-            this.LabProfileBio.Location = new System.Drawing.Point(6, 101);
-            this.LabProfileBio.Name = "LabProfileBio";
-            this.LabProfileBio.Size = new System.Drawing.Size(25, 13);
-            this.LabProfileBio.TabIndex = 6;
-            this.LabProfileBio.Text = "Bio:";
-            // 
-            // TbProfileBio
-            // 
-            this.TbProfileBio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TbProfileBio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProfileBio.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbProfileBio.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "Bio", true));
-            this.TbProfileBio.ForeColor = System.Drawing.Color.White;
-            this.TbProfileBio.Location = new System.Drawing.Point(37, 101);
-            this.TbProfileBio.Multiline = true;
-            this.TbProfileBio.Name = "TbProfileBio";
-            this.TbProfileBio.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TbProfileBio.Size = new System.Drawing.Size(273, 70);
-            this.TbProfileBio.TabIndex = 7;
-            // 
-            // PbProfile
-            // 
-            this.PbProfile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.PbProfile.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.PbProfile.DataBindings.Add(new System.Windows.Forms.Binding("ImageLocation", this.profileConfigBindingSource, "Image", true));
-            this.PbProfile.ImageLocation = "";
-            this.PbProfile.Location = new System.Drawing.Point(246, 177);
-            this.PbProfile.Name = "PbProfile";
-            this.PbProfile.Size = new System.Drawing.Size(64, 64);
-            this.PbProfile.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.PbProfile.TabIndex = 8;
-            this.PbProfile.TabStop = false;
-            // 
-            // LabProfileImage
-            // 
-            this.LabProfileImage.AutoSize = true;
-            this.LabProfileImage.Location = new System.Drawing.Point(6, 183);
-            this.LabProfileImage.Name = "LabProfileImage";
-            this.LabProfileImage.Size = new System.Drawing.Size(39, 13);
-            this.LabProfileImage.TabIndex = 9;
-            this.LabProfileImage.Text = "Image:";
-            // 
-            // BtnProfileSelectImg
-            // 
-            this.BtnProfileSelectImg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnProfileSelectImg.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.BtnProfileSelectImg.Location = new System.Drawing.Point(9, 218);
-            this.BtnProfileSelectImg.Name = "BtnProfileSelectImg";
-            this.BtnProfileSelectImg.Size = new System.Drawing.Size(231, 23);
-            this.BtnProfileSelectImg.TabIndex = 10;
-            this.BtnProfileSelectImg.Text = "Select image";
-            this.BtnProfileSelectImg.UseVisualStyleBackColor = true;
-            this.BtnProfileSelectImg.Click += new System.EventHandler(this.BtnProfileSelectImg_Click);
-            // 
-            // TbProfileImagePath
-            // 
-            this.TbProfileImagePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TbProfileImagePath.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProfileImagePath.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TbProfileImagePath.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "Image", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged, "none selected"));
-            this.TbProfileImagePath.ForeColor = System.Drawing.Color.White;
-            this.TbProfileImagePath.Location = new System.Drawing.Point(9, 199);
-            this.TbProfileImagePath.Name = "TbProfileImagePath";
-            this.TbProfileImagePath.ReadOnly = true;
-            this.TbProfileImagePath.Size = new System.Drawing.Size(231, 13);
-            this.TbProfileImagePath.TabIndex = 11;
-            this.TbProfileImagePath.Text = "~/home/meme.png";
-            // 
-            // LabProfileCountry
-            // 
-            this.LabProfileCountry.AutoSize = true;
-            this.LabProfileCountry.Location = new System.Drawing.Point(6, 244);
-            this.LabProfileCountry.Name = "LabProfileCountry";
-            this.LabProfileCountry.Size = new System.Drawing.Size(46, 13);
-            this.LabProfileCountry.TabIndex = 13;
-            this.LabProfileCountry.Text = "Country:";
-            // 
-            // LabProfileState
-            // 
-            this.LabProfileState.AutoSize = true;
-            this.LabProfileState.Location = new System.Drawing.Point(58, 244);
-            this.LabProfileState.Name = "LabProfileState";
-            this.LabProfileState.Size = new System.Drawing.Size(124, 13);
-            this.LabProfileState.TabIndex = 15;
-            this.LabProfileState.Text = "State/Province/City/etc:";
-            // 
-            // LabProfileCity
-            // 
-            this.LabProfileCity.AutoSize = true;
-            this.LabProfileCity.Location = new System.Drawing.Point(184, 244);
-            this.LabProfileCity.Name = "LabProfileCity";
-            this.LabProfileCity.Size = new System.Drawing.Size(27, 13);
-            this.LabProfileCity.TabIndex = 17;
-            this.LabProfileCity.Text = "City:";
-            // 
-            // TbProfileCountry
-            // 
-            this.TbProfileCountry.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProfileCountry.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbProfileCountry.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "Country", true));
-            this.TbProfileCountry.ForeColor = System.Drawing.Color.White;
-            this.TbProfileCountry.Location = new System.Drawing.Point(9, 260);
-            this.TbProfileCountry.MaxLength = 10;
-            this.TbProfileCountry.Name = "TbProfileCountry";
-            this.TbProfileCountry.Size = new System.Drawing.Size(43, 20);
-            this.TbProfileCountry.TabIndex = 18;
-            // 
-            // TbProfileState
-            // 
-            this.TbProfileState.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProfileState.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbProfileState.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "State", true));
-            this.TbProfileState.ForeColor = System.Drawing.Color.White;
-            this.TbProfileState.Location = new System.Drawing.Point(58, 260);
-            this.TbProfileState.MaxLength = 10;
-            this.TbProfileState.Name = "TbProfileState";
-            this.TbProfileState.Size = new System.Drawing.Size(124, 20);
-            this.TbProfileState.TabIndex = 19;
-            // 
-            // TbProfileCity
-            // 
-            this.TbProfileCity.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TbProfileCity.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbProfileCity.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbProfileCity.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.profileConfigBindingSource, "City", true));
-            this.TbProfileCity.ForeColor = System.Drawing.Color.White;
-            this.TbProfileCity.Location = new System.Drawing.Point(187, 260);
-            this.TbProfileCity.MaxLength = 10;
-            this.TbProfileCity.Name = "TbProfileCity";
-            this.TbProfileCity.Size = new System.Drawing.Size(123, 20);
-            this.TbProfileCity.TabIndex = 20;
-            // 
-            // CbProfileUrl
-            // 
-            this.CbProfileUrl.AutoSize = true;
-            this.CbProfileUrl.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.profileConfigBindingSource, "Url", true));
-            this.CbProfileUrl.Location = new System.Drawing.Point(9, 81);
-            this.CbProfileUrl.Name = "CbProfileUrl";
-            this.CbProfileUrl.Size = new System.Drawing.Size(230, 17);
-            this.CbProfileUrl.TabIndex = 4;
-            this.CbProfileUrl.Text = "Url: https://steamcommunity.com/id/{login}";
-            this.CbProfileUrl.UseVisualStyleBackColor = true;
-            // 
-            // CbProfileEnabled
-            // 
-            this.CbProfileEnabled.AutoSize = true;
-            this.CbProfileEnabled.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.profileConfigBindingSource, "Enabled", true));
-            this.CbProfileEnabled.Location = new System.Drawing.Point(9, 6);
-            this.CbProfileEnabled.Name = "CbProfileEnabled";
-            this.CbProfileEnabled.Size = new System.Drawing.Size(59, 17);
-            this.CbProfileEnabled.TabIndex = 21;
-            this.CbProfileEnabled.Text = "Enable";
-            this.CbProfileEnabled.UseVisualStyleBackColor = true;
-            // 
             // profileConfigBindingSource
             // 
             this.profileConfigBindingSource.DataSource = typeof(SteamAccCreator.Models.ProfileConfig);
@@ -1426,6 +1428,18 @@ namespace SteamAccCreator.Gui
             // 
             this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
             // 
+            // BtnProfileRmImg
+            // 
+            this.BtnProfileRmImg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnProfileRmImg.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.BtnProfileRmImg.Location = new System.Drawing.Point(136, 218);
+            this.BtnProfileRmImg.Name = "BtnProfileRmImg";
+            this.BtnProfileRmImg.Size = new System.Drawing.Size(103, 23);
+            this.BtnProfileRmImg.TabIndex = 11;
+            this.BtnProfileRmImg.Text = "Remove image";
+            this.BtnProfileRmImg.UseVisualStyleBackColor = true;
+            this.BtnProfileRmImg.Click += new System.EventHandler(this.BtnProfileRmImg_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1447,6 +1461,9 @@ namespace SteamAccCreator.Gui
             this.tabConfig.ResumeLayout(false);
             this.tabConfig.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumAccountsCount)).EndInit();
+            this.tabProfile.ResumeLayout(false);
+            this.tabProfile.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PbProfile)).EndInit();
             this.tabCaptcha.ResumeLayout(false);
             this.tabCaptcha.PerformLayout();
             this.tabFileWriting.ResumeLayout(false);
@@ -1458,9 +1475,6 @@ namespace SteamAccCreator.Gui
             this.tabUpdates.PerformLayout();
             this.tabAbout.ResumeLayout(false);
             this.tabAbout.PerformLayout();
-            this.tabProfile.ResumeLayout(false);
-            this.tabProfile.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PbProfile)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
             this.ResumeLayout(false);
@@ -1575,6 +1589,7 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.CheckBox CbProfileUrl;
         private System.Windows.Forms.BindingSource profileConfigBindingSource;
         private System.Windows.Forms.CheckBox CbProfileEnabled;
+        private System.Windows.Forms.Button BtnProfileRmImg;
     }
 }
 

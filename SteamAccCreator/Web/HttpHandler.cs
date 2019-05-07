@@ -564,31 +564,34 @@ namespace SteamAccCreator.Web
 
                     profCli.Execute(profReq);
 
-                    var imageInfo = new FileInfo(profileConfig.Image);
-                    if (imageInfo.Exists && imageInfo.Length <= MainForm.PHOTO_MAX_SIZE)
+                    if (System.IO.File.Exists(profileConfig?.Image ?? ""))
                     {
-                        Logger.Debug("Uploading image...");
-                        updateStatus("Uploading image...");
-
-                        var photoReq = new RestRequest("/actions/FileUploader", Method.POST, DataFormat.Json)
+                        var imageInfo = new FileInfo(profileConfig.Image);
+                        if (imageInfo.Length <= MainForm.PHOTO_MAX_SIZE)
                         {
-                            JsonSerializer = new RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer()
-                        };
+                            Logger.Debug("Uploading image...");
+                            updateStatus("Uploading image...");
 
-                        photoReq.AddParameter("MAX_FILE_SIZE", $"{MainForm.PHOTO_MAX_SIZE}");
-                        photoReq.AddParameter("type", "player_avatar_image");
-                        photoReq.AddParameter("sId", $"{steamId}");
-                        photoReq.AddParameter("sessionid", $"{sess}");
-                        photoReq.AddParameter("doSub", "1");
-                        photoReq.AddParameter("json", "1");
-                        photoReq.AddFile("avatar", imageInfo.FullName);
+                            var photoReq = new RestRequest("/actions/FileUploader", Method.POST, DataFormat.Json)
+                            {
+                                JsonSerializer = new RestSharp.Serializers.Newtonsoft.Json.NewtonsoftJsonSerializer()
+                            };
 
-                        var resp = profCli.Execute<Models.Steam.UploadProfileImage>(photoReq);
-                        var imgUploadOk = resp?.Data?.Success ?? false;
-                        if (imgUploadOk)
-                            Logger.Debug("Uploading image done!");
-                        else
-                            Logger.Debug("Something went wrong with uloading image");
+                            photoReq.AddParameter("MAX_FILE_SIZE", $"{MainForm.PHOTO_MAX_SIZE}");
+                            photoReq.AddParameter("type", "player_avatar_image");
+                            photoReq.AddParameter("sId", $"{steamId}");
+                            photoReq.AddParameter("sessionid", $"{sess}");
+                            photoReq.AddParameter("doSub", "1");
+                            photoReq.AddParameter("json", "1");
+                            photoReq.AddFile("avatar", imageInfo.FullName);
+
+                            var resp = profCli.Execute<Models.Steam.UploadProfileImage>(photoReq);
+                            var imgUploadOk = resp?.Data?.Success ?? false;
+                            if (imgUploadOk)
+                                Logger.Debug("Uploading image done!");
+                            else
+                                Logger.Debug("Something went wrong with uloading image");
+                        }
                     }
 
                     Logger.Debug("Updating profile info done!");

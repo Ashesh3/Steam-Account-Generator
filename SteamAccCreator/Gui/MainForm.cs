@@ -111,6 +111,21 @@ namespace SteamAccCreator.Gui
             CbUpdateChannel.SelectedIndexChanged += CbUpdateChannel_SelectedIndexChanged;
         }
 
+        private void SaveConfig()
+        {
+            try
+            {
+                Logger.Info("Saving config...");
+                var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
+                System.IO.File.WriteAllText(FILE_CONFIG, confData);
+                Logger.Info("Saving config done!");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Saving config error!", ex);
+            }
+        }
+
         public bool UpdateProxy()
         {
             if (!Configuration.Proxy.Enabled)
@@ -225,28 +240,25 @@ namespace SteamAccCreator.Gui
             if (CbFwEnable.Checked)
                 Logger.Info($"File writing is enabled and file will be here: {Configuration.Output.Path}.");
 
-            var slowCaptchaMode = Configuration.Captcha.HandMode = CbCapHandMode.Checked;
-            if (slowCaptchaMode)
-                CbCapHandMode.Enabled = false;
+            SaveConfig();
 
+            var slowCaptchaMode = Configuration.Captcha.HandMode = CbCapHandMode.Checked;
             for (var i = 0; i < NumAccountsCount.Value; i++)
             {
                 Logger.Trace($"Account {i + 1} of {NumAccountsCount}.");
                 var accCreator = new AccountCreator(this, Configuration.Clone());
                 if (slowCaptchaMode)
                 {
-                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Strting in async/await thread...");
+                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Starting in async/await thread...");
                     await Task.Run(() => accCreator.Run());
                 }
                 else
                 {
-                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Strting in new thread...");
+                    Logger.Trace($"Account {i + 1} of {NumAccountsCount}. Starting in new thread...");
                     var thread = new Thread(accCreator.Run);
                     thread.Start();
                 }
             }
-
-            CbCapHandMode.Enabled = true;
         }
 
         public int AddToTable(string mail, string alias, string pass, long steamId, string status)
@@ -697,20 +709,8 @@ namespace SteamAccCreator.Gui
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try
-            {
-                Logger.Info("Shutting down...");
-
-                var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
-                System.IO.File.WriteAllText(FILE_CONFIG, confData);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Shutdown error...", ex);
-
-                Logger.Info("Shutting down force...");
-                Environment.Exit(0);
-            }
+            SaveConfig();
+            Logger.Info("Shutting down...");
         }
 
         private void txtEmail_TextChanged(object sender, EventArgs e)
@@ -836,6 +836,11 @@ namespace SteamAccCreator.Gui
             }
 
             TbProfileImagePath.Text = openDialog.FileName;
+        }
+
+        private void BtnProfileRmImg_Click(object sender, EventArgs e)
+        {
+            TbProfileImagePath.Text = "";
         }
     }
 }
