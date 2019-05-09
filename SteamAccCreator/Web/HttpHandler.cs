@@ -1,6 +1,8 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using SteamAccCreator.Gui;
+using SteamAccCreator.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,9 +28,10 @@ namespace SteamAccCreator.Web
         private readonly MainForm FormMain;
         private readonly Models.ProxyConfig ProxyConfig;
 
-        private static readonly Uri JoinUri = new Uri("https://store.steampowered.com/join/");
+        public const string JOIN_LINK = "https://store.steampowered.com/join/";
+        public static readonly Uri JoinUri = new Uri(JOIN_LINK);
+        private static readonly Uri RefreshCaptchaUri = new Uri("https://store.steampowered.com/join/refreshcaptcha/");
         private static readonly Uri CaptchaUri = new Uri("https://store.steampowered.com/login/rendercaptcha?gid=");
-        private static readonly Uri VerifyCaptchaUri = new Uri("https://store.steampowered.com/join/verifycaptcha/");
         private static readonly Uri AjaxVerifyCaptchaUri = new Uri("https://store.steampowered.com/join/ajaxverifyemail");
         private static readonly Uri AjaxCheckEmailVerifiedUri = new Uri("https://store.steampowered.com/join/ajaxcheckemailverified");
         private static readonly Uri CheckAvailUri = new Uri("https://store.steampowered.com/join/checkavail/");
@@ -40,24 +43,25 @@ namespace SteamAccCreator.Web
 
         private static readonly Regex CaptchaRegex = new Regex(@"\/rendercaptcha\?gid=([0-9]+)\D");
         private static readonly Regex BoolRegex = new Regex(@"(true|false)");
+        private static readonly Regex SteamProfileRegex = new Regex(@"\/profiles\/(\d+)", RegexOptions.IgnoreCase);
 
         public HttpHandler(MainForm main, Models.ProxyConfig proxyConfig)
         {
             FormMain = main;
             ProxyConfig = proxyConfig;
+
+            _client.CookieContainer = _cookieJar;
         }
 
         public Image GetCaptchaImageraw()
         {
-            Logger.Trace("Loading captcha image raw...");
-            //load Steam page
-            _client.BaseUrl = JoinUri;
-            _request.Method = Method.GET;
-            var response = _client.Execute(_request);
+            Logger.Trace("Starting loading captcha image...");
 
-            //Store captcha ID
-            _captchaGid = CaptchaRegex.Matches(response.Content)[0].Groups[1].Value;
-            Logger.Trace($"Captcha GID: {_captchaGid}");
+            if (!GetRecaptcha(3, out var _siteKey, out _captchaGid, out var isRecaptcha))
+            {
+                Logger.Warn("Cannot get captcha GID...");
+                return null;
+            }
 
             //download and return captcha image
             _client.BaseUrl = new Uri(CaptchaUri + _captchaGid);
@@ -147,44 +151,113 @@ namespace SteamAccCreator.Web
             return _reportResponse?.FirstOrDefault()?.ToUpper() == "OK_REPORT_RECORDED";
         }
 
-        public Captcha.CaptchaSolution SolveCaptcha(Action<string> updateStatus, Models.CaptchaSolvingConfig captchaConfig)
+        public bool GetRecaptcha(uint retryCount, out string siteKey, out string gid, out bool? isRecaptcha)
+        {
+            for (uint i = 0; i < retryCount; i++)
+            {
+                if (GetRecaptcha(out siteKey, out gid, out isRecaptcha))
+                    return true;
+            }
+
+            siteKey = gid = string.Empty; isRecaptcha = null;
+            return false;
+        }
+        public bool GetRecaptcha(out string siteKey, out string gid, out bool? isRecaptcha)
+        {
+            siteKey = string.Empty; gid = string.Empty; isRecaptcha = null;
+            try
+            {
+                SetConfig(JoinUri, Method.GET);
+                var response = _client.Execute(_request);
+                var doc = new HtmlAgilityPack.HtmlDocument();
+                doc.LoadHtml(response.Content);
+
+                try
+                {
+                    isRecaptcha = doc.GetElementbyId("captchaImg") == null;
+                }
+                catch (HtmlAgilityPack.NodeNotFoundException) { isRecaptcha = false; }
+                catch (Exception ex) { Logger.Error("Something went wrong...", ex); }
+
+                try
+                {
+                    var captchaGid = doc.GetElementbyId("captchagid");
+                    if (captchaGid != null)
+                    {
+                        gid = captchaGid.GetAttributeValue("value", string.Empty);
+                    }
+                }
+                catch (HtmlAgilityPack.NodeNotFoundException nfNode)
+                {
+                    Logger.Error("Captcha gid not found.", nfNode);
+                }
+
+                try
+                {
+                    var recaptcha = doc.GetElementbyId("g-recaptcha");
+                    var account_form_box = doc.GetElementbyId("account_form_box");
+                    if (account_form_box == null && (isRecaptcha ?? false))
+                        return false;
+
+                    var join_form = account_form_box?.ChildNodes?.FirstOrDefault(x => x?.GetClasses()?.Any(c => (c?.ToLower() ?? "") == "join_form") ?? false);
+                    if (join_form == null && (isRecaptcha ?? false))
+                        return false;
+
+                    var g_recaptcha = join_form?.ChildNodes?.FirstOrDefault(x => x?.GetClasses()?.Any(c => (c?.ToLower() ?? "") == "g-recaptcha") ?? false);
+                    if (g_recaptcha == null && (isRecaptcha ?? false))
+                        return false;
+
+                    siteKey = g_recaptcha?.GetAttributeValue("data-sitekey", string.Empty) ?? "";
+                }
+                catch (HtmlAgilityPack.NodeNotFoundException nfNode)
+                {
+                    Logger.Error("Captcha data-sitekey not found.", nfNode);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Getting recaptcha using /join/ url: something TOTALLY went wrong.", ex);
+            }
+            return false;
+        }
+
+        public Captcha.CaptchaSolution SolveCaptcha(Action<string> updateStatus, Models.Configuration config)
         {
             Logger.Debug("Getting captcha...");
             updateStatus?.Invoke("Getting captcha...");
 
-            //Store captcha ID
-            SetConfig(JoinUri, Method.GET);
-            var response = _client.Execute(_request);
-            try
-            {
-                _captchaGid = CaptchaRegex.Matches(response.Content)[0].Groups[1].Value;
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Captcha error.", e);
-                updateStatus($"Captcha error: {e.Message}");
-                return new Captcha.CaptchaSolution(true, $"{e}\n\n{response.ResponseStatus}", captchaConfig);
-            }
+            var captchaConfig = config.Captcha;
 
-            //download and return captcha image
-            SetConfig($"{CaptchaUri}{_captchaGid}", Method.GET);
+            if (!GetRecaptcha(3, out string _siteKey, out _captchaGid, out bool? isRecaptcha))
+                return new Captcha.CaptchaSolution(true, "Get captcha info error!", captchaConfig);
+
+            if (string.IsNullOrEmpty(_captchaGid))
+                return new Captcha.CaptchaSolution(true, "Getting captcha GID error!", captchaConfig);
+
             var captchaPayload = string.Empty;
-            for (int i = 0; i < 3; i++)
+            if (isRecaptcha.HasValue && !isRecaptcha.Value)
             {
-                try
+                //download and return captcha image
+                SetConfig($"{CaptchaUri}{_captchaGid}", Method.GET);
+                for (int i = 0; i < 3; i++)
                 {
-                    Logger.Debug($"Downloading captcha: Try {i + 1}/3");
-                    updateStatus($"Downloading captcha: Try {i + 1}/3");
+                    try
+                    {
+                        Logger.Debug($"Downloading captcha: Try {i + 1}/3");
+                        updateStatus($"Downloading captcha: Try {i + 1}/3");
 
-                    var _captchaResp = _client.DownloadData(_request);
-                    captchaPayload = GetBase64FromImage(_captchaResp);
+                        var _captchaResp = _client.DownloadData(_request);
+                        captchaPayload = GetBase64FromImage(_captchaResp);
 
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error("Downloading captcha error.", ex);
-                    captchaPayload = string.Empty;
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error("Downloading captcha error.", ex);
+                        captchaPayload = string.Empty;
+                    }
                 }
             }
 
@@ -195,6 +268,28 @@ namespace SteamAccCreator.Web
             {
                 case Enums.CaptchaService.Captchasolutions:
                     {
+                        if (captchaConfig.HandMode || !captchaConfig.Enabled)
+                            goto default;
+
+                        var _params = new Dictionary<string, object>()
+                        {
+                            { "key", captchaConfig.CaptchaSolutions.ApiKey },
+                            { "secret", captchaConfig.CaptchaSolutions.ApiSecret },
+                            { "out", "txt" },
+                        };
+
+                        if (isRecaptcha.HasValue && isRecaptcha.Value)
+                        {
+                            _params.Add("p", "nocaptcha");
+                            _params.Add("googlekey", _siteKey);
+                            _params.Add("pageurl", JOIN_LINK);
+                        }
+                        else
+                        {
+                            _params.Add("p", "base64");
+                            _params.Add("captcha", $"data:image/jpg;base64,{captchaPayload}");
+                        }
+
                         Logger.Debug("Recognizing captcha via Captchasolutions...");
                         var _resp = Captchasolutions("solve",
                             new Dictionary<string, object>()
@@ -218,16 +313,31 @@ namespace SteamAccCreator.Web
                     }
                 case Enums.CaptchaService.RuCaptcha:
                     {
+                        if (captchaConfig.HandMode || !captchaConfig.Enabled)
+                            goto default;
+
                         Logger.Debug("Recognizing captcha via TwoCaptcha/RuCaptcha");
-                        var _captchaIdResponse = TwoCaptcha("in.php",
-                            new Dictionary<string, object>()
-                            {
-                                { "key", captchaConfig.RuCaptcha.ApiKey },
-                                { "body", $"data:image/jpg;base64,{captchaPayload}" },
-                                { "method", "base64" },
-                                { "soft_id", "2370" },
-                                { "json", "0" },
-                            });
+
+                        var _params = new Dictionary<string, object>()
+                        {
+                            { "key", captchaConfig.RuCaptcha.ApiKey },
+                            { "soft_id", "2370" },
+                            { "json", "0" }
+                        };
+
+                        if (isRecaptcha.HasValue && isRecaptcha.Value)
+                        {
+                            _params.Add("googlekey", _siteKey);
+                            _params.Add("method", "userrecaptcha");
+                            _params.Add("pageurl", JOIN_LINK);
+                        }
+                        else
+                        {
+                            _params.Add("body", $"data:image/jpg;base64,{captchaPayload}");
+                            _params.Add("method", "base64");
+                        }
+
+                        var _captchaIdResponse = TwoCaptcha("in.php", _params);
 
                         var _captchaStatus = _captchaIdResponse?.FirstOrDefault()?.ToUpper() ?? "UNKNOWN";
                         Logger.Debug($"TwoCaptcha/RuCaptcha image upload response: {_captchaStatus}");
@@ -248,9 +358,12 @@ namespace SteamAccCreator.Web
                         Thread.Sleep(TimeSpan.FromSeconds(20));
 
                         var solution = string.Empty;
-                        for (int i = 0; i < 3; i++)
+                        var retryCount = (isRecaptcha.HasValue && isRecaptcha.Value)
+                            ? 10
+                            : 3;
+                        for (int i = 0; i < retryCount; i++)
                         {
-                            Logger.Debug($"TwoCaptcha/RuCaptcha requesting solution... Try {i} of 3");
+                            Logger.Debug($"TwoCaptcha/RuCaptcha requesting solution... Try {i + 1} of {retryCount}");
                             var _captchaResponse = TwoCaptcha("res.php",
                                 new Dictionary<string, object>()
                                 {
@@ -283,13 +396,38 @@ namespace SteamAccCreator.Web
                     return new Captcha.CaptchaSolution(true, "Something went wrong", captchaConfig);
                 default:
                     {
-                        using (var dialog = new CaptchaDialog(this, updateStatus, captchaConfig))
+                        try
                         {
-                            if (dialog.ShowDialog() == DialogResult.OK)
-                                return dialog.Solution;
+                            var recap = isRecaptcha.HasValue && isRecaptcha.Value;
+                            using (var dialog = (recap)
+                                ? FormMain.ExecuteInvoke(() => new ReCaptchaDialog(config, FormMain.CurrentProxyItem) as ICaptchaDialog)
+                                : new CaptchaDialog(this, updateStatus, config))
+                            {
+                                var solution = default(Captcha.CaptchaSolution);
+                                var dialogResult = DialogResult.None;
+                                if (recap)
+                                    dialogResult = FormMain.ExecuteInvokeLock(() => dialog.ShowDialog(out solution));
+                                else // for image captcha we don't wait other windowses
+                                    dialogResult = dialog.ShowDialog(out solution);
+
+                                if (dialogResult == DialogResult.OK || dialogResult == DialogResult.Cancel)
+                                {
+                                    solution = solution ?? new Captcha.CaptchaSolution(true, "Something went wrong...", config.Captcha);
+                                    if (recap)
+                                        _captchaGid = solution?.Id ?? _captchaGid;
+
+                                    return solution;
+                                }
+                                else
+                                    return new Captcha.CaptchaSolution(false, "Captcha not recognized!", config.Captcha);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error("Manual captcha error.", ex);
                         }
                     }
-                    return new Captcha.CaptchaSolution(false, "Can't solve captcha!", captchaConfig);
+                    return new Captcha.CaptchaSolution(true, "Something went wrong.", captchaConfig);
             }
         }
 
@@ -303,63 +441,38 @@ namespace SteamAccCreator.Web
 
             Logger.Debug("Creating account...");
 
-            SetConfig(VerifyCaptchaUri, Method.POST);
-            _request.AddParameter("captchagid", _captchaGid);
-            _request.AddParameter("captcha_text", captcha.Solution);
-            _request.AddParameter("email", email);
-            _request.AddParameter("count", "1");
-            var response = _client.Execute(_request);
-
-            _request.Parameters.Clear();
-
-            if (!response.IsSuccessful)
-            {
-                Logger.Warn($"Creating account error: {Error.HTTP_FAILED}");
-                updateStatus(Error.HTTP_FAILED);
-                return false;
-            }
-
-            var matches = BoolRegex.Matches(response.Content);
-            var bCaptchaMatches = bool.Parse(matches[0].Value);
-            var bEmailAvail = bool.Parse(matches[1].Value);
-
-            if (!bCaptchaMatches)
-            {
-                Logger.Warn("Creating account error: Wrong captcha");
-                updateStatus(Error.WRONG_CAPTCHA);
-
-                if (captcha.Config != null &&
-                    captcha.Config.Service == Enums.CaptchaService.RuCaptcha &&
-                    captcha.Config.RuCaptcha.ReportBad)
-                {
-                    TwoCaptchaReport(captcha, false);
-                }
-                return false;
-            }
-
-            if (!bEmailAvail)
-            {
-                //seems to always return true even if email is already in use
-                Logger.Warn("Creating account error: Email probably in use");
-                updateStatus(Error.EMAIL_ERROR);
-                stop = true;
-                return false;
-            }
-
             //Send request again
             SetConfig(AjaxVerifyCaptchaUri, Method.POST);
             _request.AddParameter("captchagid", _captchaGid);
             _request.AddParameter("captcha_text", captcha.Solution);
             _request.AddParameter("email", email);
 
-            response = _client.Execute(_request);
+            var response = _client.Execute(_request);
+            if (!response.IsSuccessful)
+            {
+                Logger.Warn($"HTTP Error: {response.StatusCode}");
+                updateStatus($"HTTP Error: {response.StatusCode}");
+                return false;
+            }
+
             _request.Parameters.Clear();
             try
             {
                 dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
+
+                var succesCode = 0;
+                try
+                {
+                    succesCode = (jsonResponse?.success as Newtonsoft.Json.Linq.JValue)?.ToObject<int?>() ?? 0;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Cannot get success code.", ex);
+                }
+
                 if (jsonResponse.success != 1)
                 {
-                    switch (jsonResponse.success)
+                    switch (succesCode)
                     {
                         case 62:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.SIMILIAR_MAIL}");
@@ -373,6 +486,17 @@ namespace SteamAccCreator.Web
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.TRASH_MAIL}");
                             updateStatus(Error.TRASH_MAIL);
                             break;
+                        case 101: // Please verify your humanity by re-entering the characters below.
+                            Logger.Warn("Creating account error: Wrong captcha");
+                            updateStatus(Error.WRONG_CAPTCHA);
+
+                            if (captcha.Config != null &&
+                                captcha.Config.Service == Enums.CaptchaService.RuCaptcha &&
+                                captcha.Config.RuCaptcha.ReportBad)
+                            {
+                                TwoCaptchaReport(captcha, false);
+                            }
+                            return false;
                         default:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.UNKNOWN}");
                             updateStatus(Error.UNKNOWN);
@@ -451,18 +575,6 @@ namespace SteamAccCreator.Web
             _request.AddParameter("lt", "0");
 
             var response = _client.Execute(_request);
-            var sessionCookie = response.Cookies.SingleOrDefault(x => x.Name == "steamLoginSecure");
-            if (sessionCookie != null)
-            {
-                Logger.Trace("Creating account: Session cookie found.");
-                foreach (var coockie in response.Cookies)
-                {
-                    _cookieJar.Add(new Cookie(coockie.Name, coockie.Value, coockie.Path, coockie.Domain));
-                    if (!coockie.Domain.ToLower().Contains("steamcommunity.com"))
-                        _cookieJar.Add(new Cookie(coockie.Name, coockie.Value, coockie.Path, ".steamcommunity.com"));
-                }
-                //_cookieJar.Add(new Cookie(sessionCookie.Name, sessionCookie.Value, sessionCookie.Path, sessionCookie.Domain));
-            }
 
             dynamic jsonResponse = JsonConvert.DeserializeObject(response.Content);
             if (jsonResponse.bSuccess == "true")
@@ -472,37 +584,38 @@ namespace SteamAccCreator.Web
                 //disable guard
                 Logger.Debug("Creating account: Disabling guard");
                 _client.FollowRedirects = false;
-                _client.CookieContainer = _cookieJar;
-                SetConfig("https://store.steampowered.com/twofactor/manage_action", Method.POST);
-                _request.AddParameter("action", "actuallynone");
+                SetConfig("https://store.steampowered.com/twofactor/manage", Method.POST);
+                _request.AddParameter("action", "none");
                 _request.AddParameter("sessionid", _sessionId);
+                _request.AddParameter("none_authenticator_check", "on");
                 var response1 = _client.Execute(_request);
-                var sess = "";
-                sessionCookie = response1.Cookies.SingleOrDefault(x => x.Name == "sessionid");
-                if (sessionCookie != null)
+                var sessionId = "";
+
+                var cookies = _cookieJar.GetCookies(new Uri("https://store.steampowered.com/"));
+                foreach (Cookie cookie in cookies)
                 {
-                    Logger.Trace("Creating account: SessionID cookie found.");
-                    foreach (var coockie in response1.Cookies)
+                    _cookieJar.Add(new Uri("https://steamcommunity.com"), cookie);
+
+                    if (cookie.Name.ToLower() == "sessionid")
                     {
-                        _cookieJar.Add(new Cookie(coockie.Name, coockie.Value, coockie.Path, coockie.Domain));
-                        if (!coockie.Domain.ToLower().Contains("steamcommunity.com"))
-                            _cookieJar.Add(new Cookie(coockie.Name, coockie.Value, coockie.Path, ".steamcommunity.com"));
+                        sessionId = cookie?.Value ?? "";
                     }
-                    sess = sessionCookie.Value;
                 }
-                _client.CookieContainer = _cookieJar;
+
                 SetConfig("https://store.steampowered.com/twofactor/manage_action", Method.POST);
                 _request.AddParameter("action", "actuallynone");
-                _request.AddParameter("sessionid", sess);
-                _request.AddParameter("none_authenticator_check", "on");
+                _request.AddParameter("sessionid", sessionId);
                 var response11 = _client.Execute(_request);
                 _client.FollowRedirects = true;
 
-                var _steamRegex = Regex.Match(response11?.Content ?? "", @"\/profiles\/(\d+)", RegexOptions.IgnoreCase);
-                if (_steamRegex.Success)
+                var _steamIdRegex = SteamProfileRegex.Match(response1?.Content ?? "");
+                if (!_steamIdRegex.Success)
+                    _steamIdRegex = SteamProfileRegex.Match(response11?.Content ?? "");
+
+                if (_steamIdRegex.Success)
                 {
-                    Logger.Trace($"Creating account: SteamID64 found ({_steamRegex.Groups[1].Value}).");
-                    steamId = long.Parse(_steamRegex.Groups[1].Value);
+                    Logger.Trace($"Creating account: SteamID64 found ({_steamIdRegex.Groups[1].Value}).");
+                    steamId = long.Parse(_steamIdRegex.Groups[1].Value);
                 }
 
                 gamesNotAdded = 0;
@@ -521,7 +634,7 @@ namespace SteamAccCreator.Web
                         SetConfig("https://store.steampowered.com/checkout/addfreelicense", Method.POST);
                         _request.AddParameter("action", "add_to_cart");
                         _request.AddParameter("subid", game.SubId);
-                        _request.AddParameter("sessionid", sess);
+                        _request.AddParameter("sessionid", sessionId);
                         var responce111 = _client.Execute(_request);
                         _client.FollowRedirects = true;
 
@@ -551,7 +664,7 @@ namespace SteamAccCreator.Web
                     };
                     var profReq = new RestRequest($"/profiles/{steamId}/edit", Method.POST);
                     profReq.AddHeader("Referer", $"https://steamcommunity.com/profiles/{steamId}/edit?welcomed=1");
-                    profReq.AddParameter("sessionID", sess);
+                    profReq.AddParameter("sessionID", sessionId);
                     profReq.AddParameter("type", "profileSave");
                     profReq.AddParameter("personaName", profileConfig.Name);
                     profReq.AddParameter("real_name", profileConfig.RealName);
@@ -562,7 +675,7 @@ namespace SteamAccCreator.Web
                         profReq.AddParameter("customURL", alias);
                     profReq.AddParameter("summary", profileConfig.Bio);
 
-                    profCli.Execute(profReq);
+                    var profRes = profCli.Execute(profReq);
 
                     if (System.IO.File.Exists(profileConfig?.Image ?? ""))
                     {
@@ -580,7 +693,7 @@ namespace SteamAccCreator.Web
                             photoReq.AddParameter("MAX_FILE_SIZE", $"{MainForm.PHOTO_MAX_SIZE}");
                             photoReq.AddParameter("type", "player_avatar_image");
                             photoReq.AddParameter("sId", $"{steamId}");
-                            photoReq.AddParameter("sessionid", $"{sess}");
+                            photoReq.AddParameter("sessionid", $"{sessionId}");
                             photoReq.AddParameter("doSub", "1");
                             photoReq.AddParameter("json", "1");
                             photoReq.AddFile("avatar", imageInfo.FullName);

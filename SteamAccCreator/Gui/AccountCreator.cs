@@ -399,12 +399,8 @@ namespace SteamAccCreator.Gui
 
             UpdateStatusFull();
 
-            if (Config.Captcha.Enabled)
-                UpdateStatus("Solving Captcha...");
-            else
-                UpdateStatus("Creating Account..");
-
-            StartCreation();
+            if (!StartCreation())
+                return;
 
             var verified = false;
             var tries = (Config.Mail.Random)
@@ -442,7 +438,7 @@ namespace SteamAccCreator.Gui
             }
         }
 
-        private void StartCreation()
+        private bool StartCreation()
         {
             var success = false;
 
@@ -453,7 +449,7 @@ namespace SteamAccCreator.Gui
                 else
                     UpdateStatus("Waiting for captcha solution...");
 
-                CaptchaSolved = ShowCaptchaDialog(_httpHandler, (s) => UpdateStatus(s), Config.Captcha);
+                CaptchaSolved = SolveCaptcha();
                 if (!CaptchaSolved.Solved)
                 {
                     Logger.Warn($"Captcha solving: Error: {CaptchaSolved.Message}");
@@ -465,17 +461,19 @@ namespace SteamAccCreator.Gui
                     }
 
                     UpdateStatus(CaptchaSolved.Message);
-                    return;
+                    return false;
                 }
 
                 UpdateStatus("Creating Account...");
                 var bShouldStop = false;
-                success = _httpHandler.CreateAccount(Mail, CaptchaSolved, (s) => UpdateStatus(s), ref bShouldStop);
+                success = _httpHandler.CreateAccount(Mail, CaptchaSolved, UpdateStatus, ref bShouldStop);
 
                 if (bShouldStop)
-                    return;
+                    return false;
             }
             while (!success);
+
+            return success;
         }
 
         private void VerifyMail()
@@ -541,17 +539,7 @@ namespace SteamAccCreator.Gui
             return update;
         }
 
-        private Web.Captcha.CaptchaSolution ShowCaptchaDialog(HttpHandler httpHandler, Action<string> updateStatus, Models.CaptchaSolvingConfig captchaConfig)
-        {
-            using (var captchaDialog = new CaptchaDialog(httpHandler, updateStatus, captchaConfig))
-            {
-                if (captchaConfig.Enabled)
-                    return captchaDialog.Solution;
-                else if (captchaDialog.ShowDialog() == DialogResult.OK)
-                    return captchaDialog.Solution;
-                else
-                    return new Web.Captcha.CaptchaSolution(false, "Captcha not recognized!", captchaConfig);
-            }
-        }
+        private Web.Captcha.CaptchaSolution SolveCaptcha()
+            => _httpHandler.SolveCaptcha(UpdateStatus, Config);
     }
 }

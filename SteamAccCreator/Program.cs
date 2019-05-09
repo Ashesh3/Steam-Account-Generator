@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using Gecko;
 using SteamAccCreator.Gui;
 
 namespace SteamAccCreator
@@ -19,6 +20,8 @@ namespace SteamAccCreator
         private static Mutex mutex = null;
         public static bool UseRuCaptchaDomain = false;
         public static readonly Web.Updater.UpdaterHandler UpdaterHandler = new Web.Updater.UpdaterHandler();
+        public static bool GeckoInitialized = false;
+
         [STAThread]
         static void Main()
         {
@@ -58,6 +61,18 @@ Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generat
             {
                 Logger.Trace("Another instance is running. Shutting down...");
                 return;
+            }
+
+            try
+            {
+                Logger.Debug("Initializing gecko/xpcom...");
+                Xpcom.Initialize(Pathes.DIR_GECKO);
+                GeckoInitialized = true;
+                Logger.Debug("Initializing gecko/xpcom: done!");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Initializing gecko/xpcom: error!", ex);
             }
 
             UpdaterHandler.Refresh();

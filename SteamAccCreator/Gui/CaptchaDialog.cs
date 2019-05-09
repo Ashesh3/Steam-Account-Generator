@@ -1,54 +1,69 @@
 ﻿using System;
 using System.Windows.Forms;
 using SteamAccCreator.Web;
+using SteamAccCreator.Web.Captcha;
 
 namespace SteamAccCreator.Gui
 {
-    public partial class CaptchaDialog : Form
+    public partial class CaptchaDialog : Form, Interfaces.ICaptchaDialog
     {
         private readonly HttpHandler _httpHandler;
-        private readonly Models.CaptchaSolvingConfig Config;
+        private readonly Models.Configuration Config;
+        private readonly Action<string> UpdateStatus;
 
-        public Web.Captcha.CaptchaSolution Solution;
+        private CaptchaSolution Solution;
 
-        public CaptchaDialog(HttpHandler httpHandler, Action<string> updateStatus, Models.CaptchaSolvingConfig config)
+        public CaptchaDialog(HttpHandler httpHandler, Action<string> updateStatus, Models.Configuration config)
         {
             Logger.Debug("Init. solving captcha...");
 
-            Solution = new Web.Captcha.CaptchaSolution(false, "Something went wrong...", config);
+            Solution = new CaptchaSolution(false, "Something went wrong...", config.Captcha);
 
             _httpHandler = httpHandler;
 
             InitializeComponent();
 
-            LoadCaptcha(updateStatus, Config = config);
+            Config = config;
+            UpdateStatus = updateStatus;
+
+            LoadCaptcha();
         }
 
-        private void LoadCaptcha(Action<string> updateStatus, Models.CaptchaSolvingConfig config)
+        private void DrawCaptcha()
         {
-            if (config.Enabled)
+            var img = _httpHandler.GetCaptchaImageraw();
+            if (img == null)
+            {
+                MessageBox.Show(this, "Someting went wrong with loading captcha image...", "Captcha getting error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            boxCaptcha.Image = img;
+        }
+
+        private void LoadCaptcha()
+        {
+            if (Config.Captcha.Enabled)
             {
                 Logger.Debug("Solving captcha using services...");
-                Solution = _httpHandler.SolveCaptcha(updateStatus, config);
+                Solution = _httpHandler.SolveCaptcha(UpdateStatus, Config);
             }
             else
             {
                 Logger.Debug("Solving captcha using dialog box...");
-                boxCaptcha.Image = _httpHandler.GetCaptchaImageraw();
+                DrawCaptcha();
             }
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            boxCaptcha.Image = _httpHandler.GetCaptchaImageraw();
+            DrawCaptcha();
         }
 
         private void BtnConfirm_Click(object sender, EventArgs e)
         {
-            Solution = new Web.Captcha.CaptchaSolution(txtCaptcha.Text, null, Config);
+            Solution = new CaptchaSolution(txtCaptcha.Text, null, Config.Captcha);
             DialogResult = DialogResult.OK;
             Close();
-            Logger.Debug($"Captcha solution: {Solution.Solution}");
         }
 
         private void TxtCaptcha_KeyDown(object sender, KeyEventArgs e)
@@ -60,6 +75,23 @@ namespace SteamAccCreator.Gui
         private void TxtCaptcha_KeyPress(object sender, KeyPressEventArgs e)
         {
             e.KeyChar = char.ToUpper(e.KeyChar);
+        }
+
+        private void CaptchaDialog_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing &&
+                DialogResult != DialogResult.OK)
+            {
+                Solution = new CaptchaSolution(false, "You closed captcha dialog box.", Config.Captcha);
+                DialogResult = DialogResult.Cancel;
+            }
+        }
+
+        public DialogResult ShowDialog(out CaptchaSolution solution)
+        {
+            var result = this.ShowDialog();
+            solution = this.Solution;
+            return result;
         }
     }
 }
