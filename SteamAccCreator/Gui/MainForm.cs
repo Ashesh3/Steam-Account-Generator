@@ -16,32 +16,32 @@ namespace SteamAccCreator.Gui
         const string URL_WIKI_FIND_SUBID = "https://github.com/EarsKilla/Steam-Account-Generator/wiki/Find-sub-ID";
         public const long PHOTO_MAX_SIZE = 1048576;
 
-        private static readonly string FILE_CONFIG = Path.Combine(Environment.CurrentDirectory, "config.json");
-
         public Models.Configuration Configuration { get; private set; } = new Models.Configuration();
-        private Models.ProxyItem _CurrentProxy = null;
+
         private object _CurrentProxySync = new object();
-        public IWebProxy CurrentProxy
+        private Models.ProxyItem _CurrentProxyItem = null;
+        public Models.ProxyItem CurrentProxyItem
         {
             get
             {
                 lock (_CurrentProxySync)
-                    return _CurrentProxy?.ToWebProxy();
+                    return _CurrentProxyItem;
             }
         }
+        public IWebProxy CurrentProxy => CurrentProxyItem?.ToWebProxy();
 
         public MainForm()
         {
             Logger.Trace($"{nameof(InitializeComponent)}()...");
             InitializeComponent();
 
-            Logger.Trace($"Loading config: {FILE_CONFIG}");
+            Logger.Trace($"Loading config: {Pathes.FILE_CONFIG}");
             try
             {
-                if (System.IO.File.Exists(FILE_CONFIG))
+                if (System.IO.File.Exists(Pathes.FILE_CONFIG))
                 {
                     Logger.Trace("Reading config file...");
-                    var configData = System.IO.File.ReadAllText(FILE_CONFIG);
+                    var configData = System.IO.File.ReadAllText(Pathes.FILE_CONFIG);
                     Logger.Trace("Deserializing config from JSON...");
                     Configuration = Newtonsoft.Json.JsonConvert.DeserializeObject<Models.Configuration>(configData);
                     Logger.Trace("Config data has been loaded.");
@@ -117,7 +117,7 @@ namespace SteamAccCreator.Gui
             {
                 Logger.Info("Saving config...");
                 var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
-                System.IO.File.WriteAllText(FILE_CONFIG, confData);
+                System.IO.File.WriteAllText(Pathes.FILE_CONFIG, confData);
                 Logger.Info("Saving config done!");
             }
             catch (Exception ex)
@@ -129,34 +129,49 @@ namespace SteamAccCreator.Gui
         public bool UpdateProxy()
         {
             if (!Configuration.Proxy.Enabled)
+            {
+                try
+                {
+                    lock (_CurrentProxySync)
+                    {
+                        Logger.Trace($"{_CurrentProxyItem} was locked...");
+                        _CurrentProxyItem = null;
+                    }
+                    Logger.Trace($"{_CurrentProxyItem} was unlocked...");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error disabling proxy.", ex);
+                }
                 return false;
+            }
 
             Logger.Trace("Updating proxy...");
 
             lock (_CurrentProxySync)
             {
-                Logger.Trace($"{_CurrentProxy} was locked...");
+                Logger.Trace($"{_CurrentProxyItem} was locked...");
 
                 var proxies = ((DgvProxyList.DataSource as IEnumerable<Models.ProxyItem>) ?? new Models.ProxyItem[0]).ToList();
-                if (_CurrentProxy != null)
+                if (_CurrentProxyItem != null)
                 {
-                    Logger.Trace($"Trying to find index of {_CurrentProxy} ({_CurrentProxy.Host}:{_CurrentProxy.Port})...");
+                    Logger.Trace($"Trying to find index of {_CurrentProxyItem} ({_CurrentProxyItem.Host}:{_CurrentProxyItem.Port})...");
                     var currentIndex = proxies.FindIndex(_base =>
                     {
                         if (_base == null)
                             return false;
 
-                        if (_base.ProxyType != _CurrentProxy.ProxyType &&
-                            _base.Host != _CurrentProxy.Host &&
-                            _base.Port != _CurrentProxy.Port)
+                        if (_base.ProxyType != _CurrentProxyItem.ProxyType &&
+                            _base.Host != _CurrentProxyItem.Host &&
+                            _base.Port != _CurrentProxyItem.Port)
                             return false;
 
                         return true;
                     });
-                    Logger.Trace($"Index of {_CurrentProxy} is {currentIndex}");
+                    Logger.Trace($"Index of {_CurrentProxyItem} is {currentIndex}");
                     if (currentIndex > -1)
                     {
-                        Logger.Trace($"Disabling {_CurrentProxy} and mark it as broken.");
+                        Logger.Trace($"Disabling {_CurrentProxyItem} and mark it as broken.");
                         proxies[currentIndex].Enabled = false;
                         proxies[currentIndex].Status = Enums.ProxyStatus.Broken;
 
@@ -166,15 +181,15 @@ namespace SteamAccCreator.Gui
 
                 Logger.Trace("Looking for proxy...");
                 var working = proxies.Where(p => p.Enabled && p.Status != Enums.ProxyStatus.Broken);
-                _CurrentProxy = working?.FirstOrDefault();
-                if (_CurrentProxy == null)
+                _CurrentProxyItem = working?.FirstOrDefault();
+                if (_CurrentProxyItem == null)
                     Logger.Trace("No proxies...");
                 else
-                    Logger.Trace($"Proxy is found. {_CurrentProxy.Host}:{_CurrentProxy.Port}");
+                    Logger.Trace($"Proxy is found. {_CurrentProxyItem.Host}:{_CurrentProxyItem.Port}");
             }
-            Logger.Trace($"{_CurrentProxy} was unlocked...");
+            Logger.Trace($"{_CurrentProxyItem} was unlocked...");
 
-            return _CurrentProxy != null;
+            return _CurrentProxyItem != null;
         }
 
         public async void BtnCreateAccount_Click(object sender, EventArgs e)
@@ -231,7 +246,9 @@ namespace SteamAccCreator.Gui
             }
 
             Configuration.Proxy.Enabled = CbProxyEnabled.Checked;
-            if (Configuration.Proxy.Enabled && _CurrentProxy == null)
+            if (Configuration.Proxy.Enabled && CurrentProxyItem == null)
+                UpdateProxy();
+            else if (!Configuration.Proxy.Enabled)
                 UpdateProxy();
 
             if (CbFwEnable.Checked && string.IsNullOrEmpty(Configuration.Output.Path))
@@ -841,6 +858,31 @@ namespace SteamAccCreator.Gui
         private void BtnProfileRmImg_Click(object sender, EventArgs e)
         {
             TbProfileImagePath.Text = "";
+        }
+
+        public void ExecuteInvoke(Action action)
+            => this.Invoke(action);
+        public T ExecuteInvoke<T>(Func<T> action)
+        {
+            var result = default(T);
+            ExecuteInvoke(new Action(() => result = action()));
+            return result;
+        }
+
+        private object InvokeSync = new object();
+        public void ExecuteInvokeLock(Action action)
+        {
+            lock (InvokeSync)
+            {
+                ExecuteInvoke(action);
+            }
+        }
+        public T ExecuteInvokeLock<T>(Func<T> action)
+        {
+            lock (InvokeSync)
+            {
+                return ExecuteInvoke(action);
+            }
         }
     }
 }

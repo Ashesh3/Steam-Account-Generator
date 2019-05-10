@@ -76,7 +76,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(231, 117);
+            this.ClientSize = new System.Drawing.Size(229, 117);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btnConfirm);
             this.Controls.Add(this.txtCaptcha);
@@ -87,6 +87,7 @@
             this.Name = "CaptchaDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Enter Captcha";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CaptchaDialog_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.boxCaptcha)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
