@@ -325,6 +325,8 @@ namespace SteamAccCreator.Gui
                         Animals.RandomElement();
                 else
                     Login = Utility.GetRandomString(12);
+
+                Login += Utility.GetRandomNumber(100, 9999);
             }
             else
                 Login = EnteredLogin + TableIndex;
