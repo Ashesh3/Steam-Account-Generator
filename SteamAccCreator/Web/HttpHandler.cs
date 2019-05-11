@@ -28,16 +28,6 @@ namespace SteamAccCreator.Web
         private readonly MainForm FormMain;
         private readonly Models.ProxyConfig ProxyConfig;
 
-        public const string JOIN_LINK = "https://store.steampowered.com/join/";
-        public static readonly Uri JoinUri = new Uri(JOIN_LINK);
-        private static readonly Uri RefreshCaptchaUri = new Uri("https://store.steampowered.com/join/refreshcaptcha/");
-        private static readonly Uri CaptchaUri = new Uri("https://store.steampowered.com/login/rendercaptcha?gid=");
-        private static readonly Uri AjaxVerifyCaptchaUri = new Uri("https://store.steampowered.com/join/ajaxverifyemail");
-        private static readonly Uri AjaxCheckEmailVerifiedUri = new Uri("https://store.steampowered.com/join/ajaxcheckemailverified");
-        private static readonly Uri CheckAvailUri = new Uri("https://store.steampowered.com/join/checkavail/");
-        private static readonly Uri CheckPasswordAvailUri = new Uri("https://store.steampowered.com/join/checkpasswordavail/");
-        private static readonly Uri CreateAccountUri = new Uri("https://store.steampowered.com/join/createaccount/");
-
         public static Uri TwoCaptchaDomain = new Uri((Program.UseRuCaptchaDomain) ? "http://rucaptcha.com" : "http://2captcha.com");
         public static Uri CaptchasolutionsDomain = new Uri("http://api.captchasolutions.com/");
 
@@ -64,7 +54,7 @@ namespace SteamAccCreator.Web
             }
 
             //download and return captcha image
-            _client.BaseUrl = new Uri(CaptchaUri + _captchaGid);
+            _client.BaseUrl = new Uri($"{Defaults.Web.STEAM_RENDER_CAPTCHA_ADDRESS}?gid={_captchaGid}");
             var captchaResponse = _client.DownloadData(_request);
             using (var ms = new MemoryStream(captchaResponse))
             {
@@ -167,7 +157,7 @@ namespace SteamAccCreator.Web
             siteKey = string.Empty; gid = string.Empty; isRecaptcha = null;
             try
             {
-                SetConfig(JoinUri, Method.GET);
+                SetConfig(Defaults.Web.STEAM_JOIN_URI, Method.GET);
                 var response = _client.Execute(_request);
                 var doc = new HtmlAgilityPack.HtmlDocument();
                 doc.LoadHtml(response.Content);
@@ -240,7 +230,7 @@ namespace SteamAccCreator.Web
             if (isRecaptcha.HasValue && !isRecaptcha.Value)
             {
                 //download and return captcha image
-                SetConfig($"{CaptchaUri}{_captchaGid}", Method.GET);
+                SetConfig($"{Defaults.Web.STEAM_RENDER_CAPTCHA_ADDRESS}?gid={_captchaGid}", Method.GET);
                 for (int i = 0; i < 3; i++)
                 {
                     try
@@ -282,7 +272,7 @@ namespace SteamAccCreator.Web
                         {
                             _params.Add("p", "nocaptcha");
                             _params.Add("googlekey", _siteKey);
-                            _params.Add("pageurl", JOIN_LINK);
+                            _params.Add("pageurl", Defaults.Web.STEAM_JOIN_ADDRESS);
                         }
                         else
                         {
@@ -329,7 +319,7 @@ namespace SteamAccCreator.Web
                         {
                             _params.Add("googlekey", _siteKey);
                             _params.Add("method", "userrecaptcha");
-                            _params.Add("pageurl", JOIN_LINK);
+                            _params.Add("pageurl", Defaults.Web.STEAM_JOIN_ADDRESS);
                         }
                         else
                         {
@@ -442,7 +432,7 @@ namespace SteamAccCreator.Web
             Logger.Debug("Creating account...");
 
             //Send request again
-            SetConfig(AjaxVerifyCaptchaUri, Method.POST);
+            SetConfig(Defaults.Web.STEAM_AJAX_VERIFY_EMAIL_URI, Method.POST);
             _request.AddParameter("captchagid", _captchaGid);
             _request.AddParameter("captcha_text", captcha.Solution);
             _request.AddParameter("email", email);
@@ -524,7 +514,7 @@ namespace SteamAccCreator.Web
         {
             Logger.Trace("Creating account: checking mail is verified");
 
-            SetConfig(AjaxCheckEmailVerifiedUri, Method.POST);
+            SetConfig(Defaults.Web.STEAM_AJAX_CHECK_VERIFIED_URI, Method.POST);
             _request.AddParameter("creationid", _sessionId);
 
             var response = _client.Execute(_request);
@@ -570,7 +560,7 @@ namespace SteamAccCreator.Web
             if (!CheckPassword(password, alias, updateStatus))
                 return false;
 
-            SetConfig(CreateAccountUri, Method.POST);
+            SetConfig(Defaults.Web.STEAM_CREATE_ACCOUNT_URI, Method.POST);
             _request.AddParameter("accountname", alias);
             _request.AddParameter("password", password);
             _request.AddParameter("creation_sessionid", _sessionId);
@@ -723,9 +713,11 @@ namespace SteamAccCreator.Web
 
         private static bool CheckAlias(string alias, Action<string> statusUpdate)
         {
+            // TODO: add proxy here too
+
             Logger.Debug("Checking alias (login)...");
 
-            var tempClient = new RestClient(CheckAvailUri);
+            var tempClient = new RestClient(Defaults.Web.STEAM_CHECK_AVAILABLE_URI);
             var tempRequest = new RestRequest(Method.POST);
             tempRequest.AddParameter("accountname", alias);
             tempRequest.AddParameter("count", "1");
@@ -746,9 +738,11 @@ namespace SteamAccCreator.Web
 
         private static bool CheckPassword(string password, string alias, Action<string> updateStatus)
         {
+            // TODO: add proxy here too
+
             Logger.Debug("Checking password...");
 
-            var tempClient = new RestClient(CheckPasswordAvailUri);
+            var tempClient = new RestClient(Defaults.Web.STEAM_CHECK_AVAILABLE_PASSWORD_URI);
             var tempRequest = new RestRequest(Method.POST);
             tempRequest.AddParameter("password", password);
             tempRequest.AddParameter("accountname", alias);

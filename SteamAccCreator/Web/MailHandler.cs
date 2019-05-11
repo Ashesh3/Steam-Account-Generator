@@ -10,12 +10,11 @@ namespace SteamAccCreator.Web
         private readonly RestClient _client = new RestClient();
         private readonly RestRequest _request = new RestRequest();
 
-        public static Uri MailboxUri = new Uri(Program.DEFAULT_URL_MAILBOX);
+        public static Uri MailboxUri = new Uri(Defaults.Mail.MAILBOX_ADDRESS);
         public static bool IsMailBoxCustom = false;
-        private static readonly Uri SteamUri = new Uri("https://store.steampowered.com/account/newaccountverification?");
 
-        public static int CheckUserMailVerifyCount = 300;
-        public static int CheckRandomMailVerifyCount = 5;
+        public static int CheckUserMailVerifyCount = Defaults.Mail.COUNT_OF_CHECKS_MAIL_USER;
+        public static int CheckRandomMailVerifyCount = Defaults.Mail.COUNT_OF_CHECKS_MAIL_AUTO;
 
         public void ConfirmMail(string address)
         {
@@ -56,7 +55,7 @@ namespace SteamAccCreator.Web
                 string[] words1 = (Regex.Split(dataxx, "creationid="));
                 string[] words2 = Regex.Split(words1[1], " ");
                 var tokenUri = "stoken=" + words9[0] + "&creationid=" + words2[0];
-                ConfirmSteamAccount(new Uri(SteamUri + tokenUri));
+                ConfirmSteamAccount(new Uri($"{Defaults.Web.STEAM_ACCOUNT_VERIFY_ADDRESS}?{tokenUri}"));
 
                 Logger.Trace("Confirming mail: done?");
             }

@@ -5,6 +5,8 @@ namespace SteamAccCreator.Web.Updater
 {
     public class UpdaterHandler
     {
+        private const string DEFAULT_URL_UPDATE = "https://earskilla.github.io/SteamAccountGenerator-memes/update.json";
+
         public static readonly Version CurrentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 #if PRE_RELEASE
         public static readonly int PreRelease = 8;
@@ -67,7 +69,7 @@ namespace SteamAccCreator.Web.Updater
 
             try
             {
-                var client = new RestClient(Program.DEFAULT_URL_UPDATE);
+                var client = new RestClient(DEFAULT_URL_UPDATE);
                 var request = new RestRequest(Method.GET);
                 var response = client.Execute(request);
                 if (!response.IsSuccessful)

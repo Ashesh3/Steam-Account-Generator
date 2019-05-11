@@ -27,12 +27,6 @@ namespace SteamAccCreator.Gui
             if ((proxy?.Enabled ?? false))
             {
                 GeckoPreferences.Default["network.proxy.type"] = 1;
-                GeckoPreferences.Default["network.proxy.http"] = "";
-                GeckoPreferences.Default["network.proxy.http_port"] = 0;
-                GeckoPreferences.Default["network.proxy.ssl"] = "";
-                GeckoPreferences.Default["network.proxy.ssl_port"] = 0;
-                GeckoPreferences.Default["network.proxy.socks"] = "";
-                GeckoPreferences.Default["network.proxy.socks_port"] = 0;
 
                 // clear proxies
                 GeckoSetProxy(Enums.ProxyType.Http, "", 0);
@@ -105,7 +99,7 @@ namespace SteamAccCreator.Gui
         {
             if (Regex.IsMatch(e.Uri?.Segments?.LastOrDefault() ?? "",
                 @"join\/?", RegexOptions.IgnoreCase)
-                || (e.Uri?.Host ?? "").ToLower() != (Web.HttpHandler.JoinUri?.Host?.ToLower() ?? "NULL"))
+                || (e.Uri?.Host ?? "").ToLower() != (Defaults.Web.STEAM_JOIN_URI?.Host?.ToLower() ?? "NULL"))
             {
                 Logger.Trace("Navigated to /join/.");
                 return;
@@ -121,7 +115,7 @@ namespace SteamAccCreator.Gui
                 Logger.Error("Failed to stop navigation...", ex);
                 try
                 {
-                    geckoWebBrowser1.Navigate(Web.HttpHandler.JOIN_LINK);
+                    geckoWebBrowser1.Navigate(Defaults.Web.STEAM_JOIN_ADDRESS);
                 }
                 catch(Exception exNav)
                 {
@@ -178,7 +172,7 @@ namespace SteamAccCreator.Gui
 
         private void btnReload_Click(object sender, EventArgs e)
         {
-            geckoWebBrowser1.Navigate(Web.HttpHandler.JOIN_LINK);
+            geckoWebBrowser1.Navigate(Defaults.Web.STEAM_JOIN_ADDRESS);
         }
     }
 }

@@ -128,6 +128,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Defaults\Mail.cs" />
+    <Compile Include="Defaults\Web.cs" />
     <Compile Include="Enums\CaptchaService.cs" />
     <Compile Include="Enums\ProxyStatus.cs" />
     <Compile Include="Enums\ProxyType.cs" />
