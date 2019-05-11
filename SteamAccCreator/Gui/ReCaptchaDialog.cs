@@ -27,21 +27,47 @@ namespace SteamAccCreator.Gui
             if ((proxy?.Enabled ?? false))
             {
                 GeckoPreferences.Default["network.proxy.type"] = 1;
-                GeckoPreferences.Default["network.proxy.http"] = proxy.Host;
-                GeckoPreferences.Default["network.proxy.http_port"] = proxy.Port;
-                GeckoPreferences.Default["network.proxy.ssl"] = proxy.Host;
-                GeckoPreferences.Default["network.proxy.ssl_port"] = proxy.Port;
+                GeckoPreferences.Default["network.proxy.http"] = "";
+                GeckoPreferences.Default["network.proxy.http_port"] = 0;
+                GeckoPreferences.Default["network.proxy.ssl"] = "";
+                GeckoPreferences.Default["network.proxy.ssl_port"] = 0;
+                GeckoPreferences.Default["network.proxy.socks"] = "";
+                GeckoPreferences.Default["network.proxy.socks_port"] = 0;
 
-                if (proxy.ProxyType == Enums.ProxyType.Socks4)
-                    GeckoPreferences.Default["network.proxy.socks_version"] = 4;
-                else if (proxy.ProxyType == Enums.ProxyType.Socks5)
-                    GeckoPreferences.Default["network.proxy.socks_version"] = 5;
+                // clear proxies
+                GeckoSetProxy(Enums.ProxyType.Http, "", 0);
+                GeckoSetProxy(Enums.ProxyType.Socks4, "", 0);
 
-                GeckoPreferences.Default["network.proxy.socks"] = proxy.Host;
-                GeckoPreferences.Default["network.proxy.socks_port"] = proxy.Port;
+                GeckoSetProxy(proxy.ProxyType, proxy.Host, proxy.Port);
             }
             else
                 GeckoPreferences.Default["network.proxy.type"] = 0;
+        }
+
+        private void GeckoSetProxy(Enums.ProxyType proxyType, string host, int port)
+        {
+            switch (proxyType)
+            {
+                case Enums.ProxyType.Socks4:
+                case Enums.ProxyType.Socks5:
+                    GeckoPreferences.Default["network.proxy.socks"] = host;
+                    GeckoPreferences.Default["network.proxy.socks_port"] = port;
+                    break;
+                case Enums.ProxyType.Unknown:
+                case Enums.ProxyType.Http:
+                case Enums.ProxyType.Https:
+                default:
+                    GeckoPreferences.Default["network.proxy.http"] = host;
+                    GeckoPreferences.Default["network.proxy.http_port"] = port;
+                    GeckoPreferences.Default["network.proxy.ssl"] = host;
+                    GeckoPreferences.Default["network.proxy.ssl_port"] = port;
+                    break;
+            }
+
+            if (proxyType == Enums.ProxyType.Socks4)
+                GeckoPreferences.Default["network.proxy.socks_version"] = 4;
+            else if (proxyType == Enums.ProxyType.Socks5)
+                GeckoPreferences.Default["network.proxy.socks_version"] = 5;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

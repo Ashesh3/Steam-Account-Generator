@@ -414,7 +414,7 @@ namespace SteamAccCreator.Web
                                 {
                                     solution = solution ?? new Captcha.CaptchaSolution(true, "Something went wrong...", config.Captcha);
                                     if (recap)
-                                        _captchaGid = solution?.Id ?? _captchaGid;
+                                        _captchaGid = (string.IsNullOrEmpty(solution?.Id)) ? _captchaGid : solution?.Id ?? "";
 
                                     return solution;
                                 }
@@ -477,15 +477,18 @@ namespace SteamAccCreator.Web
                         case 62:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.SIMILIAR_MAIL}");
                             updateStatus(Error.SIMILIAR_MAIL);
-                            break;
+                            stop = true;
+                            return false;
                         case 13:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.INVALID_MAIL}");
                             updateStatus(Error.INVALID_MAIL);
-                            break;
+                            stop = true;
+                            return false;
                         case 17:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.TRASH_MAIL}");
                             updateStatus(Error.TRASH_MAIL);
-                            break;
+                            stop = true;
+                            return false;
                         case 101: // Please verify your humanity by re-entering the characters below.
                             Logger.Warn("Creating account error: Wrong captcha");
                             updateStatus(Error.WRONG_CAPTCHA);
