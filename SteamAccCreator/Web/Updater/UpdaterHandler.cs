@@ -9,7 +9,7 @@ namespace SteamAccCreator.Web.Updater
 
         public static readonly Version CurrentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 #if PRE_RELEASE
-        public static readonly int PreRelease = 8;
+        public static readonly int PreRelease = 9;
 #endif
 
         public UpdateInfo UpdateInfo { get; private set; } = new UpdateInfo();
