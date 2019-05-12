@@ -115,10 +115,13 @@ namespace SteamAccCreator.Web
                 _request.Parameters.Clear();
             }
 
+            var proxyEnabled = FormMain.ProxyManager.Enabled;
+            var proxy = (proxyEnabled) ? FormMain.ProxyManager.WebProxy : default(IWebProxy);
+
             Logger.Trace($"Setting request config: url = {uri}");
             _client.BaseUrl = uri;
-            Logger.Trace($"Setting request config: proxy = {((ProxyConfig.Enabled) ? FormMain?.CurrentProxy?.ToString() ?? "NULL" : "disabled")}");
-            _client.Proxy = (ProxyConfig.Enabled) ? FormMain.CurrentProxy : default(IWebProxy);
+            Logger.Trace($"Setting request config: proxy = {((proxyEnabled) ? proxy?.ToString() ?? "NULL" : "disabled")}");
+            _client.Proxy = (proxyEnabled) ? proxy : default(IWebProxy);
             Logger.Trace($"Setting request config: method = {method.ToString()}");
             _request.Method = method;
             Logger.Trace($"Setting request config: security protocol = {securityProtocol.ToString()}");
@@ -390,7 +393,7 @@ namespace SteamAccCreator.Web
                         {
                             var recap = isRecaptcha.HasValue && isRecaptcha.Value;
                             using (var dialog = (recap)
-                                ? FormMain.ExecuteInvoke(() => new ReCaptchaDialog(config, FormMain.CurrentProxyItem) as ICaptchaDialog)
+                                ? FormMain.ExecuteInvoke(() => new ReCaptchaDialog(config, FormMain.ProxyManager.Current) as ICaptchaDialog)
                                 : new CaptchaDialog(this, updateStatus, config))
                             {
                                 var solution = default(Captcha.CaptchaSolution);
@@ -493,7 +496,7 @@ namespace SteamAccCreator.Web
                         default:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.UNKNOWN}");
                             updateStatus(Error.UNKNOWN);
-                            stop = !FormMain.UpdateProxy();
+                            stop = !FormMain.ProxyManager.GetNew();
                             break;
                     }
                     return false;
@@ -541,7 +544,7 @@ namespace SteamAccCreator.Web
                 default:
                     Logger.Warn($"Creating account error: #{response.Content} / {Error.UNKNOWN}");
                     updateStatus?.Invoke(Error.UNKNOWN);
-                    shouldRetry = FormMain.UpdateProxy();
+                    shouldRetry = FormMain.ProxyManager.GetNew();
                     break;
             }
             return false;
@@ -711,10 +714,8 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        private static bool CheckAlias(string alias, Action<string> statusUpdate)
+        private bool CheckAlias(string alias, Action<string> statusUpdate)
         {
-            // TODO: add proxy here too
-
             Logger.Debug("Checking alias (login)...");
 
             var tempClient = new RestClient(Defaults.Web.STEAM_CHECK_AVAILABLE_URI);
@@ -736,13 +737,15 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        private static bool CheckPassword(string password, string alias, Action<string> updateStatus)
+        private bool CheckPassword(string password, string alias, Action<string> updateStatus)
         {
-            // TODO: add proxy here too
-
             Logger.Debug("Checking password...");
 
-            var tempClient = new RestClient(Defaults.Web.STEAM_CHECK_AVAILABLE_PASSWORD_URI);
+            var tempClient = new RestClient(Defaults.Web.STEAM_CHECK_AVAILABLE_PASSWORD_URI)
+            {
+                CookieContainer = _cookieJar,
+                Proxy = FormMain?.ProxyManager?.WebProxy
+            };
             var tempRequest = new RestRequest(Method.POST);
             tempRequest.AddParameter("password", password);
             tempRequest.AddParameter("accountname", alias);

@@ -189,6 +189,7 @@
     <Compile Include="Web\Error.cs" />
     <Compile Include="Web\HttpHandler.cs" />
     <Compile Include="Web\MailHandler.cs" />
+    <Compile Include="Web\ProxyManager.cs" />
     <Compile Include="Web\Updater\Enums\UpdateChannelEnum.cs" />
     <Compile Include="Web\Updater\Models\DownloadLinks.cs" />
     <Compile Include="Web\Updater\Models\Misc.cs" />

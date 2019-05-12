@@ -63,6 +63,7 @@ namespace SteamAccCreator.Gui
             this.NumAccountsCount = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.tabProfile = new System.Windows.Forms.TabPage();
+            this.BtnProfileRmImg = new System.Windows.Forms.Button();
             this.CbProfileEnabled = new System.Windows.Forms.CheckBox();
             this.CbProfileUrl = new System.Windows.Forms.CheckBox();
             this.TbProfileCity = new System.Windows.Forms.TextBox();
@@ -130,6 +131,7 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.BtnProxyTestCancel = new System.Windows.Forms.Button();
             this.profileConfigBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -137,7 +139,6 @@ namespace SteamAccCreator.Gui
             this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.BtnProfileRmImg = new System.Windows.Forms.Button();
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -586,6 +587,18 @@ namespace SteamAccCreator.Gui
             this.tabProfile.TabIndex = 6;
             this.tabProfile.Text = "Profile";
             // 
+            // BtnProfileRmImg
+            // 
+            this.BtnProfileRmImg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnProfileRmImg.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.BtnProfileRmImg.Location = new System.Drawing.Point(136, 218);
+            this.BtnProfileRmImg.Name = "BtnProfileRmImg";
+            this.BtnProfileRmImg.Size = new System.Drawing.Size(103, 23);
+            this.BtnProfileRmImg.TabIndex = 11;
+            this.BtnProfileRmImg.Text = "Remove image";
+            this.BtnProfileRmImg.UseVisualStyleBackColor = true;
+            this.BtnProfileRmImg.Click += new System.EventHandler(this.BtnProfileRmImg_Click);
+            // 
             // CbProfileEnabled
             // 
             this.CbProfileEnabled.AutoSize = true;
@@ -1031,6 +1044,7 @@ namespace SteamAccCreator.Gui
             // tabProxy
             // 
             this.tabProxy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.tabProxy.Controls.Add(this.BtnProxyTestCancel);
             this.tabProxy.Controls.Add(this.LabProxyTotal);
             this.tabProxy.Controls.Add(this.label12);
             this.tabProxy.Controls.Add(this.LabProxyDisabled);
@@ -1133,7 +1147,7 @@ namespace SteamAccCreator.Gui
             // 
             // BtnProxyLoad
             // 
-            this.BtnProxyLoad.Location = new System.Drawing.Point(172, 6);
+            this.BtnProxyLoad.Location = new System.Drawing.Point(216, 236);
             this.BtnProxyLoad.Name = "BtnProxyLoad";
             this.BtnProxyLoad.Size = new System.Drawing.Size(94, 23);
             this.BtnProxyLoad.TabIndex = 12;
@@ -1165,12 +1179,13 @@ namespace SteamAccCreator.Gui
             this.DgvProxyList.Name = "DgvProxyList";
             this.DgvProxyList.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.DgvProxyList.RowHeadersVisible = false;
+            this.DgvProxyList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DgvProxyList.Size = new System.Drawing.Size(302, 195);
             this.DgvProxyList.TabIndex = 11;
             // 
             // BtnProxyTest
             // 
-            this.BtnProxyTest.Location = new System.Drawing.Point(272, 6);
+            this.BtnProxyTest.Location = new System.Drawing.Point(216, 265);
             this.BtnProxyTest.Name = "BtnProxyTest";
             this.BtnProxyTest.Size = new System.Drawing.Size(38, 23);
             this.BtnProxyTest.TabIndex = 9;
@@ -1378,6 +1393,17 @@ namespace SteamAccCreator.Gui
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // BtnProxyTestCancel
+            // 
+            this.BtnProxyTestCancel.Enabled = false;
+            this.BtnProxyTestCancel.Location = new System.Drawing.Point(260, 265);
+            this.BtnProxyTestCancel.Name = "BtnProxyTestCancel";
+            this.BtnProxyTestCancel.Size = new System.Drawing.Size(50, 23);
+            this.BtnProxyTestCancel.TabIndex = 21;
+            this.BtnProxyTestCancel.Text = "Cancel";
+            this.BtnProxyTestCancel.UseVisualStyleBackColor = true;
+            this.BtnProxyTestCancel.Click += new System.EventHandler(this.BtnProxyTestCancel_Click);
+            // 
             // profileConfigBindingSource
             // 
             this.profileConfigBindingSource.DataSource = typeof(SteamAccCreator.Models.ProfileConfig);
@@ -1427,18 +1453,6 @@ namespace SteamAccCreator.Gui
             // proxyItemBindingSource
             // 
             this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
-            // 
-            // BtnProfileRmImg
-            // 
-            this.BtnProfileRmImg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnProfileRmImg.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.BtnProfileRmImg.Location = new System.Drawing.Point(136, 218);
-            this.BtnProfileRmImg.Name = "BtnProfileRmImg";
-            this.BtnProfileRmImg.Size = new System.Drawing.Size(103, 23);
-            this.BtnProfileRmImg.TabIndex = 11;
-            this.BtnProfileRmImg.Text = "Remove image";
-            this.BtnProfileRmImg.UseVisualStyleBackColor = true;
-            this.BtnProfileRmImg.Click += new System.EventHandler(this.BtnProfileRmImg_Click);
             // 
             // MainForm
             // 
@@ -1590,6 +1604,7 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.BindingSource profileConfigBindingSource;
         private System.Windows.Forms.CheckBox CbProfileEnabled;
         private System.Windows.Forms.Button BtnProfileRmImg;
+        private System.Windows.Forms.Button BtnProxyTestCancel;
     }
 }
 
