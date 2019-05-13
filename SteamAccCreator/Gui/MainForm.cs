@@ -284,7 +284,7 @@ namespace SteamAccCreator.Gui
 
         private void CbRandomMail_CheckedChanged(object sender, EventArgs e)
         {
-            txtEmail.Enabled = !(Configuration.Mail.Random = CbRandomMail.Checked);
+            Configuration.Mail.Random = CbRandomMail.Checked;
             ToggleForceWriteIntoFile();
         }
 
