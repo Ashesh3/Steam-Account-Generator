@@ -802,5 +802,31 @@ namespace SteamAccCreator.Gui
                 return ExecuteInvoke(action);
             }
         }
+
+        // lol. yeah. someone ask me to implement this xd
+        private FormWindowState OldWinState = FormWindowState.Normal;
+        private bool IsFullScreenLikeBrowser = false;
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F11)
+            {
+                IsFullScreenLikeBrowser = !IsFullScreenLikeBrowser;
+
+                if (IsFullScreenLikeBrowser)
+                {
+                    OldWinState = this.WindowState;
+
+                    this.WindowState = FormWindowState.Maximized;
+                    this.FormBorderStyle = FormBorderStyle.None;
+                }
+                else
+                {
+                    this.WindowState = OldWinState;
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
     }
 }

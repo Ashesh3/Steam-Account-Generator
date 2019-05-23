@@ -102,6 +102,7 @@ namespace SteamAccCreator.Gui
             this.CbFwMail = new System.Windows.Forms.CheckBox();
             this.CbFwEnable = new System.Windows.Forms.CheckBox();
             this.tabProxy = new System.Windows.Forms.TabPage();
+            this.BtnProxyTestCancel = new System.Windows.Forms.Button();
             this.LabProxyTotal = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.LabProxyDisabled = new System.Windows.Forms.Label();
@@ -131,7 +132,6 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.BtnProxyTestCancel = new System.Windows.Forms.Button();
             this.profileConfigBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -1065,6 +1065,17 @@ namespace SteamAccCreator.Gui
             this.tabProxy.TabIndex = 3;
             this.tabProxy.Text = "Proxy";
             // 
+            // BtnProxyTestCancel
+            // 
+            this.BtnProxyTestCancel.Enabled = false;
+            this.BtnProxyTestCancel.Location = new System.Drawing.Point(260, 265);
+            this.BtnProxyTestCancel.Name = "BtnProxyTestCancel";
+            this.BtnProxyTestCancel.Size = new System.Drawing.Size(50, 23);
+            this.BtnProxyTestCancel.TabIndex = 21;
+            this.BtnProxyTestCancel.Text = "Cancel";
+            this.BtnProxyTestCancel.UseVisualStyleBackColor = true;
+            this.BtnProxyTestCancel.Click += new System.EventHandler(this.BtnProxyTestCancel_Click);
+            // 
             // LabProxyTotal
             // 
             this.LabProxyTotal.AutoSize = true;
@@ -1392,17 +1403,6 @@ namespace SteamAccCreator.Gui
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // BtnProxyTestCancel
-            // 
-            this.BtnProxyTestCancel.Enabled = false;
-            this.BtnProxyTestCancel.Location = new System.Drawing.Point(260, 265);
-            this.BtnProxyTestCancel.Name = "BtnProxyTestCancel";
-            this.BtnProxyTestCancel.Size = new System.Drawing.Size(50, 23);
-            this.BtnProxyTestCancel.TabIndex = 21;
-            this.BtnProxyTestCancel.Text = "Cancel";
-            this.BtnProxyTestCancel.UseVisualStyleBackColor = true;
-            this.BtnProxyTestCancel.Click += new System.EventHandler(this.BtnProxyTestCancel_Click);
             // 
             // profileConfigBindingSource
             // 
