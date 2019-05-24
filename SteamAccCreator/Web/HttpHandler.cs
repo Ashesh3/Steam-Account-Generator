@@ -424,10 +424,10 @@ namespace SteamAccCreator.Web
             }
         }
 
-        private int CaptchaFailedCount = 0;
+        private int CreateFailedCount = 0;
         public bool CreateAccount(string email, Captcha.CaptchaSolution captcha, Action<string> updateStatus, ref bool stop)
         {
-            if (CaptchaFailedCount >= 3)
+            if (CreateFailedCount >= 3)
             {
                 if ((captcha?.Config?.Enabled ?? false))
                 {
@@ -514,12 +514,13 @@ namespace SteamAccCreator.Web
                                 if (!captcha.Config.HandMode)
                                     stop = !FormMain.ProxyManager.GetNew();
                             }
-                            CaptchaFailedCount++;
+                            CreateFailedCount++;
                             return false;
                         default:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.UNKNOWN}");
                             updateStatus(Error.UNKNOWN);
                             stop = !FormMain.ProxyManager.GetNew();
+                            CreateFailedCount++;
                             break;
                     }
                     return false;
@@ -733,7 +734,7 @@ namespace SteamAccCreator.Web
                 return true;
             }
             Logger.Debug($"Creating account: {jsonResponse.details}");
-            updateStatus?.Invoke(jsonResponse.details);
+            updateStatus?.Invoke((jsonResponse.details as object)?.ToString() ?? "Accounts seems to be created but something broken...");
             return false;
         }
 

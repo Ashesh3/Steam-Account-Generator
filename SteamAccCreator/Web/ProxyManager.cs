@@ -84,6 +84,8 @@ namespace SteamAccCreator.Web
                         Logger.Info($"Proxy ({_Current.ProxyType.ToString()}) {_Current.Host}:{_Current.Port} was disabled in list.");
                     }
 
+                    enabledProxies.AddRange(Proxies.Where(x => x?.Enabled ?? false));
+
                     if (enabledProxies.Count() > 0)
                     {
                         _Current = enabledProxies.First();
