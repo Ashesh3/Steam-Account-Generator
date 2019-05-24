@@ -12,6 +12,7 @@
                 "Please provide a different email address.";
 
         public const string UNKNOWN = "Steam has disallowed your IP making this account";
+        public const string PROBABLY_IP_BAN = "Your IP probably banned by Steam.";
         public const string REGISTRATION = "There was an error with your registration, please try again.";
         public const string TIMEOUT = "You've waited too long to verify your email. Please try creating your account and verifying your email again.";
         public const string MAIL_UNVERIFIED = "Trying to verify Mail..";

@@ -103,6 +103,9 @@ namespace SteamAccCreator.Models
 
         public static bool operator ==(ProxyItem a, ProxyItem b)
         {
+            if (Equals(a, null) && Equals(b, null))
+                return true;
+
             if (Equals(a, null) || Equals(b, null))
                 return false;
 

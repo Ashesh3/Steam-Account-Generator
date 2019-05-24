@@ -424,8 +424,25 @@ namespace SteamAccCreator.Web
             }
         }
 
+        private int CreateFailedCount = 0;
         public bool CreateAccount(string email, Captcha.CaptchaSolution captcha, Action<string> updateStatus, ref bool stop)
         {
+            if (CreateFailedCount >= 3)
+            {
+                if ((captcha?.Config?.Enabled ?? false))
+                {
+                    Logger.Warn("Some of proxy IP's is banned by steam for 24h. Stopped creation.");
+                    updateStatus?.Invoke("Some of proxy IP's is banned by steam for 24h. Stopped creation.");
+                }
+                else
+                {
+                    Logger.Warn("Current seems IP is banned by steam for 24h. Stopped creation.");
+                    updateStatus?.Invoke("Current seems IP is banned by steam for 24h. Stopped creation.");
+                }
+                stop = true;
+                return false;
+            }
+
             if (!(captcha?.Solved ?? false))
             {
                 Logger.Warn("Captcha not solved. Cannot create account.");
@@ -486,17 +503,32 @@ namespace SteamAccCreator.Web
                             Logger.Warn("Creating account error: Wrong captcha");
                             updateStatus(Error.WRONG_CAPTCHA);
 
-                            if (captcha.Config != null &&
-                                captcha.Config.Service == Enums.CaptchaService.RuCaptcha &&
-                                captcha.Config.RuCaptcha.ReportBad)
+                            if (captcha.Config != null)
                             {
-                                TwoCaptchaReport(captcha, false);
+                                if (captcha.Config.Service == Enums.CaptchaService.RuCaptcha &&
+                                    captcha.Config.RuCaptcha.ReportBad)
+                                {
+                                    TwoCaptchaReport(captcha, false);
+                                }
+
+                                if (!captcha.Config.HandMode)
+                                    stop = !FormMain.ProxyManager.GetNew();
+                            }
+                            CreateFailedCount++;
+                            return false;
+                        case 84:
+                            {
+                                Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.PROBABLY_IP_BAN}");
+                                updateStatus(Error.PROBABLY_IP_BAN);
+                                stop = !FormMain.ProxyManager.GetNew();
+                                CreateFailedCount++;
                             }
                             return false;
                         default:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.UNKNOWN}");
                             updateStatus(Error.UNKNOWN);
                             stop = !FormMain.ProxyManager.GetNew();
+                            CreateFailedCount++;
                             break;
                     }
                     return false;
@@ -710,7 +742,7 @@ namespace SteamAccCreator.Web
                 return true;
             }
             Logger.Debug($"Creating account: {jsonResponse.details}");
-            updateStatus?.Invoke(jsonResponse.details);
+            updateStatus?.Invoke((jsonResponse.details as object)?.ToString() ?? "Accounts seems to be created but something broken...");
             return false;
         }
 
