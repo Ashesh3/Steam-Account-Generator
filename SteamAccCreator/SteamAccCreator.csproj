@@ -277,7 +277,12 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SACModuleBase\SACModuleBase.csproj">
+      <Project>{6ef56439-571f-4598-b89f-2fd4176142eb}</Project>
+      <Name>SACModuleBase</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Geckofx60.32.60.0.26\build\Geckofx60.32.targets" Condition="Exists('..\packages\Geckofx60.32.60.0.26\build\Geckofx60.32.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
