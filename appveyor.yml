@@ -31,4 +31,5 @@ deploy:
   auth_token:
     secure: /fvZl/QGpo3y+3d8bWELQvz3qDIFEfiYDHvZg6ds1wMJ0gx0sunCVS2WwshPfh62
   draft: true
+  prerelease: true
   force_update: true
