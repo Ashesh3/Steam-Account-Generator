@@ -516,6 +516,14 @@ namespace SteamAccCreator.Web
                             }
                             CreateFailedCount++;
                             return false;
+                        case 84:
+                            {
+                                Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.PROBABLY_IP_BAN}");
+                                updateStatus(Error.PROBABLY_IP_BAN);
+                                stop = !FormMain.ProxyManager.GetNew();
+                                CreateFailedCount++;
+                            }
+                            return false;
                         default:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.UNKNOWN}");
                             updateStatus(Error.UNKNOWN);
