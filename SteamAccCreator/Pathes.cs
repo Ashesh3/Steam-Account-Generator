@@ -12,6 +12,10 @@ namespace SteamAccCreator
         public static readonly string DIR_BASE = AppDomain.CurrentDomain.BaseDirectory;
         public static readonly string DIR_GECKO = Path.Combine(DIR_BASE, "Firefox");
 
+        public static readonly string DIR_MODULES = Path.Combine(DIR_BASE, "modules");
+        public static readonly string DIR_MODULES_CONFIGS = Path.Combine(DIR_MODULES, "configs");
+        public static readonly string DIR_MODULES_REQUIRED = Path.Combine(DIR_MODULES, "required");
+
         public static readonly string FILE_CONFIG = Path.Combine(DIR_BASE, "config.json");
     }
 }

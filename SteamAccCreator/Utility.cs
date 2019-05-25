@@ -128,5 +128,33 @@ namespace SteamAccCreator
 
         public static string GetVisualPath(this Models.OutputConfig config)
             => CutFilePath(config?.Path, 64);
+
+        public static bool ValidateDirectory(string path)
+        {
+            var invalidSymbols = Path.GetInvalidPathChars();
+            return !(path?.Any(x => invalidSymbols.Any(s => x == s)) ?? true);
+        }
+
+        public static void MkDirs(params string[] dirPathes)
+        {
+            foreach (var dirPath in dirPathes ?? new string[0])
+            {
+                if (!ValidateDirectory(dirPath))
+                {
+                    Logger.Warn($"Directory path \"{dirPath ?? "NULL"}\" contains invalid chars...");
+                    continue;
+                }
+
+                try
+                {
+                    if (!Directory.Exists(dirPath))
+                        Directory.CreateDirectory(dirPath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Directory \"{dirPath ?? "NULL"}\" check/creating error!", ex);
+                }
+            }
+        }
     }
 }

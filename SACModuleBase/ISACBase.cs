@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SACModuleBase
 {
     public interface ISACBase
     {
+        bool ModuleEnabled { get; set; }
         string ModuleName { get; }
-        Version Version { get; }
+        Version ModuleVersion { get; }
 
-        void Initialize();
+        void ModuleInitialize();
     }
 }

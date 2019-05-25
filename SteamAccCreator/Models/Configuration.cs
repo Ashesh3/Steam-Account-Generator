@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SteamAccCreator.Models
 {
@@ -13,6 +14,7 @@ namespace SteamAccCreator.Models
         public CaptchaSolvingConfig Captcha { get; set; } = new CaptchaSolvingConfig();
         public OutputConfig Output { get; set; } = new OutputConfig();
         public ProxyConfig Proxy { get; set; } = new ProxyConfig();
+        public List<Guid> DisabledModules { get; set; } = new List<Guid>();
 
         public void FixNulls()
         {
@@ -24,6 +26,7 @@ namespace SteamAccCreator.Models
             Captcha = Captcha ?? new CaptchaSolvingConfig();
             Output = Output ?? new OutputConfig();
             Proxy = Proxy ?? new ProxyConfig();
+            DisabledModules = DisabledModules ?? new List<Guid>();
         }
 
         public Configuration Clone()

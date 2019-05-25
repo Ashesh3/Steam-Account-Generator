@@ -175,12 +175,15 @@
     <Compile Include="Models\Configuration.cs" />
     <Compile Include="Models\GamesConfig.cs" />
     <Compile Include="Models\MailConfig.cs" />
+    <Compile Include="Models\ModuleBinding.cs" />
+    <Compile Include="Models\ModuleManager.cs" />
     <Compile Include="Models\OutputConfig.cs" />
     <Compile Include="Models\ProfileConfig.cs" />
     <Compile Include="Models\ProxyConfig.cs" />
     <Compile Include="Models\ProxyItem.cs" />
     <Compile Include="Models\RuCaptchaConfig.cs" />
     <Compile Include="Models\Steam\UploadProfileImage.cs" />
+    <Compile Include="ModuleExtends.cs" />
     <Compile Include="Pathes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -227,6 +230,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\SACModuleBase.ISACBase.datasource" />
+    <None Include="Properties\DataSources\SteamAccCreator.Models.ModuleBinding.datasource" />
     <None Include="Properties\DataSources\SteamAccCreator.Models.ProfileConfig.datasource" />
     <None Include="Properties\DataSources\SteamAccCreator.Models.ProxyItem.datasource" />
     <None Include="Properties\Settings.settings">

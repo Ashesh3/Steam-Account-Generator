@@ -18,6 +18,7 @@ namespace SteamAccCreator.Gui
 
         public Models.Configuration Configuration { get; private set; } = new Models.Configuration();
         public Web.ProxyManager ProxyManager { get; private set; }
+        public Models.ModuleManager ModuleManager { get; private set; }
 
         public MainForm()
         {
@@ -100,6 +101,9 @@ namespace SteamAccCreator.Gui
             CbUpdateChannel.SelectedIndexChanged += CbUpdateChannel_SelectedIndexChanged;
 
             ProxyManager = new Web.ProxyManager(this);
+
+            ModuleManager = new Models.ModuleManager(Configuration);
+            DgvModules.DataSource = ModuleManager.ModuleBindings;
         }
 
         private void SaveConfig()
