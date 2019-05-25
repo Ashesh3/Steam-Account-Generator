@@ -1530,12 +1530,12 @@ namespace SteamAccCreator.Gui
             // 
             // Button
             // 
-            this.Button.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.Button.DataPropertyName = "Button";
-            this.Button.HeaderText = "";
+            this.Button.HeaderText = "Button";
             this.Button.Name = "Button";
             this.Button.ReadOnly = true;
-            this.Button.Width = 5;
+            this.Button.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Button.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // MainForm
             // 

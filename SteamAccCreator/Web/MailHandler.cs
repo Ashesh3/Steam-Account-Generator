@@ -16,6 +16,9 @@ namespace SteamAccCreator.Web
         private readonly Models.ProxyItem Proxy;
         private readonly bool IsCustomDomain;
 
+        private static readonly Regex RegexToken = new Regex("stoken=([^&$]+)", RegexOptions.IgnoreCase);
+        private static readonly Regex RegexCreationId = new Regex("creationid=([^&$]+)", RegexOptions.IgnoreCase);
+
         public MailHandler(Models.ProxyItem proxy, bool isCustomDomain)
         {
             Proxy = proxy;
@@ -52,32 +55,44 @@ namespace SteamAccCreator.Web
                 jsonResponse = "";
                 return;
             }
+
+            var content = jsonResponse.First.ToString() as string;
+            var url = GetConfirmUrl(content);
+            if (string.IsNullOrEmpty(url))
+            {
+                Logger.Warn("URL is empty!");
+                return;
+            }
+            if (!ConfirmSteamAccount(url))
+                Logger.Warn("Account seems isn't confirmed...");
+        }
+
+        public string GetConfirmUrl(string content)
+        {
+            Logger.Trace("Parsing confirm url...");
             try
             {
-                string dataxx = jsonResponse.First.ToString();
-                string[] words = (Regex.Split(dataxx, "stoken="));
-                string[] words9 = (Regex.Split(words[1], "&"));
-                string[] words1 = (Regex.Split(dataxx, "creationid="));
-                string[] words2 = Regex.Split(words1[1], " ");
-                var tokenUri = "stoken=" + words9[0] + "&creationid=" + words2[0];
-                ConfirmSteamAccount($"{Defaults.Web.STEAM_ACCOUNT_VERIFY_ADDRESS}?{tokenUri}");
+                var creationId = RegexCreationId.Match(content);
+                var token = RegexToken.Match(content);
 
-                Logger.Trace("Confirming mail: done?");
+                return $"{Defaults.Web.STEAM_ACCOUNT_VERIFY_ADDRESS}?stoken={token.Groups[1].Value}&creationid={creationId.Groups[1].Value}";
             }
             catch (Exception ex)
             {
-                Logger.Error($"Confirming mail: Error", ex);
+                Logger.Error($"Parsing confirm url: Error", ex);
             }
+            return string.Empty;
         }
 
-        private void ConfirmSteamAccount(string url)
+        public bool ConfirmSteamAccount(string url)
         {
             var client = new RestClient(url)
             {
                 Proxy = Proxy?.ToWebProxy()
             };
             var request = new RestRequest(Method.GET);
-            client.Execute(request);
+            var response = client.Execute(request);
+            return response.IsSuccessful;
         }
     }
 }
