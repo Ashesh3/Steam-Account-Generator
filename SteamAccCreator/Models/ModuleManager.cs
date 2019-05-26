@@ -20,7 +20,7 @@ namespace SteamAccCreator.Models
          * |- .exe
          * |- modules
          *    |- config
-         *       |- module_GUID                 <- here any configs for module
+         *       |- module_lib.name             <- here any configs for module
          *    |- required                       <- here any required libraries for module. Sub-directories will be checked and .dll will be loaded...
          *    |- *.dll                          <- here modules library. only .dll will be scanned for interfaces. You may put here for example .pdb to debug your module
          */
