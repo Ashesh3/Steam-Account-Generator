@@ -15,12 +15,12 @@ namespace SACModuleBase.Models
             get
             {
                 lock (Sync)
-                    return Running;
+                    return _Running;
             }
             set
             {
                 lock (Sync)
-                    Running = value;
+                    _Running = value;
             }
         }
 
