@@ -57,8 +57,10 @@
   <ItemGroup>
     <Compile Include="ImageCaptcha.cs" />
     <Compile Include="MailBox.cs" />
+    <Compile Include="Misc.cs" />
     <Compile Include="Models\CaptchaConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReCaptcha.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SACModuleBase\SACModuleBase.csproj">
