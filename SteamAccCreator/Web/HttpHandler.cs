@@ -387,6 +387,71 @@ namespace SteamAccCreator.Web
                     }
                     Logger.Debug("TwoCaptcha/RuCaptcha somethig went wrong.");
                     return new Captcha.CaptchaSolution(true, "Something went wrong", captchaConfig);
+                case Enums.CaptchaService.Module:
+                    {
+                        try
+                        {
+                            if (isRecaptcha.HasValue && !isRecaptcha.Value)
+                            {
+                                var imageCaptchas = FormMain.ModuleManager.Modules.GetCaptchaSolvers();
+                                if (imageCaptchas.Count() < 1)
+                                    goto default;
+
+                                var anyRetryAvailable = false;
+                                for (int i = 0; i < imageCaptchas.Count(); i++)
+                                {
+                                    var ic = imageCaptchas.ElementAt(i);
+                                    var icResponse = ic.Solve(new SACModuleBase.Models.Capcha.CaptchaRequest(captchaPayload));
+                                    var icStatus = icResponse?.Status ?? SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve;
+                                    if (icStatus == SACModuleBase.Enums.Captcha.CaptchaStatus.Success)
+                                        return new Captcha.CaptchaSolution(icResponse.Solution, icResponse?.ToString(), captchaConfig);
+
+                                    switch (icStatus)
+                                    {
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.RetryAvailable:
+                                            anyRetryAvailable = true;
+                                            continue;
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.Failed:
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve:
+                                            continue;
+                                    }
+                                }
+                                return new Captcha.CaptchaSolution(anyRetryAvailable, "Something went wrong...", captchaConfig);
+                            }
+                            else
+                            {
+                                var reCaptchas = FormMain.ModuleManager.Modules.GetReCaptchaSolvers();
+                                if (reCaptchas.Count() < 1)
+                                    goto default;
+
+                                var anyRetryAvailable = false;
+                                for (int i = 0; i < reCaptchas.Count(); i++)
+                                {
+                                    var rc = reCaptchas.ElementAt(i);
+                                    var rcResponse = rc.Solve(new SACModuleBase.Models.Capcha.ReCaptchaRequest(_siteKey, Defaults.Web.STEAM_JOIN_ADDRESS));
+                                    var rcStatus = rcResponse?.Status ?? SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve;
+                                    if (rcStatus == SACModuleBase.Enums.Captcha.CaptchaStatus.Success)
+                                        return new Captcha.CaptchaSolution(rcResponse.Solution, rcResponse?.ToString(), captchaConfig);
+
+                                    switch (rcStatus)
+                                    {
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.RetryAvailable:
+                                            anyRetryAvailable = true;
+                                            continue;
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.Failed:
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve:
+                                            continue;
+                                    }
+                                }
+                                return new Captcha.CaptchaSolution(anyRetryAvailable, "Something went wrong...", captchaConfig);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            Logger.Error($"Module solving error.", ex);
+                        }
+                    }
+                    return new Captcha.CaptchaSolution(true, "Something went wrong.", captchaConfig);
                 default:
                     {
                         try
