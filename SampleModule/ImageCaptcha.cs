@@ -26,7 +26,11 @@ namespace SampleModule
 
         public CaptchaResponse Solve(CaptchaRequest request)
         {
-            Config.Load();
+            if (!Config.Load())
+            {
+                Config.Save();
+                return new CaptchaResponse(SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve, "Config load error");
+            }
 
             var _params = new Dictionary<string, object>()
             {
