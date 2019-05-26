@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MailKit.Net.Imap;
 using MailKit.Net.Smtp;
+using SACModuleBase.Models;
 using SACModuleBase.Models.Mail;
 
 namespace SampleModule
@@ -50,6 +51,6 @@ namespace SampleModule
             return new ReadOnlyCollection<MailBoxMailItem>(mails);
         }
 
-        public void ModuleInitialize() { }
+        public void ModuleInitialize(SACInitialize initialize) { }
     }
 }
