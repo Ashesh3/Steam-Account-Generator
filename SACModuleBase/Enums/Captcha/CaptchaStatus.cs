@@ -2,6 +2,7 @@
 {
     public enum CaptchaStatus
     {
+        CannotSolve = -1,
         Failed,
         Success,
         RetryAvailable
