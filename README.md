@@ -3,10 +3,13 @@ Steam Account Generator
 
 Web generator: https://accgen.cathook.club/
 
-![screenshot](https://i.imgur.com/e1kIgzl.png)
+[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/master?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/master)
+
+![screenshot](https://i.vgy.me/cgb0Bo.png)
 
 Mass Steam Account generator features:
 - [x] Auto generate and verify email
+  - [x] Custom email domain ([How to do this](https://github.com/EarsKilla/Steam-Account-Generator/wiki/Using-custom-mail-domain))
 - [x] Auto generate username
 - [x] Auto generate password
 - [x] Update profile info
@@ -25,14 +28,11 @@ Mass Steam Account generator features:
 - [x] Manual and auto captcha services:
   - Captchasolutions
   - 2Captcha/RuCaptcha
-  - **Note:** You can replace hosts of auto captcha services ([here is how to do this](https://github.com/EarsKilla/Steam-Account-Generator/releases/tag/v1.1.2-pre3))*
-  - **Warning:** Latest build can cause issues with auto captha services.
-  Open issue if you are expecting problems.
+  - **Note:** You can replace hosts of auto captcha services ([here is how to do this](https://github.com/EarsKilla/Steam-Account-Generator/releases/tag/v1.1.2-pre3))
 - [x] Proxy support
-  - [x] Multiple proxies are supported*
+  - [x] Multiple proxies are supported  
+It will work with http/https/socks4/socks5
 - [x] Save most settings in JSON file.
-
-\* - Supported in latest pre-release version
 
 # Download
 [Steam-Account-Generator/releases](https://github.com/EarsKilla/Steam-Account-Generator/releases)

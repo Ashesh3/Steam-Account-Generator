@@ -27,21 +27,41 @@ namespace SteamAccCreator.Gui
             if ((proxy?.Enabled ?? false))
             {
                 GeckoPreferences.Default["network.proxy.type"] = 1;
-                GeckoPreferences.Default["network.proxy.http"] = proxy.Host;
-                GeckoPreferences.Default["network.proxy.http_port"] = proxy.Port;
-                GeckoPreferences.Default["network.proxy.ssl"] = proxy.Host;
-                GeckoPreferences.Default["network.proxy.ssl_port"] = proxy.Port;
 
-                if (proxy.ProxyType == Enums.ProxyType.Socks4)
-                    GeckoPreferences.Default["network.proxy.socks_version"] = 4;
-                else if (proxy.ProxyType == Enums.ProxyType.Socks5)
-                    GeckoPreferences.Default["network.proxy.socks_version"] = 5;
+                // clear proxies
+                GeckoSetProxy(Enums.ProxyType.Http, "", 0);
+                GeckoSetProxy(Enums.ProxyType.Socks4, "", 0);
 
-                GeckoPreferences.Default["network.proxy.socks"] = proxy.Host;
-                GeckoPreferences.Default["network.proxy.socks_port"] = proxy.Port;
+                GeckoSetProxy(proxy.ProxyType, proxy.Host, proxy.Port);
             }
             else
                 GeckoPreferences.Default["network.proxy.type"] = 0;
+        }
+
+        private void GeckoSetProxy(Enums.ProxyType proxyType, string host, int port)
+        {
+            switch (proxyType)
+            {
+                case Enums.ProxyType.Socks4:
+                case Enums.ProxyType.Socks5:
+                    GeckoPreferences.Default["network.proxy.socks"] = host;
+                    GeckoPreferences.Default["network.proxy.socks_port"] = port;
+                    break;
+                case Enums.ProxyType.Unknown:
+                case Enums.ProxyType.Http:
+                case Enums.ProxyType.Https:
+                default:
+                    GeckoPreferences.Default["network.proxy.http"] = host;
+                    GeckoPreferences.Default["network.proxy.http_port"] = port;
+                    GeckoPreferences.Default["network.proxy.ssl"] = host;
+                    GeckoPreferences.Default["network.proxy.ssl_port"] = port;
+                    break;
+            }
+
+            if (proxyType == Enums.ProxyType.Socks4)
+                GeckoPreferences.Default["network.proxy.socks_version"] = 4;
+            else if (proxyType == Enums.ProxyType.Socks5)
+                GeckoPreferences.Default["network.proxy.socks_version"] = 5;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -79,7 +99,7 @@ namespace SteamAccCreator.Gui
         {
             if (Regex.IsMatch(e.Uri?.Segments?.LastOrDefault() ?? "",
                 @"join\/?", RegexOptions.IgnoreCase)
-                || (e.Uri?.Host ?? "").ToLower() != (Web.HttpHandler.JoinUri?.Host?.ToLower() ?? "NULL"))
+                || (e.Uri?.Host ?? "").ToLower() != (Defaults.Web.STEAM_JOIN_URI?.Host?.ToLower() ?? "NULL"))
             {
                 Logger.Trace("Navigated to /join/.");
                 return;
@@ -95,7 +115,7 @@ namespace SteamAccCreator.Gui
                 Logger.Error("Failed to stop navigation...", ex);
                 try
                 {
-                    geckoWebBrowser1.Navigate(Web.HttpHandler.JOIN_LINK);
+                    geckoWebBrowser1.Navigate(Defaults.Web.STEAM_JOIN_ADDRESS);
                 }
                 catch(Exception exNav)
                 {
@@ -152,7 +172,7 @@ namespace SteamAccCreator.Gui
 
         private void btnReload_Click(object sender, EventArgs e)
         {
-            geckoWebBrowser1.Navigate(Web.HttpHandler.JOIN_LINK);
+            geckoWebBrowser1.Navigate(Defaults.Web.STEAM_JOIN_ADDRESS);
         }
     }
 }

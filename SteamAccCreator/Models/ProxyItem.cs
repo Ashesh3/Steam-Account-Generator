@@ -94,5 +94,29 @@ namespace SteamAccCreator.Models
 
         public override string ToString()
             => $"{ProxyType.ToString().ToLower()}://{Host}:{Port}";
+
+        public override bool Equals(object obj)
+            => Equals(this, obj);
+
+        public override int GetHashCode()
+            => $"{ProxyType.ToString().ToLower()}://{UserName}:{Password}@{Host}:{Port}/".GetHashCode();
+
+        public static bool operator ==(ProxyItem a, ProxyItem b)
+        {
+            if (Equals(a, null) && Equals(b, null))
+                return true;
+
+            if (Equals(a, null) || Equals(b, null))
+                return false;
+
+            return a.ProxyType == b.ProxyType &&
+                a.Host?.ToLower() == b.Host?.ToLower() &&
+                a.Port == b.Port &&
+                a.UserName?.ToLower() == b.UserName?.ToLower() &&
+                a.Password?.ToLower() == b.Password?.ToLower();
+        }
+
+        public static bool operator !=(ProxyItem a, ProxyItem b)
+            => !(a == b);
     }
 }

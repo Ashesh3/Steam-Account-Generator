@@ -10,9 +10,6 @@ namespace SteamAccCreator
 {
     static class Program
     {
-        public const string DEFAULT_URL_MAILBOX = "https://newemailsrv.now.sh/index.php";
-        public const string DEFAULT_URL_UPDATE = "https://earskilla.github.io/SteamAccountGenerator-memes/update.json";
-
         /// <summary>
         /// Der Haupteinstiegspunkt für die Anwendung.
         /// </summary>

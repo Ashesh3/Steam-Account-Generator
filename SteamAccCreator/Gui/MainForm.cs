@@ -17,18 +17,7 @@ namespace SteamAccCreator.Gui
         public const long PHOTO_MAX_SIZE = 1048576;
 
         public Models.Configuration Configuration { get; private set; } = new Models.Configuration();
-
-        private object _CurrentProxySync = new object();
-        private Models.ProxyItem _CurrentProxyItem = null;
-        public Models.ProxyItem CurrentProxyItem
-        {
-            get
-            {
-                lock (_CurrentProxySync)
-                    return _CurrentProxyItem;
-            }
-        }
-        public IWebProxy CurrentProxy => CurrentProxyItem?.ToWebProxy();
+        public Web.ProxyManager ProxyManager { get; private set; }
 
         public MainForm()
         {
@@ -109,6 +98,8 @@ namespace SteamAccCreator.Gui
             CbUpdateChannel.SelectedIndex = (int)Program.UpdaterHandler.UpdateChannel;
             CbUpdateChannel_SelectedIndexChanged(this, null);
             CbUpdateChannel.SelectedIndexChanged += CbUpdateChannel_SelectedIndexChanged;
+
+            ProxyManager = new Web.ProxyManager(this);
         }
 
         private void SaveConfig()
@@ -124,72 +115,6 @@ namespace SteamAccCreator.Gui
             {
                 Logger.Error("Saving config error!", ex);
             }
-        }
-
-        public bool UpdateProxy()
-        {
-            if (!Configuration.Proxy.Enabled)
-            {
-                try
-                {
-                    lock (_CurrentProxySync)
-                    {
-                        Logger.Trace($"{_CurrentProxyItem} was locked...");
-                        _CurrentProxyItem = null;
-                    }
-                    Logger.Trace($"{_CurrentProxyItem} was unlocked...");
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Error disabling proxy.", ex);
-                }
-                return false;
-            }
-
-            Logger.Trace("Updating proxy...");
-
-            lock (_CurrentProxySync)
-            {
-                Logger.Trace($"{_CurrentProxyItem} was locked...");
-
-                var proxies = ((DgvProxyList.DataSource as IEnumerable<Models.ProxyItem>) ?? new Models.ProxyItem[0]).ToList();
-                if (_CurrentProxyItem != null)
-                {
-                    Logger.Trace($"Trying to find index of {_CurrentProxyItem} ({_CurrentProxyItem.Host}:{_CurrentProxyItem.Port})...");
-                    var currentIndex = proxies.FindIndex(_base =>
-                    {
-                        if (_base == null)
-                            return false;
-
-                        if (_base.ProxyType != _CurrentProxyItem.ProxyType &&
-                            _base.Host != _CurrentProxyItem.Host &&
-                            _base.Port != _CurrentProxyItem.Port)
-                            return false;
-
-                        return true;
-                    });
-                    Logger.Trace($"Index of {_CurrentProxyItem} is {currentIndex}");
-                    if (currentIndex > -1)
-                    {
-                        Logger.Trace($"Disabling {_CurrentProxyItem} and mark it as broken.");
-                        proxies[currentIndex].Enabled = false;
-                        proxies[currentIndex].Status = Enums.ProxyStatus.Broken;
-
-                        Invoke(new Action(() => { DgvProxyList.DataSource = proxies; }));
-                    }
-                }
-
-                Logger.Trace("Looking for proxy...");
-                var working = proxies.Where(p => p.Enabled && p.Status != Enums.ProxyStatus.Broken);
-                _CurrentProxyItem = working?.FirstOrDefault();
-                if (_CurrentProxyItem == null)
-                    Logger.Trace("No proxies...");
-                else
-                    Logger.Trace($"Proxy is found. {_CurrentProxyItem.Host}:{_CurrentProxyItem.Port}");
-            }
-            Logger.Trace($"{_CurrentProxyItem} was unlocked...");
-
-            return _CurrentProxyItem != null;
         }
 
         public async void BtnCreateAccount_Click(object sender, EventArgs e)
@@ -246,10 +171,10 @@ namespace SteamAccCreator.Gui
             }
 
             Configuration.Proxy.Enabled = CbProxyEnabled.Checked;
-            if (Configuration.Proxy.Enabled && CurrentProxyItem == null)
-                UpdateProxy();
-            else if (!Configuration.Proxy.Enabled)
-                UpdateProxy();
+            if (ProxyManager.Enabled && ProxyManager.Current == null)
+                ProxyManager.GetNew();
+            else if (!ProxyManager.Enabled)
+                ProxyManager.GetNew();
 
             if (CbFwEnable.Checked && string.IsNullOrEmpty(Configuration.Output.Path))
                 Configuration.Output.Path = Path.Combine(Environment.CurrentDirectory, $"Accounts.{((CbFwOutType.SelectedIndex == 2) ? "csv" : "txt")}");
@@ -359,7 +284,7 @@ namespace SteamAccCreator.Gui
 
         private void CbRandomMail_CheckedChanged(object sender, EventArgs e)
         {
-            txtEmail.Enabled = !(Configuration.Mail.Random = CbRandomMail.Checked);
+            Configuration.Mail.Random = CbRandomMail.Checked;
             ToggleForceWriteIntoFile();
         }
 
@@ -667,60 +592,47 @@ namespace SteamAccCreator.Gui
 
         private async void BtnProxyTest_Click(object sender, EventArgs e)
         {
-            await Task.Factory.StartNew(() =>
+            int disabled = 0, error = 0, good = 0;
+            LabProxyTotal.Text = (Configuration.Proxy?.List?.Count())?.ToString() ?? "NULL";
+            void updateCounters()
             {
-                int good = 0, bad = 0, disabled = 0;
-                var proxies = (DgvProxyList.DataSource as IEnumerable<Models.ProxyItem>) ?? new Models.ProxyItem[0];
-                void RefreshCounters()
-                    => Invoke(new Action(() =>
-                    {
-                        LabProxyBad.Text = $"{bad}";
-                        LabProxyGood.Text = $"{good}";
-                        LabProxyDisabled.Text = $"{disabled}";
-                        LabProxyTotal.Text = $"{proxies.Count()}";
-                    }));
-
-                RefreshCounters();
-
-                var client = new RestSharp.RestClient("https://store.steampowered.com/login/");
-                foreach (var proxy in proxies)
+                ExecuteInvoke(() =>
                 {
-                    if (!proxy.Enabled)
-                    {
-                        disabled++;
-                        RefreshCounters();
-                        continue;
-                    }
+                    LabProxyBad.Text = $"{error}";
+                    LabProxyGood.Text = $"{good}";
+                    LabProxyDisabled.Text = $"{disabled}";
 
-                    client.Proxy = proxy.ToWebProxy();
-                    var request = new RestSharp.RestRequest("", RestSharp.Method.GET);
-                    var response = client.Execute(request);
+                    DgvProxyList.Refresh();
+                });
+            }
 
-                    if (!response.IsSuccessful)
-                    {
-                        bad++;
-                        proxy.Enabled = false;
-                        proxy.Status = Enums.ProxyStatus.Broken;
-                        RefreshCounters();
-                        continue;
-                    }
+            BtnProxyTestCancel.Enabled = true;
+            BtnProxyLoad.Enabled =
+                BtnProxyTest.Enabled = false;
+            await ProxyManager.CheckProxies(() =>
+            { // proxy is disabled
+                disabled++;
+                updateCounters();
+            },
+            () =>
+            { // proxy not passed checks
+                error++;
+                updateCounters();
+            },
+            () =>
+            { // proxy is working
+                good++;
+                updateCounters();
+            },
+            () =>
+            { // check ended
+                ExecuteInvoke(() =>
+                {
+                    BtnProxyTestCancel.Enabled = false;
 
-                    if (Regex.IsMatch(response.Content, @"(steamcommunity\.com|steampowered\.com)", RegexOptions.IgnoreCase))
-                    {
-                        good++;
-                        proxy.Status = Enums.ProxyStatus.Working;
-                    }
-                    else
-                    {
-                        proxy.Enabled = false;
-                        bad++;
-                        proxy.Status = Enums.ProxyStatus.Broken;
-                    }
-
-                    Logger.Debug($"Proxy({proxy.Host}:{proxy.Port}): {proxy.Status.ToString()}");
-
-                    RefreshCounters();
-                }
+                    BtnProxyLoad.Enabled =
+                        BtnProxyTest.Enabled = true;
+                });
             });
         }
 
@@ -790,6 +702,12 @@ namespace SteamAccCreator.Gui
             DgvProxyList.DataSource = Configuration.Proxy.List = proxies;
 
             Logger.Trace("Loading proxies done.");
+        }
+
+        private void BtnProxyTestCancel_Click(object sender, EventArgs e)
+        {
+            BtnProxyTestCancel.Enabled = false;
+            ProxyManager.CancelChecking();
         }
 
         private void CbUpdateChannel_SelectedIndexChanged(object sender, EventArgs e)
@@ -883,6 +801,32 @@ namespace SteamAccCreator.Gui
             {
                 return ExecuteInvoke(action);
             }
+        }
+
+        // lol. yeah. someone ask me to implement this xd
+        private FormWindowState OldWinState = FormWindowState.Normal;
+        private bool IsFullScreenLikeBrowser = false;
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F11)
+            {
+                IsFullScreenLikeBrowser = !IsFullScreenLikeBrowser;
+
+                if (IsFullScreenLikeBrowser)
+                {
+                    OldWinState = this.WindowState;
+
+                    this.WindowState = FormWindowState.Maximized;
+                    this.FormBorderStyle = FormBorderStyle.None;
+                }
+                else
+                {
+                    this.WindowState = OldWinState;
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

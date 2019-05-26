@@ -98,7 +98,7 @@
             this.Name = "ReCaptchaDialog";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ReCaptchaDialog";
+            this.Text = "ReCaptcha";
             this.ResumeLayout(false);
 
         }

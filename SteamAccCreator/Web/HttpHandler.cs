@@ -28,16 +28,6 @@ namespace SteamAccCreator.Web
         private readonly MainForm FormMain;
         private readonly Models.ProxyConfig ProxyConfig;
 
-        public const string JOIN_LINK = "https://store.steampowered.com/join/";
-        public static readonly Uri JoinUri = new Uri(JOIN_LINK);
-        private static readonly Uri RefreshCaptchaUri = new Uri("https://store.steampowered.com/join/refreshcaptcha/");
-        private static readonly Uri CaptchaUri = new Uri("https://store.steampowered.com/login/rendercaptcha?gid=");
-        private static readonly Uri AjaxVerifyCaptchaUri = new Uri("https://store.steampowered.com/join/ajaxverifyemail");
-        private static readonly Uri AjaxCheckEmailVerifiedUri = new Uri("https://store.steampowered.com/join/ajaxcheckemailverified");
-        private static readonly Uri CheckAvailUri = new Uri("https://store.steampowered.com/join/checkavail/");
-        private static readonly Uri CheckPasswordAvailUri = new Uri("https://store.steampowered.com/join/checkpasswordavail/");
-        private static readonly Uri CreateAccountUri = new Uri("https://store.steampowered.com/join/createaccount/");
-
         public static Uri TwoCaptchaDomain = new Uri((Program.UseRuCaptchaDomain) ? "http://rucaptcha.com" : "http://2captcha.com");
         public static Uri CaptchasolutionsDomain = new Uri("http://api.captchasolutions.com/");
 
@@ -64,7 +54,7 @@ namespace SteamAccCreator.Web
             }
 
             //download and return captcha image
-            _client.BaseUrl = new Uri(CaptchaUri + _captchaGid);
+            _client.BaseUrl = new Uri($"{Defaults.Web.STEAM_RENDER_CAPTCHA_ADDRESS}?gid={_captchaGid}");
             var captchaResponse = _client.DownloadData(_request);
             using (var ms = new MemoryStream(captchaResponse))
             {
@@ -125,10 +115,13 @@ namespace SteamAccCreator.Web
                 _request.Parameters.Clear();
             }
 
+            var proxyEnabled = FormMain.ProxyManager.Enabled;
+            var proxy = (proxyEnabled) ? FormMain.ProxyManager.WebProxy : default(IWebProxy);
+
             Logger.Trace($"Setting request config: url = {uri}");
             _client.BaseUrl = uri;
-            Logger.Trace($"Setting request config: proxy = {((ProxyConfig.Enabled) ? FormMain?.CurrentProxy?.ToString() ?? "NULL" : "disabled")}");
-            _client.Proxy = (ProxyConfig.Enabled) ? FormMain.CurrentProxy : default(IWebProxy);
+            Logger.Trace($"Setting request config: proxy = {((proxyEnabled) ? proxy?.ToString() ?? "NULL" : "disabled")}");
+            _client.Proxy = (proxyEnabled) ? proxy : default(IWebProxy);
             Logger.Trace($"Setting request config: method = {method.ToString()}");
             _request.Method = method;
             Logger.Trace($"Setting request config: security protocol = {securityProtocol.ToString()}");
@@ -167,7 +160,7 @@ namespace SteamAccCreator.Web
             siteKey = string.Empty; gid = string.Empty; isRecaptcha = null;
             try
             {
-                SetConfig(JoinUri, Method.GET);
+                SetConfig(Defaults.Web.STEAM_JOIN_URI, Method.GET);
                 var response = _client.Execute(_request);
                 var doc = new HtmlAgilityPack.HtmlDocument();
                 doc.LoadHtml(response.Content);
@@ -240,7 +233,7 @@ namespace SteamAccCreator.Web
             if (isRecaptcha.HasValue && !isRecaptcha.Value)
             {
                 //download and return captcha image
-                SetConfig($"{CaptchaUri}{_captchaGid}", Method.GET);
+                SetConfig($"{Defaults.Web.STEAM_RENDER_CAPTCHA_ADDRESS}?gid={_captchaGid}", Method.GET);
                 for (int i = 0; i < 3; i++)
                 {
                     try
@@ -282,7 +275,7 @@ namespace SteamAccCreator.Web
                         {
                             _params.Add("p", "nocaptcha");
                             _params.Add("googlekey", _siteKey);
-                            _params.Add("pageurl", JOIN_LINK);
+                            _params.Add("pageurl", Defaults.Web.STEAM_JOIN_ADDRESS);
                         }
                         else
                         {
@@ -329,7 +322,7 @@ namespace SteamAccCreator.Web
                         {
                             _params.Add("googlekey", _siteKey);
                             _params.Add("method", "userrecaptcha");
-                            _params.Add("pageurl", JOIN_LINK);
+                            _params.Add("pageurl", Defaults.Web.STEAM_JOIN_ADDRESS);
                         }
                         else
                         {
@@ -400,7 +393,7 @@ namespace SteamAccCreator.Web
                         {
                             var recap = isRecaptcha.HasValue && isRecaptcha.Value;
                             using (var dialog = (recap)
-                                ? FormMain.ExecuteInvoke(() => new ReCaptchaDialog(config, FormMain.CurrentProxyItem) as ICaptchaDialog)
+                                ? FormMain.ExecuteInvoke(() => new ReCaptchaDialog(config, FormMain.ProxyManager.Current) as ICaptchaDialog)
                                 : new CaptchaDialog(this, updateStatus, config))
                             {
                                 var solution = default(Captcha.CaptchaSolution);
@@ -414,7 +407,7 @@ namespace SteamAccCreator.Web
                                 {
                                     solution = solution ?? new Captcha.CaptchaSolution(true, "Something went wrong...", config.Captcha);
                                     if (recap)
-                                        _captchaGid = solution?.Id ?? _captchaGid;
+                                        _captchaGid = (string.IsNullOrEmpty(solution?.Id)) ? _captchaGid : solution?.Id ?? "";
 
                                     return solution;
                                 }
@@ -431,8 +424,25 @@ namespace SteamAccCreator.Web
             }
         }
 
+        private int CreateFailedCount = 0;
         public bool CreateAccount(string email, Captcha.CaptchaSolution captcha, Action<string> updateStatus, ref bool stop)
         {
+            if (CreateFailedCount >= 3)
+            {
+                if ((captcha?.Config?.Enabled ?? false))
+                {
+                    Logger.Warn("Some of proxy IP's is banned by steam for 24h. Stopped creation.");
+                    updateStatus?.Invoke("Some of proxy IP's is banned by steam for 24h. Stopped creation.");
+                }
+                else
+                {
+                    Logger.Warn("Current seems IP is banned by steam for 24h. Stopped creation.");
+                    updateStatus?.Invoke("Current seems IP is banned by steam for 24h. Stopped creation.");
+                }
+                stop = true;
+                return false;
+            }
+
             if (!(captcha?.Solved ?? false))
             {
                 Logger.Warn("Captcha not solved. Cannot create account.");
@@ -442,7 +452,7 @@ namespace SteamAccCreator.Web
             Logger.Debug("Creating account...");
 
             //Send request again
-            SetConfig(AjaxVerifyCaptchaUri, Method.POST);
+            SetConfig(Defaults.Web.STEAM_AJAX_VERIFY_EMAIL_URI, Method.POST);
             _request.AddParameter("captchagid", _captchaGid);
             _request.AddParameter("captcha_text", captcha.Solution);
             _request.AddParameter("email", email);
@@ -477,30 +487,48 @@ namespace SteamAccCreator.Web
                         case 62:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.SIMILIAR_MAIL}");
                             updateStatus(Error.SIMILIAR_MAIL);
-                            break;
+                            stop = true;
+                            return false;
                         case 13:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.INVALID_MAIL}");
                             updateStatus(Error.INVALID_MAIL);
-                            break;
+                            stop = true;
+                            return false;
                         case 17:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.TRASH_MAIL}");
                             updateStatus(Error.TRASH_MAIL);
-                            break;
+                            stop = true;
+                            return false;
                         case 101: // Please verify your humanity by re-entering the characters below.
                             Logger.Warn("Creating account error: Wrong captcha");
                             updateStatus(Error.WRONG_CAPTCHA);
 
-                            if (captcha.Config != null &&
-                                captcha.Config.Service == Enums.CaptchaService.RuCaptcha &&
-                                captcha.Config.RuCaptcha.ReportBad)
+                            if (captcha.Config != null)
                             {
-                                TwoCaptchaReport(captcha, false);
+                                if (captcha.Config.Service == Enums.CaptchaService.RuCaptcha &&
+                                    captcha.Config.RuCaptcha.ReportBad)
+                                {
+                                    TwoCaptchaReport(captcha, false);
+                                }
+
+                                if (!captcha.Config.HandMode)
+                                    stop = !FormMain.ProxyManager.GetNew();
+                            }
+                            CreateFailedCount++;
+                            return false;
+                        case 84:
+                            {
+                                Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.PROBABLY_IP_BAN}");
+                                updateStatus(Error.PROBABLY_IP_BAN);
+                                stop = !FormMain.ProxyManager.GetNew();
+                                CreateFailedCount++;
                             }
                             return false;
                         default:
                             Logger.Warn($"Creating account error: #{jsonResponse.success} / {Error.UNKNOWN}");
                             updateStatus(Error.UNKNOWN);
-                            stop = !FormMain.UpdateProxy();
+                            stop = !FormMain.ProxyManager.GetNew();
+                            CreateFailedCount++;
                             break;
                     }
                     return false;
@@ -521,7 +549,7 @@ namespace SteamAccCreator.Web
         {
             Logger.Trace("Creating account: checking mail is verified");
 
-            SetConfig(AjaxCheckEmailVerifiedUri, Method.POST);
+            SetConfig(Defaults.Web.STEAM_AJAX_CHECK_VERIFIED_URI, Method.POST);
             _request.AddParameter("creationid", _sessionId);
 
             var response = _client.Execute(_request);
@@ -548,7 +576,7 @@ namespace SteamAccCreator.Web
                 default:
                     Logger.Warn($"Creating account error: #{response.Content} / {Error.UNKNOWN}");
                     updateStatus?.Invoke(Error.UNKNOWN);
-                    shouldRetry = FormMain.UpdateProxy();
+                    shouldRetry = FormMain.ProxyManager.GetNew();
                     break;
             }
             return false;
@@ -567,7 +595,7 @@ namespace SteamAccCreator.Web
             if (!CheckPassword(password, alias, updateStatus))
                 return false;
 
-            SetConfig(CreateAccountUri, Method.POST);
+            SetConfig(Defaults.Web.STEAM_CREATE_ACCOUNT_URI, Method.POST);
             _request.AddParameter("accountname", alias);
             _request.AddParameter("password", password);
             _request.AddParameter("creation_sessionid", _sessionId);
@@ -714,15 +742,15 @@ namespace SteamAccCreator.Web
                 return true;
             }
             Logger.Debug($"Creating account: {jsonResponse.details}");
-            updateStatus?.Invoke(jsonResponse.details);
+            updateStatus?.Invoke((jsonResponse.details as object)?.ToString() ?? "Accounts seems to be created but something broken...");
             return false;
         }
 
-        private static bool CheckAlias(string alias, Action<string> statusUpdate)
+        private bool CheckAlias(string alias, Action<string> statusUpdate)
         {
             Logger.Debug("Checking alias (login)...");
 
-            var tempClient = new RestClient(CheckAvailUri);
+            var tempClient = new RestClient(Defaults.Web.STEAM_CHECK_AVAILABLE_URI);
             var tempRequest = new RestRequest(Method.POST);
             tempRequest.AddParameter("accountname", alias);
             tempRequest.AddParameter("count", "1");
@@ -741,11 +769,15 @@ namespace SteamAccCreator.Web
             return false;
         }
 
-        private static bool CheckPassword(string password, string alias, Action<string> updateStatus)
+        private bool CheckPassword(string password, string alias, Action<string> updateStatus)
         {
             Logger.Debug("Checking password...");
 
-            var tempClient = new RestClient(CheckPasswordAvailUri);
+            var tempClient = new RestClient(Defaults.Web.STEAM_CHECK_AVAILABLE_PASSWORD_URI)
+            {
+                CookieContainer = _cookieJar,
+                Proxy = FormMain?.ProxyManager?.WebProxy
+            };
             var tempRequest = new RestRequest(Method.POST);
             tempRequest.AddParameter("password", password);
             tempRequest.AddParameter("accountname", alias);

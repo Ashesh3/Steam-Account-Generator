@@ -259,7 +259,7 @@ namespace SteamAccCreator.Gui
 
         private readonly HttpHandler _httpHandler;
         private readonly FileManager _fileManager = new FileManager();
-        private readonly MailHandler _mailHandler = new MailHandler();
+        private readonly MailHandler _mailHandler;
         public readonly MainForm _mainForm;
 
         public readonly Models.Configuration Config;
@@ -280,6 +280,9 @@ namespace SteamAccCreator.Gui
         }
         private IEnumerable<Models.GameInfo> AddThisGames
             => (Config.Games.AddGames) ? Config.Games.GamesToAdd : new Models.GameInfo[0];
+
+        public string MailProvider { get; private set; } = "";
+        public bool IsCustomProvider { get; private set; } = false;
 
         private long SteamId = 0;
         private int GamesNotAdded = 0;
@@ -302,15 +305,34 @@ namespace SteamAccCreator.Gui
                 Config.Login.Value = "Init...";
             if (Config.Password.Random)
                 Config.Password.Value = "Init...";
+
+            if ((Config.Mail.Value ?? "").StartsWith("@"))
+            {
+                MailProvider = Config.Mail.Value;
+                IsCustomProvider = true;
+            }
+
             if (Config.Mail.Random)
                 Config.Mail.Value = "Init...";
 
             EnteredLogin = (Config.Login.Random) ? string.Empty : Login;
 
+            _mailHandler = new MailHandler(mainForm.ProxyManager.Current, IsCustomProvider);
+
             TableIndex = _mainForm.AddToTable(Mail, Login, Password, SteamId, Status);
 
             _httpHandler = new HttpHandler(_mainForm, config.Proxy);
             Logger.Trace("Creating account: init done");
+        }
+
+        private bool CheckMailCommunication(RestSharp.IRestResponse restResponse)
+        {
+            if (restResponse.IsSuccessful)
+                return true;
+
+            Logger.Warn("Cannot communicate with mail service.", restResponse.ErrorException);
+            UpdateStatus("Cannot communicate with mail service.");
+            return false;
         }
 
         public async void Run()
@@ -371,32 +393,41 @@ namespace SteamAccCreator.Gui
             if (Config.Mail.Random)
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
                 var _cli = new RestSharp.RestClient(MailHandler.MailboxUri);
 
-                var _reqProvider = new RestSharp.RestRequest(RestSharp.Method.GET);
-                var providerResult = _cli.Execute(_reqProvider);
-
-                string Provider = providerResult.Content;
-                if (!Provider.StartsWith("@"))
+                if (!MailProvider.StartsWith("@"))
                 {
-                    Logger.Warn($"Creating account: temp. mail service error: {Provider}");
-                    UpdateStatus("No email service... Try again (later)?...");
-                    return;
+                    var _reqProvider = new RestSharp.RestRequest(RestSharp.Method.GET);
+                    var providerResult = _cli.Execute(_reqProvider);
+
+                    if (!CheckMailCommunication(providerResult))
+                        return;
+
+                    var _provider = providerResult.Content;
+                    if (!_provider.StartsWith("@"))
+                    {
+                        Logger.Warn($"Creating account: temp. mail service error: {_provider}");
+                        UpdateStatus("No email service... Try again (later)?...");
+                        return;
+                    }
+
+                    MailProvider = _provider;
                 }
 
-                var mailCheck = new RestSharp.RestRequest(RestSharp.Method.GET);
-                mailCheck.AddParameter("alias", Login);
+                Mail = (Login + MailProvider).ToLower();
+
+                var mailCheck = new RestSharp.RestRequest((IsCustomProvider) ? "v2" : "", RestSharp.Method.GET);
+                mailCheck.AddParameter("alias", (IsCustomProvider) ? Mail : Login);
                 var mailCheckResult = _cli.Execute(mailCheck);
+                if (!CheckMailCommunication(mailCheckResult))
+                    return;
 
                 if (mailCheckResult.Content != "ok")
                 {
                     Logger.Warn($"Creating account: Something went wrong with temp. mail service...\nResponse: {mailCheckResult.Content}\n---------\nHTTP Status-Code: {mailCheckResult.StatusCode}\n====== END ======");
-                    UpdateStatus($"Something went wrong... HTTP Status-Code: {mailCheckResult.StatusCode}");
+                    UpdateStatus($"Something went wrong... {mailCheckResult.Content}");
                     return;
                 }
-
-                Mail = (Login + Provider).ToLower();
             }
 
             UpdateStatusFull();

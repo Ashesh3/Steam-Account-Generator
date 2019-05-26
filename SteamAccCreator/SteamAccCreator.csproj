@@ -128,6 +128,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Defaults\Mail.cs" />
+    <Compile Include="Defaults\Web.cs" />
     <Compile Include="Enums\CaptchaService.cs" />
     <Compile Include="Enums\ProxyStatus.cs" />
     <Compile Include="Enums\ProxyType.cs" />
@@ -187,6 +189,7 @@
     <Compile Include="Web\Error.cs" />
     <Compile Include="Web\HttpHandler.cs" />
     <Compile Include="Web\MailHandler.cs" />
+    <Compile Include="Web\ProxyManager.cs" />
     <Compile Include="Web\Updater\Enums\UpdateChannelEnum.cs" />
     <Compile Include="Web\Updater\Models\DownloadLinks.cs" />
     <Compile Include="Web\Updater\Models\Misc.cs" />
