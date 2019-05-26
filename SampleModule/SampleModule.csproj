@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImageCaptcha.cs" />
     <Compile Include="MailBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
