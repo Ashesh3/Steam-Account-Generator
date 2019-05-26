@@ -130,7 +130,11 @@ namespace SteamAccCreator.Models
                                 module.ModuleEnabled = true;
                                 try
                                 {
-                                    module.ModuleInitialize();
+                                    var configDirectory = Path.Combine(Pathes.DIR_MODULES_CONFIGS, fileName);
+                                    module.ModuleInitialize(new SACModuleBase.Models.SACInitialize()
+                                    {
+                                        ConfigurationPath = configDirectory
+                                    });
                                     Logger.Info($"Module ['{fileName}',{module?.ModuleName ?? "?"},{guid}]: Initialized.");
 
                                     try
