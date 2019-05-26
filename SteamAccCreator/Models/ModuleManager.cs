@@ -131,6 +131,7 @@ namespace SteamAccCreator.Models
                                 try
                                 {
                                     var configDirectory = Path.Combine(Pathes.DIR_MODULES_CONFIGS, fileName);
+                                    Utility.MkDirs(configDirectory);
                                     module.ModuleInitialize(new SACModuleBase.Models.SACInitialize()
                                     {
                                         ConfigurationPath = configDirectory
