@@ -34,7 +34,7 @@ namespace SACModuleBase.Models
         public ConfigManager(string directory, string fileName, T defaultConfig, object syncObject)
         {
             DirectoryPath = directory;
-            FileName = FileName;
+            FileName = fileName;
             Default = _Running = defaultConfig;
             Sync = syncObject ?? new object();
         }
