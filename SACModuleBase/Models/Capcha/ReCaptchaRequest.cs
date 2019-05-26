@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SACModuleBase.Models.Capcha
+﻿namespace SACModuleBase.Models.Capcha
 {
     public class ReCaptchaRequest
     {
@@ -16,5 +10,11 @@ namespace SACModuleBase.Models.Capcha
         /// ReCaptcha site-key
         /// </summary>
         public string SiteKey { get; private set; }
+
+        public ReCaptchaRequest(string siteKey, string url)
+        {
+            Url = url;
+            SiteKey = siteKey;
+        }
     }
 }
