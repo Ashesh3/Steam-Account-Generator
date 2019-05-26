@@ -19,6 +19,6 @@ namespace SteamAccCreator
             => GetModulesByInterface<SACModuleBase.ISACUserInterface>(modules);
 
         private static IEnumerable<T> GetModulesByInterface<T>(IEnumerable<SACModuleBase.ISACBase> modules)
-            => modules?.Where(m => typeof(T).IsAssignableFrom(m.GetType())).Select(m => (T)m) ?? new T[0];
+            => modules?.Where(m => m.ModuleEnabled && typeof(T).IsAssignableFrom(m.GetType())).Select(m => (T)m) ?? new T[0];
     }
 }
