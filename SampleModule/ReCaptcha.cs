@@ -4,12 +4,12 @@ using SACModuleBase.Models.Capcha;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SampleModule
 {
+    [Guid("9FF2D587-7CA7-4FFE-89F9-74010444812D")]
     public class ReCaptcha : ISACHandlerReCaptcha
     {
         public bool ModuleEnabled { get; set; } = true;
