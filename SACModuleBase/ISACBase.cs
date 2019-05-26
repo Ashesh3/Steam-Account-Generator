@@ -8,6 +8,6 @@ namespace SACModuleBase
         string ModuleName { get; }
         Version ModuleVersion { get; }
 
-        void ModuleInitialize();
+        void ModuleInitialize(Models.SACInitialize initialize);
     }
 }
