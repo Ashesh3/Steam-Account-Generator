@@ -1,16 +1,15 @@
-﻿using System;
+﻿using MailKit.Net.Imap;
+using SACModuleBase.Models;
+using SACModuleBase.Models.Mail;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MailKit.Net.Imap;
-using MailKit.Net.Smtp;
-using SACModuleBase.Models;
-using SACModuleBase.Models.Mail;
+using System.Runtime.InteropServices;
 
 namespace SampleModule
 {
+    [Guid("C89C87D9-D9FE-447B-85A6-92203F0C3397")]
     public class MailBox : SACModuleBase.ISACHandlerMailBox
     {
         private const string IMAP_HOST = "imap.rambler.ru";
