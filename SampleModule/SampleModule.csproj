@@ -45,8 +45,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -55,6 +57,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gui\Configuration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Configuration.Designer.cs">
+      <DependentUpon>Configuration.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImageCaptcha.cs" />
     <Compile Include="MailBox.cs" />
     <Compile Include="Misc.cs" />
@@ -71,6 +79,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\SampleModule.Models.CaptchaConfig.datasource" />
+    <None Include="Properties\DataSources\SampleModule.Models.MailConfig.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Gui\Configuration.resx">
+      <DependentUpon>Configuration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

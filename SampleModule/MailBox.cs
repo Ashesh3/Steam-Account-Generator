@@ -19,7 +19,8 @@ namespace SampleModule
         private ConfigManager<Models.MailConfig> Config;
         public void ModuleInitialize(SACInitialize initialize)
         {
-            Config = new ConfigManager<Models.MailConfig>(initialize.ConfigurationPath, "mail.json", new Models.MailConfig());
+            Config = new ConfigManager<Models.MailConfig>(initialize.ConfigurationPath, "mail.json",
+                new Models.MailConfig(), Misc.MailBoxConfigSync);
             if (!Config.Load())
                 Config.Save();
         }

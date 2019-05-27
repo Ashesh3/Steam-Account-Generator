@@ -21,7 +21,7 @@ namespace SampleModule
         public void ModuleInitialize(SACInitialize initialize)
         {
             Config = new ConfigManager<Models.CaptchaConfig>(initialize.ConfigurationPath, "captcha.json",
-                new Models.CaptchaConfig(), Misc.ConfigSync);
+                new Models.CaptchaConfig(), Misc.CaptchaConfigSync);
         }
 
         public CaptchaResponse Solve(CaptchaRequest request)

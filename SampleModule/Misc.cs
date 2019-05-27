@@ -9,7 +9,8 @@ namespace SampleModule
 {
     public static class Misc
     {
-        public static object ConfigSync = new object(); // for sync config across all parts of module
+        public static object CaptchaConfigSync = new object(); // for sync config across all parts of module
+        public static object MailBoxConfigSync = new object();
 
         public static string[] TwoCaptcha(string resource, Dictionary<string, object> args)
         {
