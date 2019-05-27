@@ -23,21 +23,18 @@ namespace SteamAccCreator.Models
         public string Name => Module.ModuleName;
         public Version Version => Module.ModuleVersion;
 
-        private readonly Button _Button;
-        public Button Button => _Button;
+        public string ButtonName => IsUI ? ModuleUI?.ShowButtonCaption ?? "Settings" : "NULL";
+        public Action OnClick => () =>
+        {
+            if (IsUI)
+                ModuleUI?.ShowWindow();
+            else
+                MessageBox.Show("No GUI here...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        };
 
         public ModuleBinding(SACModuleBase.ISACBase module)
         {
             Module = module;
-
-            _Button = new Button()
-            {
-                Name = IsUI ? ModuleUI?.ShowButtonCaption ?? "Settings" : "DON'T CLICK!"
-            };
-            if (IsUI)
-                _Button.Click += (s, e) => ModuleUI?.ShowWindow();
-            else
-                _Button.Click += (s, e) => MessageBox.Show("I SAY DON'T F...... CKICK!", "WHY????", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

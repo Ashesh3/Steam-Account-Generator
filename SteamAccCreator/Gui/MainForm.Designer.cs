@@ -115,6 +115,8 @@ namespace SteamAccCreator.Gui
             this.DgvProxyList = new System.Windows.Forms.DataGridView();
             this.BtnProxyTest = new System.Windows.Forms.Button();
             this.CbProxyEnabled = new System.Windows.Forms.CheckBox();
+            this.tabModules = new System.Windows.Forms.TabPage();
+            this.DgvModules = new System.Windows.Forms.DataGridView();
             this.tabUpdates = new System.Windows.Forms.TabPage();
             this.BtnUpdateNotes = new System.Windows.Forms.Button();
             this.LbCurrentversionStr = new System.Windows.Forms.Label();
@@ -132,8 +134,6 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.tabModules = new System.Windows.Forms.TabPage();
-            this.DgvModules = new System.Windows.Forms.DataGridView();
             this.profileConfigBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -157,10 +157,10 @@ namespace SteamAccCreator.Gui
             this.tabFileWriting.SuspendLayout();
             this.tabProxy.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).BeginInit();
-            this.tabUpdates.SuspendLayout();
-            this.tabAbout.SuspendLayout();
             this.tabModules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvModules)).BeginInit();
+            this.tabUpdates.SuspendLayout();
+            this.tabAbout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BsModules)).BeginInit();
@@ -1227,6 +1227,40 @@ namespace SteamAccCreator.Gui
             this.CbProxyEnabled.UseVisualStyleBackColor = true;
             this.CbProxyEnabled.CheckedChanged += new System.EventHandler(this.CbProxyEnabled_CheckedChanged);
             // 
+            // tabModules
+            // 
+            this.tabModules.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.tabModules.Controls.Add(this.DgvModules);
+            this.tabModules.Location = new System.Drawing.Point(4, 22);
+            this.tabModules.Name = "tabModules";
+            this.tabModules.Padding = new System.Windows.Forms.Padding(3);
+            this.tabModules.Size = new System.Drawing.Size(316, 296);
+            this.tabModules.TabIndex = 7;
+            this.tabModules.Text = "Modules";
+            // 
+            // DgvModules
+            // 
+            this.DgvModules.AllowUserToAddRows = false;
+            this.DgvModules.AllowUserToDeleteRows = false;
+            this.DgvModules.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DgvModules.AutoGenerateColumns = false;
+            this.DgvModules.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.DgvModules.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvModules.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.enabledDataGridViewCheckBoxColumn1,
+            this.nameDataGridViewTextBoxColumn,
+            this.versionDataGridViewTextBoxColumn,
+            this.Button});
+            this.DgvModules.DataSource = this.BsModules;
+            this.DgvModules.Location = new System.Drawing.Point(0, 0);
+            this.DgvModules.Name = "DgvModules";
+            this.DgvModules.RowHeadersVisible = false;
+            this.DgvModules.Size = new System.Drawing.Size(316, 296);
+            this.DgvModules.TabIndex = 0;
+            this.DgvModules.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvModules_CellContentClick);
+            // 
             // tabUpdates
             // 
             this.tabUpdates.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
@@ -1415,39 +1449,6 @@ namespace SteamAccCreator.Gui
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // tabModules
-            // 
-            this.tabModules.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.tabModules.Controls.Add(this.DgvModules);
-            this.tabModules.Location = new System.Drawing.Point(4, 22);
-            this.tabModules.Name = "tabModules";
-            this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(316, 296);
-            this.tabModules.TabIndex = 7;
-            this.tabModules.Text = "Modules";
-            // 
-            // DgvModules
-            // 
-            this.DgvModules.AllowUserToAddRows = false;
-            this.DgvModules.AllowUserToDeleteRows = false;
-            this.DgvModules.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.DgvModules.AutoGenerateColumns = false;
-            this.DgvModules.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.DgvModules.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DgvModules.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.enabledDataGridViewCheckBoxColumn1,
-            this.nameDataGridViewTextBoxColumn,
-            this.versionDataGridViewTextBoxColumn,
-            this.Button});
-            this.DgvModules.DataSource = this.BsModules;
-            this.DgvModules.Location = new System.Drawing.Point(0, 0);
-            this.DgvModules.Name = "DgvModules";
-            this.DgvModules.RowHeadersVisible = false;
-            this.DgvModules.Size = new System.Drawing.Size(316, 296);
-            this.DgvModules.TabIndex = 0;
-            // 
             // profileConfigBindingSource
             // 
             this.profileConfigBindingSource.DataSource = typeof(SteamAccCreator.Models.ProfileConfig);
@@ -1530,8 +1531,8 @@ namespace SteamAccCreator.Gui
             // 
             // Button
             // 
-            this.Button.DataPropertyName = "Button";
-            this.Button.HeaderText = "Button";
+            this.Button.DataPropertyName = "ButtonName";
+            this.Button.HeaderText = "Action";
             this.Button.Name = "Button";
             this.Button.ReadOnly = true;
             this.Button.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -1568,12 +1569,12 @@ namespace SteamAccCreator.Gui
             this.tabProxy.ResumeLayout(false);
             this.tabProxy.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).EndInit();
+            this.tabModules.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DgvModules)).EndInit();
             this.tabUpdates.ResumeLayout(false);
             this.tabUpdates.PerformLayout();
             this.tabAbout.ResumeLayout(false);
             this.tabAbout.PerformLayout();
-            this.tabModules.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.DgvModules)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.BsModules)).EndInit();

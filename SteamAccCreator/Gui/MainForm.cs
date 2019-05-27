@@ -832,5 +832,14 @@ namespace SteamAccCreator.Gui
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        private void DgvModules_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex != 3)
+                return;
+
+            var module = ModuleManager.ModuleBindings.ElementAtOrDefault(e.RowIndex);
+            module?.OnClick?.Invoke();
+        }
     }
 }
