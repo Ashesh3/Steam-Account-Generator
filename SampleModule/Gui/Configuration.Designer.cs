@@ -30,26 +30,26 @@
         {
             this.components = new System.ComponentModel.Container();
             this.GbMail = new System.Windows.Forms.GroupBox();
-            this.GbTwoCaptcha = new System.Windows.Forms.GroupBox();
-            this.LbMail = new System.Windows.Forms.Label();
+            this.LbMailPort = new System.Windows.Forms.Label();
+            this.LabMailHost = new System.Windows.Forms.Label();
+            this.LabMailPassword = new System.Windows.Forms.Label();
             this.CbMailSsl = new System.Windows.Forms.CheckBox();
+            this.BsMail = new System.Windows.Forms.BindingSource(this.components);
             this.NumMailPort = new System.Windows.Forms.NumericUpDown();
             this.TbMailHost = new System.Windows.Forms.TextBox();
             this.TbMailPassword = new System.Windows.Forms.TextBox();
             this.TbMail = new System.Windows.Forms.TextBox();
-            this.LabMailPassword = new System.Windows.Forms.Label();
-            this.LabMailHost = new System.Windows.Forms.Label();
-            this.LbMailPort = new System.Windows.Forms.Label();
-            this.LbTwoCapKey = new System.Windows.Forms.Label();
+            this.LbMail = new System.Windows.Forms.Label();
+            this.GbTwoCaptcha = new System.Windows.Forms.GroupBox();
             this.TbTwoCapKey = new System.Windows.Forms.TextBox();
+            this.BsCaptcha = new System.Windows.Forms.BindingSource(this.components);
+            this.LbTwoCapKey = new System.Windows.Forms.Label();
             this.BtnCancel = new System.Windows.Forms.Button();
             this.BtnApply = new System.Windows.Forms.Button();
-            this.BsMail = new System.Windows.Forms.BindingSource(this.components);
-            this.BsCaptcha = new System.Windows.Forms.BindingSource(this.components);
             this.GbMail.SuspendLayout();
-            this.GbTwoCaptcha.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NumMailPort)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BsMail)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumMailPort)).BeginInit();
+            this.GbTwoCaptcha.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BsCaptcha)).BeginInit();
             this.SuspendLayout();
             // 
@@ -71,25 +71,32 @@
             this.GbMail.TabStop = false;
             this.GbMail.Text = "Mail";
             // 
-            // GbTwoCaptcha
+            // LbMailPort
             // 
-            this.GbTwoCaptcha.Controls.Add(this.TbTwoCapKey);
-            this.GbTwoCaptcha.Controls.Add(this.LbTwoCapKey);
-            this.GbTwoCaptcha.Location = new System.Drawing.Point(12, 163);
-            this.GbTwoCaptcha.Name = "GbTwoCaptcha";
-            this.GbTwoCaptcha.Size = new System.Drawing.Size(264, 60);
-            this.GbTwoCaptcha.TabIndex = 1;
-            this.GbTwoCaptcha.TabStop = false;
-            this.GbTwoCaptcha.Text = "2Captcha/RuCaptcha";
+            this.LbMailPort.AutoSize = true;
+            this.LbMailPort.Location = new System.Drawing.Point(11, 99);
+            this.LbMailPort.Name = "LbMailPort";
+            this.LbMailPort.Size = new System.Drawing.Size(58, 13);
+            this.LbMailPort.TabIndex = 3;
+            this.LbMailPort.Text = "IMAP Port:";
             // 
-            // LbMail
+            // LabMailHost
             // 
-            this.LbMail.AutoSize = true;
-            this.LbMail.Location = new System.Drawing.Point(31, 22);
-            this.LbMail.Name = "LbMail";
-            this.LbMail.Size = new System.Drawing.Size(35, 13);
-            this.LbMail.TabIndex = 0;
-            this.LbMail.Text = "Email:";
+            this.LabMailHost.AutoSize = true;
+            this.LabMailHost.Location = new System.Drawing.Point(8, 74);
+            this.LabMailHost.Name = "LabMailHost";
+            this.LabMailHost.Size = new System.Drawing.Size(61, 13);
+            this.LabMailHost.TabIndex = 2;
+            this.LabMailHost.Text = "IMAP Host:";
+            // 
+            // LabMailPassword
+            // 
+            this.LabMailPassword.AutoSize = true;
+            this.LabMailPassword.Location = new System.Drawing.Point(13, 48);
+            this.LabMailPassword.Name = "LabMailPassword";
+            this.LabMailPassword.Size = new System.Drawing.Size(56, 13);
+            this.LabMailPassword.TabIndex = 1;
+            this.LabMailPassword.Text = "Password:";
             // 
             // CbMailSsl
             // 
@@ -102,10 +109,19 @@
             this.CbMailSsl.Text = "Use SSL";
             this.CbMailSsl.UseVisualStyleBackColor = true;
             // 
+            // BsMail
+            // 
+            this.BsMail.DataSource = typeof(SampleModule.Models.MailConfig);
+            // 
             // NumMailPort
             // 
             this.NumMailPort.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.BsMail, "Port", true));
             this.NumMailPort.Location = new System.Drawing.Point(72, 97);
+            this.NumMailPort.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
             this.NumMailPort.Name = "NumMailPort";
             this.NumMailPort.Size = new System.Drawing.Size(186, 20);
             this.NumMailPort.TabIndex = 7;
@@ -134,32 +150,37 @@
             this.TbMail.Size = new System.Drawing.Size(186, 20);
             this.TbMail.TabIndex = 4;
             // 
-            // LabMailPassword
+            // LbMail
             // 
-            this.LabMailPassword.AutoSize = true;
-            this.LabMailPassword.Location = new System.Drawing.Point(13, 48);
-            this.LabMailPassword.Name = "LabMailPassword";
-            this.LabMailPassword.Size = new System.Drawing.Size(56, 13);
-            this.LabMailPassword.TabIndex = 1;
-            this.LabMailPassword.Text = "Password:";
+            this.LbMail.AutoSize = true;
+            this.LbMail.Location = new System.Drawing.Point(31, 22);
+            this.LbMail.Name = "LbMail";
+            this.LbMail.Size = new System.Drawing.Size(35, 13);
+            this.LbMail.TabIndex = 0;
+            this.LbMail.Text = "Email:";
             // 
-            // LabMailHost
+            // GbTwoCaptcha
             // 
-            this.LabMailHost.AutoSize = true;
-            this.LabMailHost.Location = new System.Drawing.Point(8, 74);
-            this.LabMailHost.Name = "LabMailHost";
-            this.LabMailHost.Size = new System.Drawing.Size(61, 13);
-            this.LabMailHost.TabIndex = 2;
-            this.LabMailHost.Text = "IMAP Host:";
+            this.GbTwoCaptcha.Controls.Add(this.TbTwoCapKey);
+            this.GbTwoCaptcha.Controls.Add(this.LbTwoCapKey);
+            this.GbTwoCaptcha.Location = new System.Drawing.Point(12, 163);
+            this.GbTwoCaptcha.Name = "GbTwoCaptcha";
+            this.GbTwoCaptcha.Size = new System.Drawing.Size(264, 60);
+            this.GbTwoCaptcha.TabIndex = 1;
+            this.GbTwoCaptcha.TabStop = false;
+            this.GbTwoCaptcha.Text = "2Captcha/RuCaptcha";
             // 
-            // LbMailPort
+            // TbTwoCapKey
             // 
-            this.LbMailPort.AutoSize = true;
-            this.LbMailPort.Location = new System.Drawing.Point(11, 99);
-            this.LbMailPort.Name = "LbMailPort";
-            this.LbMailPort.Size = new System.Drawing.Size(58, 13);
-            this.LbMailPort.TabIndex = 3;
-            this.LbMailPort.Text = "IMAP Port:";
+            this.TbTwoCapKey.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.BsCaptcha, "ApiKey", true));
+            this.TbTwoCapKey.Location = new System.Drawing.Point(6, 32);
+            this.TbTwoCapKey.Name = "TbTwoCapKey";
+            this.TbTwoCapKey.Size = new System.Drawing.Size(252, 20);
+            this.TbTwoCapKey.TabIndex = 1;
+            // 
+            // BsCaptcha
+            // 
+            this.BsCaptcha.DataSource = typeof(SampleModule.Models.CaptchaConfig);
             // 
             // LbTwoCapKey
             // 
@@ -169,14 +190,6 @@
             this.LbTwoCapKey.Size = new System.Drawing.Size(48, 13);
             this.LbTwoCapKey.TabIndex = 0;
             this.LbTwoCapKey.Text = "API Key:";
-            // 
-            // TbTwoCapKey
-            // 
-            this.TbTwoCapKey.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.BsCaptcha, "ApiKey", true));
-            this.TbTwoCapKey.Location = new System.Drawing.Point(6, 32);
-            this.TbTwoCapKey.Name = "TbTwoCapKey";
-            this.TbTwoCapKey.Size = new System.Drawing.Size(252, 20);
-            this.TbTwoCapKey.TabIndex = 1;
             // 
             // BtnCancel
             // 
@@ -199,14 +212,6 @@
             this.BtnApply.UseVisualStyleBackColor = true;
             this.BtnApply.Click += new System.EventHandler(this.BtnApply_Click);
             // 
-            // BsMail
-            // 
-            this.BsMail.DataSource = typeof(SampleModule.Models.MailConfig);
-            // 
-            // BsCaptcha
-            // 
-            this.BsCaptcha.DataSource = typeof(SampleModule.Models.CaptchaConfig);
-            // 
             // Configuration
             // 
             this.AcceptButton = this.BtnApply;
@@ -226,10 +231,10 @@
             this.Text = "Configuration";
             this.GbMail.ResumeLayout(false);
             this.GbMail.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BsMail)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumMailPort)).EndInit();
             this.GbTwoCaptcha.ResumeLayout(false);
             this.GbTwoCaptcha.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NumMailPort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BsMail)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.BsCaptcha)).EndInit();
             this.ResumeLayout(false);
 
