@@ -398,7 +398,7 @@ namespace SteamAccCreator.Gui
             {
                 foreach (var mailBox in _mainForm.ModuleManager.Modules.GetMailBoxes())
                 {
-                    var mail = mailBox.GetMailBox(new SACModuleBase.Models.Mail.MailBoxRequest(Login));
+                    var mail = mailBox.GetMailBox(new SACModuleBase.Models.Mail.MailBoxRequest(Login, _mainForm.ProxyManager.WebProxy));
                     if (string.IsNullOrEmpty(mail?.Email) || !mail.Email.Contains("@"))
                         continue;
 

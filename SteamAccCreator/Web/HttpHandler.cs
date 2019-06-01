@@ -401,7 +401,7 @@ namespace SteamAccCreator.Web
                                 for (int i = 0; i < imageCaptchas.Count(); i++)
                                 {
                                     var ic = imageCaptchas.ElementAt(i);
-                                    var icResponse = ic.Solve(new SACModuleBase.Models.Capcha.CaptchaRequest(captchaPayload));
+                                    var icResponse = ic.Solve(new SACModuleBase.Models.Capcha.CaptchaRequest(captchaPayload, FormMain.ProxyManager.WebProxy));
                                     var icStatus = icResponse?.Status ?? SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve;
                                     if (icStatus == SACModuleBase.Enums.Captcha.CaptchaStatus.Success)
                                         return new Captcha.CaptchaSolution(icResponse.Solution, icResponse?.ToString(), captchaConfig);
