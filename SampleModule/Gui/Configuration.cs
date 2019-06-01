@@ -1,20 +1,13 @@
 ﻿using SACModuleBase;
+using SACModuleBase.Attributes;
 using SACModuleBase.Models;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SampleModule.Gui
 {
-    [Guid("5C8E14BD-6105-475A-81D0-B59AB56B186A")]
+    [SACModuleInfo("5C8E14BD-6105-475A-81D0-B59AB56B186A", "SampleModule: config UI", "1.3.3.7")]
     public partial class Configuration : Form, ISACUserInterface
     {
         private ConfigManager<Models.MailConfig> ConfigMail;
@@ -27,8 +20,6 @@ namespace SampleModule.Gui
 
         public string ShowButtonCaption => "Config";
         public bool ModuleEnabled { get; set; } = true;
-        public string ModuleName => "SampleModule: config UI";
-        public Version ModuleVersion => new Version("1.3.3.7");
 
         public void ModuleInitialize(SACInitialize initialize)
         {

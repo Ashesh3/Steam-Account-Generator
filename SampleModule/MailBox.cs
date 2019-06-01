@@ -1,20 +1,17 @@
 ﻿using MailKit.Net.Imap;
+using SACModuleBase.Attributes;
 using SACModuleBase.Models;
 using SACModuleBase.Models.Mail;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace SampleModule
 {
-    [Guid("C89C87D9-D9FE-447B-85A6-92203F0C3397")]
+    [SACModuleInfo("C89C87D9-D9FE-447B-85A6-92203F0C3397", "IMAP mail handler", "1.0.0.0")]
     public class MailBox : SACModuleBase.ISACHandlerMailBox
     {
         public bool ModuleEnabled { get; set; } = true;
-        public string ModuleName => "IMAP mail handler";
-        public Version ModuleVersion => new Version("1.0.0.0");
 
         private ConfigManager<Models.MailConfig> Config;
         public void ModuleInitialize(SACInitialize initialize)

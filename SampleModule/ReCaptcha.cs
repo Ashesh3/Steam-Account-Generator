@@ -1,20 +1,18 @@
 ﻿using SACModuleBase;
+using SACModuleBase.Attributes;
 using SACModuleBase.Models;
 using SACModuleBase.Models.Capcha;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace SampleModule
 {
-    [Guid("9FF2D587-7CA7-4FFE-89F9-74010444812D")]
+    [SACModuleInfo("9FF2D587-7CA7-4FFE-89F9-74010444812D", "Sample google captcha", "1.0.0.0")]
     public class ReCaptcha : ISACHandlerReCaptcha
     {
         public bool ModuleEnabled { get; set; } = true;
-        public string ModuleName => "Sample google captcha";
-        public Version ModuleVersion => new Version("1.0.0.0");
 
         private ConfigManager<Models.CaptchaConfig> Config;
 
