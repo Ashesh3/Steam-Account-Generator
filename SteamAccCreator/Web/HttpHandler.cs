@@ -261,7 +261,7 @@ namespace SteamAccCreator.Web
             {
                 case Enums.CaptchaService.Captchasolutions:
                     {
-                        if (captchaConfig.HandMode || !captchaConfig.Enabled)
+                        if (!captchaConfig.Enabled)
                             goto default;
 
                         var _params = new Dictionary<string, object>()
@@ -306,7 +306,7 @@ namespace SteamAccCreator.Web
                     }
                 case Enums.CaptchaService.RuCaptcha:
                     {
-                        if (captchaConfig.HandMode || !captchaConfig.Enabled)
+                        if (!captchaConfig.Enabled)
                             goto default;
 
                         Logger.Debug("Recognizing captcha via TwoCaptcha/RuCaptcha");
@@ -446,7 +446,7 @@ namespace SteamAccCreator.Web
                                 return new Captcha.CaptchaSolution(anyRetryAvailable, "Something went wrong...", captchaConfig);
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Logger.Error($"Module solving error.", ex);
                         }
@@ -576,8 +576,7 @@ namespace SteamAccCreator.Web
                                     TwoCaptchaReport(captcha, false);
                                 }
 
-                                if (!captcha.Config.HandMode)
-                                    stop = !FormMain.ProxyManager.GetNew();
+                                stop = !FormMain.ProxyManager.GetNew();
                             }
                             CreateFailedCount++;
                             return false;

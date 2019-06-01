@@ -232,9 +232,11 @@
     </None>
     <None Include="packages.config" />
     <None Include="Properties\DataSources\SACModuleBase.ISACBase.datasource" />
+    <None Include="Properties\DataSources\SteamAccCreator.Models.CaptchaSolutionsConfig.datasource" />
     <None Include="Properties\DataSources\SteamAccCreator.Models.ModuleBinding.datasource" />
     <None Include="Properties\DataSources\SteamAccCreator.Models.ProfileConfig.datasource" />
     <None Include="Properties\DataSources\SteamAccCreator.Models.ProxyItem.datasource" />
+    <None Include="Properties\DataSources\SteamAccCreator.Models.RuCaptchaConfig.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
