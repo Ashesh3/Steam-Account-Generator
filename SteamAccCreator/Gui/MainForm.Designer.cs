@@ -1242,9 +1242,7 @@ namespace SteamAccCreator.Gui
             // 
             this.DgvModules.AllowUserToAddRows = false;
             this.DgvModules.AllowUserToDeleteRows = false;
-            this.DgvModules.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DgvModules.AllowUserToResizeRows = false;
             this.DgvModules.AutoGenerateColumns = false;
             this.DgvModules.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
             this.DgvModules.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -1255,8 +1253,11 @@ namespace SteamAccCreator.Gui
             this.Button});
             this.DgvModules.DataSource = this.BsModules;
             this.DgvModules.Location = new System.Drawing.Point(0, 0);
+            this.DgvModules.MultiSelect = false;
             this.DgvModules.Name = "DgvModules";
             this.DgvModules.RowHeadersVisible = false;
+            this.DgvModules.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.DgvModules.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DgvModules.Size = new System.Drawing.Size(316, 296);
             this.DgvModules.TabIndex = 0;
             this.DgvModules.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvModules_CellContentClick);
@@ -1509,6 +1510,7 @@ namespace SteamAccCreator.Gui
             this.enabledDataGridViewCheckBoxColumn1.DataPropertyName = "Enabled";
             this.enabledDataGridViewCheckBoxColumn1.HeaderText = "";
             this.enabledDataGridViewCheckBoxColumn1.Name = "enabledDataGridViewCheckBoxColumn1";
+            this.enabledDataGridViewCheckBoxColumn1.ToolTipText = "Enabled";
             this.enabledDataGridViewCheckBoxColumn1.Width = 5;
             // 
             // nameDataGridViewTextBoxColumn

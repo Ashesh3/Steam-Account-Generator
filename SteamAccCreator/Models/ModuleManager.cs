@@ -10,7 +10,7 @@ namespace SteamAccCreator.Models
     public class ModuleManager
     {
         private List<ModuleBinding> _Modules = new List<ModuleBinding>();
-        public IReadOnlyCollection<ModuleBinding> ModuleBindings => new ReadOnlyCollection<ModuleBinding>(_Modules);
+        public IEnumerable<ModuleBinding> ModuleBindings => _Modules;
         public IReadOnlyCollection<SACModuleBase.ISACBase> Modules => new ReadOnlyCollection<SACModuleBase.ISACBase>(_Modules.Select(x => x.Module).ToList());
 
         private Configuration Configuration;
