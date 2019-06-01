@@ -6,7 +6,7 @@ namespace SACModuleBase.Attributes
     [DebuggerDisplay("{Name} / {Version} | {Guid}")]
     public class SACModuleInfoAttribute : Attribute
     {
-        public Guid Guid { get; set; }
+        public Guid Guid { get; private set; }
         public string Name { get; private set; }
         public Version Version { get; private set; }
 
