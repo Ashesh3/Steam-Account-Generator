@@ -113,14 +113,10 @@ namespace SteamAccCreator.Models
                             var guid = asmInfo.Guid;
                             var mName = asmInfo.Name;
                             var mVer = asmInfo.Version;
+                            var isDisabled = Configuration.DisabledModules.Any(g => g == guid);
 
-                            Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Checking for module enabled...");
-                            if (Configuration.DisabledModules.Any(g => g == guid))
-                            {
-                                Logger.Warn($"Module ['{fileName}','{mName}',{mVer},{guid}]: This module is disabled.");
-                                continue;
-                            }
-                            Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: This module is enabled.");
+                            if (isDisabled)
+                                Logger.Warn($"Module ['{fileName}','{mName}',{mVer},{guid}]: Will be initialized anyway. To completely disabling module you need to remove '{fileName}' from '{Pathes.DIR_MODULES}'");
 
                             Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Check for GUID free...");
                             if (!Modules.GuidIsFree(guid))
@@ -137,7 +133,7 @@ namespace SteamAccCreator.Models
                                 Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Seems to be created...");
 
                                 Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Initializing...");
-                                module.ModuleEnabled = true;
+                                module.ModuleEnabled = !isDisabled; // anyway need full init to enable/disable using gui and during runtime...
                                 try
                                 {
                                     var configDirectory = Path.Combine(Pathes.DIR_MODULES_CONFIGS, fileName);
