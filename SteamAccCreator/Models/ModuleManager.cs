@@ -13,6 +13,8 @@ namespace SteamAccCreator.Models
         public IEnumerable<ModuleBinding> ModuleBindings => _Modules;
         public IReadOnlyCollection<SACModuleBase.ISACBase> Modules => new ReadOnlyCollection<SACModuleBase.ISACBase>(_Modules.Select(x => x.Module).ToList());
 
+        private IEnumerable<Guid> ConfigDisabled;
+
         private Configuration Configuration;
 
         /* Modules directory model
@@ -27,6 +29,33 @@ namespace SteamAccCreator.Models
         public ModuleManager(Configuration configuration)
         {
             Configuration = configuration;
+
+            Logger.Trace($"Loading disabled modules list: {Pathes.FILE_DISABLED_MODULES}");
+            try
+            {
+                if (System.IO.File.Exists(Pathes.FILE_DISABLED_MODULES))
+                {
+                    Logger.Trace("Reading disabled modules file...");
+                    var disabledData = System.IO.File.ReadAllText(Pathes.FILE_DISABLED_MODULES);
+                    Logger.Trace("Deserializing list from JSON...");
+                    ConfigDisabled = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Guid>>(disabledData);
+                    Logger.Trace("Disabled modules list has been loaded.");
+                }
+                else
+                    Logger.Trace("File does not exists. All modules are enabled...");
+            }
+            catch (Newtonsoft.Json.JsonException jEx)
+            {
+                Logger.Error("Probabply deserializing error...", jEx);
+                ConfigDisabled = new Guid[0];
+                Logger.Trace("All modules are enabled...");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Load or deserializing error or something else.", ex);
+                ConfigDisabled = new Guid[0];
+                Logger.Trace("All modules are enabled...");
+            }
 
             // this will fix assembly not found error
             AppDomain.CurrentDomain.AssemblyResolve += (s, args) =>
@@ -113,7 +142,7 @@ namespace SteamAccCreator.Models
                             var guid = asmInfo.Guid;
                             var mName = asmInfo.Name;
                             var mVer = asmInfo.Version;
-                            var isDisabled = Configuration.DisabledModules.Any(g => g == guid);
+                            var isDisabled = ConfigDisabled.Any(g => g == guid);
 
                             if (isDisabled)
                                 Logger.Warn($"Module ['{fileName}','{mName}',{mVer},{guid}]: Will be initialized anyway. To completely disabling module you need to remove '{fileName}' from '{Pathes.DIR_MODULES}'");
@@ -184,6 +213,26 @@ namespace SteamAccCreator.Models
             }
 
             Logger.Info("Loading modules done.");
+        }
+
+        public void SaveDisabled()
+        {
+            try
+            {
+                Logger.Info("Getting disabled modules...");
+                ConfigDisabled = Modules
+                    .Where(x => !x.ModuleEnabled)
+                    .Select(x => x.GetInfoAttribute().Guid);
+
+                Logger.Info("Saving disabled modules...");
+                var disabledData = Newtonsoft.Json.JsonConvert.SerializeObject(ConfigDisabled, Newtonsoft.Json.Formatting.Indented);
+                System.IO.File.WriteAllText(Pathes.FILE_DISABLED_MODULES, disabledData);
+                Logger.Info("Saving disabled modules done!");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Saving disabled modules error!", ex);
+            }
         }
     }
 }

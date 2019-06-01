@@ -17,5 +17,6 @@ namespace SteamAccCreator
         public static readonly string DIR_MODULES_REQUIRED = Path.Combine(DIR_MODULES, "required");
 
         public static readonly string FILE_CONFIG = Path.Combine(DIR_BASE, "config.json");
+        public static readonly string FILE_DISABLED_MODULES = Path.Combine(DIR_BASE, "modules_disabled.json");
     }
 }

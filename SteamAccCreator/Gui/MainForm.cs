@@ -110,12 +110,6 @@ namespace SteamAccCreator.Gui
         {
             try
             {
-                Logger.Info("Getting disabled modules...");
-                var disabledGuids = ModuleManager.Modules
-                    .Where(x => !x.ModuleEnabled)
-                    .Select(x => x.GetInfoAttribute().Guid);
-                Configuration.DisabledModules = disabledGuids;
-
                 Logger.Info("Saving config...");
                 var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
                 System.IO.File.WriteAllText(Pathes.FILE_CONFIG, confData);
@@ -125,6 +119,8 @@ namespace SteamAccCreator.Gui
             {
                 Logger.Error("Saving config error!", ex);
             }
+
+            ModuleManager.SaveDisabled();
         }
 
         public async void BtnCreateAccount_Click(object sender, EventArgs e)
