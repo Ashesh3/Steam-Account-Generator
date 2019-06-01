@@ -110,6 +110,12 @@ namespace SteamAccCreator.Gui
         {
             try
             {
+                Logger.Info("Getting disabled modules...");
+                var disabledGuids = ModuleManager.Modules
+                    .Where(x => !x.ModuleEnabled)
+                    .Select(x => x.GetInfoAttribute().Guid);
+                Configuration.DisabledModules = disabledGuids;
+
                 Logger.Info("Saving config...");
                 var confData = Newtonsoft.Json.JsonConvert.SerializeObject(Configuration, Newtonsoft.Json.Formatting.Indented);
                 System.IO.File.WriteAllText(Pathes.FILE_CONFIG, confData);
