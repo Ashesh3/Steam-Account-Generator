@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 
 namespace SteamAccCreator
 {
@@ -12,7 +11,7 @@ namespace SteamAccCreator
         public ModuleLogger(SACModuleBase.ISACBase module)
         {
             Module = module;
-            ModuleAttribute = Module.GetType().GetCustomAttribute<SACModuleBase.Attributes.SACModuleInfoAttribute>();
+            ModuleAttribute = Module.GetInfoAttribute();
         }
 
         public void Debug(string message)
