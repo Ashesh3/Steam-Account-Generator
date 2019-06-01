@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SteamAccCreator.Models
@@ -14,14 +10,15 @@ namespace SteamAccCreator.Models
             => typeof(SACModuleBase.ISACUserInterface).IsAssignableFrom(Module.GetType());
         private SACModuleBase.ISACUserInterface ModuleUI
             => IsUI ? (SACModuleBase.ISACUserInterface)Module : null;
+        private SACModuleBase.Attributes.SACModuleInfoAttribute ModuleAttribute;
 
         public bool Enabled
         {
             get => Module.ModuleEnabled;
             set => Module.ModuleEnabled = value;
         }
-        public string Name => Module.ModuleName;
-        public Version Version => Module.ModuleVersion;
+        public string Name => ModuleAttribute.Name;
+        public Version Version => ModuleAttribute.Version;
 
         public string ButtonName => IsUI ? ModuleUI?.ShowButtonCaption ?? "Settings" : "NULL";
         public Action OnClick => () =>
@@ -35,6 +32,7 @@ namespace SteamAccCreator.Models
         public ModuleBinding(SACModuleBase.ISACBase module)
         {
             Module = module;
+            ModuleAttribute = Module.GetInfoAttribute();
         }
     }
 }
