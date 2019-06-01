@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("@DedSec1337")]
 [assembly: AssemblyProduct("Steam Account Generator")]
 [assembly: AssemblyCopyright("Copyright © 2019")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("SteamAccountGenerator")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
