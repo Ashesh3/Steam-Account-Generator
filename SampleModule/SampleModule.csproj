@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllInOneSample\AllHere.cs" />
     <Compile Include="Gui\Configuration.cs">
       <SubType>Form</SubType>
     </Compile>
