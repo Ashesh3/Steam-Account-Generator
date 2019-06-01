@@ -136,9 +136,12 @@ namespace SteamAccCreator.Models
                                 module.ModuleEnabled = !isDisabled; // anyway need full init to enable/disable using gui and during runtime...
                                 try
                                 {
+                                    Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Initializing logger...");
+                                    var logger = new ModuleLogger(module);
+
                                     var configDirectory = Path.Combine(Pathes.DIR_MODULES_CONFIGS, fileName);
                                     Utility.MkDirs(configDirectory);
-                                    module.ModuleInitialize(new SACModuleBase.Models.SACInitialize()
+                                    module.ModuleInitialize(new SACModuleBase.Models.SACInitialize(logger)
                                     {
                                         ConfigurationPath = configDirectory
                                     });

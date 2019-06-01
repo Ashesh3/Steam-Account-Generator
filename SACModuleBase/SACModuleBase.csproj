@@ -50,6 +50,7 @@
     <Compile Include="ISACHandlerCaptcha.cs" />
     <Compile Include="ISACHandlerMailBox.cs" />
     <Compile Include="ISACHandlerReCaptcha.cs" />
+    <Compile Include="ISACLogger.cs" />
     <Compile Include="ISACUserInterface.cs" />
     <Compile Include="Models\Capcha\CaptchaRequest.cs" />
     <Compile Include="Models\Capcha\CaptchaResponse.cs" />

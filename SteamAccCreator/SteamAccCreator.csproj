@@ -184,6 +184,7 @@
     <Compile Include="Models\RuCaptchaConfig.cs" />
     <Compile Include="Models\Steam\UploadProfileImage.cs" />
     <Compile Include="ModuleExtends.cs" />
+    <Compile Include="ModuleLogger.cs" />
     <Compile Include="Pathes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

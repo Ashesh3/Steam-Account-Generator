@@ -8,5 +8,12 @@
             get => _ConfigurationPath ?? string.Empty;
             set { if (string.IsNullOrEmpty(_ConfigurationPath)) _ConfigurationPath = value; }
         }
+
+        public ISACLogger Logger { get; private set; }
+
+        public SACInitialize(ISACLogger logger)
+        {
+            Logger = logger;
+        }
     }
 }
