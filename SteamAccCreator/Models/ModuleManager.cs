@@ -87,46 +87,56 @@ namespace SteamAccCreator.Models
             foreach (var lib in libs)
             {
                 var fileName = Path.GetFileName(lib);
-                Logger.Info($"Module ['{fileName}',?,?]: Loading...");
+                Logger.Info($"Module ['{fileName}',?,?,?]: Loading...");
                 try
                 {
                     var asm = Assembly.LoadFile(lib);
                     var asmTypes = (from type in asm.GetExportedTypes()
                                     where type.IsClass &&
-                                    typeof(SACModuleBase.ISACBase).IsAssignableFrom(type)
+                                    typeof(SACModuleBase.ISACBase).IsAssignableFrom(type) &&
+                                    type.IsDefined(typeof(SACModuleBase.Attributes.SACModuleInfoAttribute))
                                     select type);
 
-                    Logger.Info($"Module ['{fileName}',?,?]: {asmTypes.Count()} type(s) available.");
+                    Logger.Info($"Module ['{fileName}',?,?,?]: {asmTypes.Count()} type(s) available.");
 
                     foreach (var asmType in asmTypes)
                     {
                         try
                         {
-                            var guid = asmType.GUID;
+                            var asmInfo = asmType.GetCustomAttribute<SACModuleBase.Attributes.SACModuleInfoAttribute>();
+                            if (asmInfo == null)
+                            {
+                                Logger.Warn($"Module ['{fileName}',?,?,?]: WTF? Cannot get info-attribute...");
+                                continue;
+                            }
 
-                            Logger.Info($"Module ['{fileName}',?,{guid}]: Checking for module enabled...");
+                            var guid = asmInfo.Guid;
+                            var mName = asmInfo.Name;
+                            var mVer = asmInfo.Version;
+
+                            Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Checking for module enabled...");
                             if (Configuration.DisabledModules.Any(g => g == guid))
                             {
-                                Logger.Warn($"Module ['{fileName}',?,{guid}]: This module is disabled.");
+                                Logger.Warn($"Module ['{fileName}','{mName}',{mVer},{guid}]: This module is disabled.");
                                 continue;
                             }
-                            Logger.Info($"Module ['{fileName}',?,{guid}]: This module is enabled.");
+                            Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: This module is enabled.");
 
-                            Logger.Info($"Module ['{fileName}',?,{guid}]: Check for GUID free...");
+                            Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Check for GUID free...");
                             if (!Modules.GuidIsFree(guid))
                             {
-                                Logger.Warn($"Module ['{fileName}',?,{guid}]: Was not be loaded GUID is NOT free.");
+                                Logger.Warn($"Module ['{fileName}','{mName}',{mVer},{guid}]: Was not be loaded GUID is NOT free.");
                                 continue;
                             }
-                            Logger.Info($"Module ['{fileName}',?,{guid}]: GUID is free.");
+                            Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: GUID is free.");
 
                             try
                             {
-                                Logger.Info($"Module ['{fileName}',?,{guid}]: Creating instance...");
+                                Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Creating instance...");
                                 var module = (SACModuleBase.ISACBase)Activator.CreateInstance(asmType);
-                                Logger.Info($"Module ['{fileName}',{module?.ModuleName ?? "?"},{guid}]: Seems to be created...");
+                                Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Seems to be created...");
 
-                                Logger.Info($"Module ['{fileName}',{module?.ModuleName ?? "?"},{guid}]: Initializing...");
+                                Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Initializing...");
                                 module.ModuleEnabled = true;
                                 try
                                 {
@@ -136,7 +146,7 @@ namespace SteamAccCreator.Models
                                     {
                                         ConfigurationPath = configDirectory
                                     });
-                                    Logger.Info($"Module ['{fileName}',{module?.ModuleName ?? "?"},{guid}]: Initialized.");
+                                    Logger.Info($"Module ['{fileName}','{mName}',{mVer},{guid}]: Initialized.");
 
                                     try
                                     {
@@ -144,19 +154,19 @@ namespace SteamAccCreator.Models
                                     }
                                     catch (Exception ex)
                                     {
-                                        Logger.Error($"Module ['{fileName}',{module?.ModuleName ?? "?"},{guid}]: Initialized but cannot add to module list...", ex);
+                                        Logger.Error($"Module ['{fileName}','{mName}',{mVer},{guid}]: Initialized but cannot add to module list...", ex);
                                         continue;
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Logger.Error($"Module ['{fileName}',{module?.ModuleName ?? "?"},{guid}]: Initialize module error.", ex);
+                                    Logger.Error($"Module ['{fileName}','{mName}',{mVer},{guid}]: Initialize module error.", ex);
                                     continue;
                                 }
                             }
                             catch (Exception ex)
                             {
-                                Logger.Error($"Module ['{fileName}',?,{guid}]: Initialize assembly error.", ex);
+                                Logger.Error($"Module ['{fileName}','{mName}',{mVer},{guid}]: Initialize assembly error.", ex);
                                 continue;
                             }
                         }

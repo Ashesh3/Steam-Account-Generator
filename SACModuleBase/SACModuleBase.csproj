@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\SACModuleInfoAttribute.cs" />
     <Compile Include="Enums\Captcha\CaptchaStatus.cs" />
     <Compile Include="ISACBase.cs" />
     <Compile Include="ISACHandlerCaptcha.cs" />
