@@ -11,8 +11,6 @@ namespace SteamAccCreator.Web.Updater.Models
         public int Minor { get; set; } = 0;
         [JsonProperty("build")]
         public int Build { get; set; } = 0;
-        [JsonProperty("pre")]
-        public int? PreRelease { get; set; } = null;
         [JsonProperty("notes")]
         public string ReleaseNotes { get; set; } = string.Empty;
         [JsonProperty("download")]
@@ -20,5 +18,8 @@ namespace SteamAccCreator.Web.Updater.Models
 
         [JsonIgnore]
         public Version Version => new Version(Major, Minor, Build, 0);
+
+        public override string ToString()
+            => Version.ToString(3);
     }
 }

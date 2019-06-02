@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Steam Account Generator. Maintained by EarsKilla https://github.com/EarsKilla/")]
 #if DEBUG
 [assembly: AssemblyConfiguration("DEBUG")]
-#elif PRE_RELEASE
-[assembly: AssemblyConfiguration("PRE-RELEASE")]
+#elif DEV_RELEASE
+[assembly: AssemblyConfiguration("DEV-RELEASE")]
 #else
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif

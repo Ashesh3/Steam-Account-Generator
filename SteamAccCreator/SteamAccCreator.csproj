@@ -74,9 +74,9 @@
     <ManifestKeyFile>
     </ManifestKeyFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Pre-Release|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Dev|AnyCPU' ">
     <OutputPath>bin\Pre-Release\</OutputPath>
-    <DefineConstants>TRACE;IS_GUI_APP,LOGGER_TRACE,PRE_RELEASE</DefineConstants>
+    <DefineConstants>TRACE;IS_GUI_APP,LOGGER_TRACE,DEV_RELEASE</DefineConstants>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>

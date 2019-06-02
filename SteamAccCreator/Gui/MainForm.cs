@@ -668,14 +668,9 @@ namespace SteamAccCreator.Gui
         {
             if (sender != this)
                 Program.UpdaterHandler.Refresh((Web.Updater.Enums.UpdateChannelEnum)CbUpdateChannel.SelectedIndex);
-#if PRE_RELEASE
-            LbCurrentversionStr.Text = $"{Web.Updater.UpdaterHandler.CurrentVersion.ToString(3)}-pre{Web.Updater.UpdaterHandler.PreRelease}";
-#else
+
             LbCurrentversionStr.Text = Web.Updater.UpdaterHandler.CurrentVersion.ToString(3);
-#endif
-            LbServerVersionStr.Text = (Program.UpdaterHandler.UpdateChannel == Web.Updater.Enums.UpdateChannelEnum.PreRelease) ?
-                $"{Program.UpdaterHandler.VersionInfo.Version.ToString(3)}-pre{Program.UpdaterHandler.VersionInfo.PreRelease}" :
-                $"{Program.UpdaterHandler.VersionInfo.Version.ToString(3)}";
+            LbServerVersionStr.Text = Program.UpdaterHandler.VersionInfo.ToString();
 
             if (Program.UpdaterHandler.IsCanBeUpdated && sender == this)
                 tabControl.SelectedTab = tabUpdates;

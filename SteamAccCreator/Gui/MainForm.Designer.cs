@@ -65,6 +65,7 @@ namespace SteamAccCreator.Gui
             this.tabProfile = new System.Windows.Forms.TabPage();
             this.BtnProfileRmImg = new System.Windows.Forms.Button();
             this.CbProfileEnabled = new System.Windows.Forms.CheckBox();
+            this.profileConfigBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.CbProfileUrl = new System.Windows.Forms.CheckBox();
             this.TbProfileCity = new System.Windows.Forms.TextBox();
             this.TbProfileState = new System.Windows.Forms.TextBox();
@@ -85,12 +86,14 @@ namespace SteamAccCreator.Gui
             this.tabCaptcha = new System.Windows.Forms.TabPage();
             this.GbCapTwoCaptcha = new System.Windows.Forms.GroupBox();
             this.CbCapTwoCaptchaReportBad = new System.Windows.Forms.CheckBox();
+            this.BsCaptchaTwoCapConfig = new System.Windows.Forms.BindingSource(this.components);
             this.LbCapTwoCaptchaKey = new System.Windows.Forms.Label();
             this.TbCapTwoCaptchaKey = new System.Windows.Forms.TextBox();
             this.GbCapCaptchasolutions = new System.Windows.Forms.GroupBox();
             this.LbCapCaptchasolutionsSectet = new System.Windows.Forms.Label();
             this.LbCapCaptchasolutionsKey = new System.Windows.Forms.Label();
             this.TbCapCaptchasolutionsSectet = new System.Windows.Forms.TextBox();
+            this.BsCaptchaCapsolConfig = new System.Windows.Forms.BindingSource(this.components);
             this.TbCapCaptchasolutionsKey = new System.Windows.Forms.TextBox();
             this.LbCapSolver = new System.Windows.Forms.Label();
             this.CbCapSolver = new System.Windows.Forms.ComboBox();
@@ -113,11 +116,21 @@ namespace SteamAccCreator.Gui
             this.label1 = new System.Windows.Forms.Label();
             this.BtnProxyLoad = new System.Windows.Forms.Button();
             this.DgvProxyList = new System.Windows.Forms.DataGridView();
+            this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.BtnProxyTest = new System.Windows.Forms.Button();
             this.CbProxyEnabled = new System.Windows.Forms.CheckBox();
             this.tabModules = new System.Windows.Forms.TabPage();
             this.DgvModules = new System.Windows.Forms.DataGridView();
+            this.enabledDataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.versionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Button = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.BsModules = new System.Windows.Forms.BindingSource(this.components);
             this.tabUpdates = new System.Windows.Forms.TabPage();
             this.BtnUpdateNotes = new System.Windows.Forms.Button();
             this.LbCurrentversionStr = new System.Windows.Forms.Label();
@@ -135,41 +148,28 @@ namespace SteamAccCreator.Gui
             this.LinkUpdates = new System.Windows.Forms.LinkLabel();
             this.label15 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.profileConfigBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.BsCaptchaTwoCapConfig = new System.Windows.Forms.BindingSource(this.components);
-            this.BsCaptchaCapsolConfig = new System.Windows.Forms.BindingSource(this.components);
-            this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hostDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.enabledDataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.versionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BsModules = new System.Windows.Forms.BindingSource(this.components);
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabConfig.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumAccountsCount)).BeginInit();
             this.tabProfile.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PbProfile)).BeginInit();
             this.tabCaptcha.SuspendLayout();
             this.GbCapTwoCaptcha.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaTwoCapConfig)).BeginInit();
             this.GbCapCaptchasolutions.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaCapsolConfig)).BeginInit();
             this.tabFileWriting.SuspendLayout();
             this.tabProxy.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).BeginInit();
             this.tabModules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvModules)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BsModules)).BeginInit();
             this.tabUpdates.SuspendLayout();
             this.tabAbout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaTwoCapConfig)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaCapsolConfig)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BsModules)).BeginInit();
             this.SuspendLayout();
             // 
             // txtEmail
@@ -627,6 +627,10 @@ namespace SteamAccCreator.Gui
             this.CbProfileEnabled.Text = "Enable";
             this.CbProfileEnabled.UseVisualStyleBackColor = true;
             // 
+            // profileConfigBindingSource
+            // 
+            this.profileConfigBindingSource.DataSource = typeof(SteamAccCreator.Models.ProfileConfig);
+            // 
             // CbProfileUrl
             // 
             this.CbProfileUrl.AutoSize = true;
@@ -861,6 +865,10 @@ namespace SteamAccCreator.Gui
             this.CbCapTwoCaptchaReportBad.Text = "Report if not recognized";
             this.CbCapTwoCaptchaReportBad.UseVisualStyleBackColor = true;
             // 
+            // BsCaptchaTwoCapConfig
+            // 
+            this.BsCaptchaTwoCapConfig.DataSource = typeof(SteamAccCreator.Models.RuCaptchaConfig);
+            // 
             // LbCapTwoCaptchaKey
             // 
             this.LbCapTwoCaptchaKey.AutoSize = true;
@@ -926,6 +934,10 @@ namespace SteamAccCreator.Gui
             this.TbCapCaptchasolutionsSectet.Name = "TbCapCaptchasolutionsSectet";
             this.TbCapCaptchasolutionsSectet.Size = new System.Drawing.Size(225, 20);
             this.TbCapCaptchasolutionsSectet.TabIndex = 3;
+            // 
+            // BsCaptchaCapsolConfig
+            // 
+            this.BsCaptchaCapsolConfig.DataSource = typeof(SteamAccCreator.Models.CaptchaSolutionsConfig);
             // 
             // TbCapCaptchasolutionsKey
             // 
@@ -1204,6 +1216,52 @@ namespace SteamAccCreator.Gui
             this.DgvProxyList.Size = new System.Drawing.Size(302, 195);
             this.DgvProxyList.TabIndex = 11;
             // 
+            // enabledDataGridViewCheckBoxColumn
+            // 
+            this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.enabledDataGridViewCheckBoxColumn.DataPropertyName = "Enabled";
+            this.enabledDataGridViewCheckBoxColumn.FillWeight = 32F;
+            this.enabledDataGridViewCheckBoxColumn.HeaderText = "Use";
+            this.enabledDataGridViewCheckBoxColumn.MinimumWidth = 32;
+            this.enabledDataGridViewCheckBoxColumn.Name = "enabledDataGridViewCheckBoxColumn";
+            this.enabledDataGridViewCheckBoxColumn.Width = 32;
+            // 
+            // Status
+            // 
+            this.Status.DataPropertyName = "Status";
+            this.Status.HeaderText = "Status";
+            this.Status.Name = "Status";
+            this.Status.ReadOnly = true;
+            this.Status.Width = 62;
+            // 
+            // hostDataGridViewTextBoxColumn
+            // 
+            this.hostDataGridViewTextBoxColumn.DataPropertyName = "Host";
+            this.hostDataGridViewTextBoxColumn.HeaderText = "Host";
+            this.hostDataGridViewTextBoxColumn.Name = "hostDataGridViewTextBoxColumn";
+            this.hostDataGridViewTextBoxColumn.ReadOnly = true;
+            this.hostDataGridViewTextBoxColumn.Width = 54;
+            // 
+            // portDataGridViewTextBoxColumn
+            // 
+            this.portDataGridViewTextBoxColumn.DataPropertyName = "Port";
+            this.portDataGridViewTextBoxColumn.HeaderText = "Port";
+            this.portDataGridViewTextBoxColumn.Name = "portDataGridViewTextBoxColumn";
+            this.portDataGridViewTextBoxColumn.ReadOnly = true;
+            this.portDataGridViewTextBoxColumn.Width = 51;
+            // 
+            // proxyTypeDataGridViewTextBoxColumn
+            // 
+            this.proxyTypeDataGridViewTextBoxColumn.DataPropertyName = "ProxyType";
+            this.proxyTypeDataGridViewTextBoxColumn.HeaderText = "Type";
+            this.proxyTypeDataGridViewTextBoxColumn.Name = "proxyTypeDataGridViewTextBoxColumn";
+            this.proxyTypeDataGridViewTextBoxColumn.ReadOnly = true;
+            this.proxyTypeDataGridViewTextBoxColumn.Width = 56;
+            // 
+            // proxyItemBindingSource
+            // 
+            this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
+            // 
             // BtnProxyTest
             // 
             this.BtnProxyTest.Location = new System.Drawing.Point(216, 265);
@@ -1261,6 +1319,33 @@ namespace SteamAccCreator.Gui
             this.DgvModules.TabIndex = 0;
             this.DgvModules.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvModules_CellContentClick);
             // 
+            // enabledDataGridViewCheckBoxColumn1
+            // 
+            this.enabledDataGridViewCheckBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.enabledDataGridViewCheckBoxColumn1.DataPropertyName = "Enabled";
+            this.enabledDataGridViewCheckBoxColumn1.HeaderText = "";
+            this.enabledDataGridViewCheckBoxColumn1.Name = "enabledDataGridViewCheckBoxColumn1";
+            this.enabledDataGridViewCheckBoxColumn1.ToolTipText = "Enabled";
+            this.enabledDataGridViewCheckBoxColumn1.Width = 5;
+            // 
+            // nameDataGridViewTextBoxColumn
+            // 
+            this.nameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
+            this.nameDataGridViewTextBoxColumn.HeaderText = "Name";
+            this.nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
+            this.nameDataGridViewTextBoxColumn.ReadOnly = true;
+            this.nameDataGridViewTextBoxColumn.Width = 60;
+            // 
+            // versionDataGridViewTextBoxColumn
+            // 
+            this.versionDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.versionDataGridViewTextBoxColumn.DataPropertyName = "Version";
+            this.versionDataGridViewTextBoxColumn.HeaderText = "Version";
+            this.versionDataGridViewTextBoxColumn.Name = "versionDataGridViewTextBoxColumn";
+            this.versionDataGridViewTextBoxColumn.ReadOnly = true;
+            this.versionDataGridViewTextBoxColumn.Width = 67;
+            // 
             // Button
             // 
             this.Button.DataPropertyName = "ButtonName";
@@ -1269,6 +1354,10 @@ namespace SteamAccCreator.Gui
             this.Button.ReadOnly = true;
             this.Button.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Button.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // BsModules
+            // 
+            this.BsModules.DataSource = typeof(SteamAccCreator.Models.ModuleBinding);
             // 
             // tabUpdates
             // 
@@ -1354,7 +1443,7 @@ namespace SteamAccCreator.Gui
             this.CbUpdateChannel.FormattingEnabled = true;
             this.CbUpdateChannel.Items.AddRange(new object[] {
             "Stable",
-            "Pre-Release"});
+            "Dev-Release"});
             this.CbUpdateChannel.Location = new System.Drawing.Point(103, 6);
             this.CbUpdateChannel.Name = "CbUpdateChannel";
             this.CbUpdateChannel.Size = new System.Drawing.Size(207, 21);
@@ -1458,95 +1547,6 @@ namespace SteamAccCreator.Gui
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // profileConfigBindingSource
-            // 
-            this.profileConfigBindingSource.DataSource = typeof(SteamAccCreator.Models.ProfileConfig);
-            // 
-            // BsCaptchaTwoCapConfig
-            // 
-            this.BsCaptchaTwoCapConfig.DataSource = typeof(SteamAccCreator.Models.RuCaptchaConfig);
-            // 
-            // BsCaptchaCapsolConfig
-            // 
-            this.BsCaptchaCapsolConfig.DataSource = typeof(SteamAccCreator.Models.CaptchaSolutionsConfig);
-            // 
-            // enabledDataGridViewCheckBoxColumn
-            // 
-            this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.enabledDataGridViewCheckBoxColumn.DataPropertyName = "Enabled";
-            this.enabledDataGridViewCheckBoxColumn.FillWeight = 32F;
-            this.enabledDataGridViewCheckBoxColumn.HeaderText = "Use";
-            this.enabledDataGridViewCheckBoxColumn.MinimumWidth = 32;
-            this.enabledDataGridViewCheckBoxColumn.Name = "enabledDataGridViewCheckBoxColumn";
-            this.enabledDataGridViewCheckBoxColumn.Width = 32;
-            // 
-            // Status
-            // 
-            this.Status.DataPropertyName = "Status";
-            this.Status.HeaderText = "Status";
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
-            this.Status.Width = 62;
-            // 
-            // hostDataGridViewTextBoxColumn
-            // 
-            this.hostDataGridViewTextBoxColumn.DataPropertyName = "Host";
-            this.hostDataGridViewTextBoxColumn.HeaderText = "Host";
-            this.hostDataGridViewTextBoxColumn.Name = "hostDataGridViewTextBoxColumn";
-            this.hostDataGridViewTextBoxColumn.ReadOnly = true;
-            this.hostDataGridViewTextBoxColumn.Width = 54;
-            // 
-            // portDataGridViewTextBoxColumn
-            // 
-            this.portDataGridViewTextBoxColumn.DataPropertyName = "Port";
-            this.portDataGridViewTextBoxColumn.HeaderText = "Port";
-            this.portDataGridViewTextBoxColumn.Name = "portDataGridViewTextBoxColumn";
-            this.portDataGridViewTextBoxColumn.ReadOnly = true;
-            this.portDataGridViewTextBoxColumn.Width = 51;
-            // 
-            // proxyTypeDataGridViewTextBoxColumn
-            // 
-            this.proxyTypeDataGridViewTextBoxColumn.DataPropertyName = "ProxyType";
-            this.proxyTypeDataGridViewTextBoxColumn.HeaderText = "Type";
-            this.proxyTypeDataGridViewTextBoxColumn.Name = "proxyTypeDataGridViewTextBoxColumn";
-            this.proxyTypeDataGridViewTextBoxColumn.ReadOnly = true;
-            this.proxyTypeDataGridViewTextBoxColumn.Width = 56;
-            // 
-            // proxyItemBindingSource
-            // 
-            this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
-            // 
-            // enabledDataGridViewCheckBoxColumn1
-            // 
-            this.enabledDataGridViewCheckBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.enabledDataGridViewCheckBoxColumn1.DataPropertyName = "Enabled";
-            this.enabledDataGridViewCheckBoxColumn1.HeaderText = "";
-            this.enabledDataGridViewCheckBoxColumn1.Name = "enabledDataGridViewCheckBoxColumn1";
-            this.enabledDataGridViewCheckBoxColumn1.ToolTipText = "Enabled";
-            this.enabledDataGridViewCheckBoxColumn1.Width = 5;
-            // 
-            // nameDataGridViewTextBoxColumn
-            // 
-            this.nameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-            this.nameDataGridViewTextBoxColumn.HeaderText = "Name";
-            this.nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
-            this.nameDataGridViewTextBoxColumn.ReadOnly = true;
-            this.nameDataGridViewTextBoxColumn.Width = 60;
-            // 
-            // versionDataGridViewTextBoxColumn
-            // 
-            this.versionDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.versionDataGridViewTextBoxColumn.DataPropertyName = "Version";
-            this.versionDataGridViewTextBoxColumn.HeaderText = "Version";
-            this.versionDataGridViewTextBoxColumn.Name = "versionDataGridViewTextBoxColumn";
-            this.versionDataGridViewTextBoxColumn.ReadOnly = true;
-            this.versionDataGridViewTextBoxColumn.Width = 67;
-            // 
-            // BsModules
-            // 
-            this.BsModules.DataSource = typeof(SteamAccCreator.Models.ModuleBinding);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1570,29 +1570,29 @@ namespace SteamAccCreator.Gui
             ((System.ComponentModel.ISupportInitialize)(this.NumAccountsCount)).EndInit();
             this.tabProfile.ResumeLayout(false);
             this.tabProfile.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PbProfile)).EndInit();
             this.tabCaptcha.ResumeLayout(false);
             this.tabCaptcha.PerformLayout();
             this.GbCapTwoCaptcha.ResumeLayout(false);
             this.GbCapTwoCaptcha.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaTwoCapConfig)).EndInit();
             this.GbCapCaptchasolutions.ResumeLayout(false);
             this.GbCapCaptchasolutions.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaCapsolConfig)).EndInit();
             this.tabFileWriting.ResumeLayout(false);
             this.tabFileWriting.PerformLayout();
             this.tabProxy.ResumeLayout(false);
             this.tabProxy.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
             this.tabModules.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DgvModules)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BsModules)).EndInit();
             this.tabUpdates.ResumeLayout(false);
             this.tabUpdates.PerformLayout();
             this.tabAbout.ResumeLayout(false);
             this.tabAbout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaTwoCapConfig)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaCapsolConfig)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BsModules)).EndInit();
             this.ResumeLayout(false);
 
         }
