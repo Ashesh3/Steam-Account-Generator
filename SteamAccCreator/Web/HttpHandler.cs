@@ -494,16 +494,8 @@ namespace SteamAccCreator.Web
         {
             if (CreateFailedCount >= 3)
             {
-                if ((captcha?.Config?.Enabled ?? false))
-                {
-                    Logger.Warn("Some of proxy IP's is banned by steam for 24h. Stopped creation.");
-                    updateStatus?.Invoke("Some of proxy IP's is banned by steam for 24h. Stopped creation.");
-                }
-                else
-                {
-                    Logger.Warn("Current seems IP is banned by steam for 24h. Stopped creation.");
-                    updateStatus?.Invoke("Current seems IP is banned by steam for 24h. Stopped creation.");
-                }
+                Logger.Warn("FAILED! Current IP seems to be banned. Endless captcha detected.");
+                updateStatus?.Invoke("FAILED! Current IP seems to be banned. Endless captcha detected.");
                 stop = true;
                 return false;
             }
@@ -575,9 +567,8 @@ namespace SteamAccCreator.Web
                                 {
                                     TwoCaptchaReport(captcha, false);
                                 }
-
-                                stop = !FormMain.ProxyManager.GetNew();
                             }
+                            stop = !FormMain.ProxyManager.GetNew();
                             CreateFailedCount++;
                             return false;
                         case 84:
