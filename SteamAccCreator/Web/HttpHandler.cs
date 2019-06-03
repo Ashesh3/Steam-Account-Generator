@@ -737,8 +737,7 @@ namespace SteamAccCreator.Web
                         var responce111 = _client.Execute(_request);
                         _client.FollowRedirects = true;
 
-                        if (!Regex.IsMatch(responce111.Content, @"problem\sadding\sthis\sproduct", RegexOptions.IgnoreCase))
-                            addSuccess = true;
+                        addSuccess = Regex.IsMatch(responce111?.Content ?? "", $"steam://subscriptioninstall/{game.SubId}", RegexOptions.IgnoreCase);
                     }
                     catch { }
 
