@@ -694,6 +694,13 @@ namespace SteamAccCreator.Web
                     }
                 }
 
+                if (string.IsNullOrEmpty(sessionId))
+                {
+                    Logger.Warn($"SessionID cookie not found for: {alias}");
+                    updateStatus?.Invoke("Account seems created but SessionID cookie not found. Cannot disable guard, add game(s), set profile.");
+                    return true;
+                }
+
                 SetConfig("https://store.steampowered.com/twofactor/manage_action", Method.POST);
                 _request.AddParameter("action", "actuallynone");
                 _request.AddParameter("sessionid", sessionId);
