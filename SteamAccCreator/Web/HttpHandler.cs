@@ -354,9 +354,9 @@ namespace SteamAccCreator.Web
                         var retryCount = (isRecaptcha.HasValue && isRecaptcha.Value)
                             ? 10
                             : 3;
-                        for (int i = 0; i < retryCount; i++)
+                        for (int i = 0; (Program.EndlessTwoCaptcha) ? true : i < retryCount; i++)
                         {
-                            Logger.Debug($"TwoCaptcha/RuCaptcha requesting solution... Try {i + 1} of {retryCount}");
+                            Logger.Debug($"TwoCaptcha/RuCaptcha requesting solution... Try {i + 1}{(Program.EndlessTwoCaptcha ? "" : $" of {retryCount}")}");
                             var _captchaResponse = TwoCaptcha("res.php",
                                 new Dictionary<string, object>()
                                 {
