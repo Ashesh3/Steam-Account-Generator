@@ -89,4 +89,18 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules"
+copy /Y "$(TargetPath)" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\$(TargetFileName)"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\BouncyCastle\1.8.2" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\BouncyCastle\1.8.2"
+copy /Y "$(TargetDir)BouncyCastle.Crypto.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\BouncyCastle\1.8.2\BouncyCastle.Crypto.dll"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MailKit\2.1.5.1" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MailKit\2.1.5.1"
+copy /Y "$(TargetDir)MailKit.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MailKit\2.1.5.1\MailKit.dll"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MimeKit\2.1.5.1" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MimeKit\2.1.5.1"
+copy /Y "$(TargetDir)MimeKit.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MimeKit\2.1.5.1\MimeKit.dll"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\Newtonsoft.Json\12.0.2" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\Newtonsoft.Json\12.0.2"
+copy /Y "$(TargetDir)Newtonsoft.Json.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\Newtonsoft.Json\12.0.2\Newtonsoft.Json.dll"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\RestSharp\106.6.9" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\RestSharp\106.6.9"
+copy /Y "$(TargetDir)RestSharp.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\RestSharp\106.6.9\RestSharp.dll"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
