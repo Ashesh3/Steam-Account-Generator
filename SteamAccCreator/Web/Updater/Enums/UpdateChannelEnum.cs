@@ -3,6 +3,6 @@
     public enum UpdateChannelEnum
     {
         Stable,
-        PreRelease
+        DevRelease
     }
 }

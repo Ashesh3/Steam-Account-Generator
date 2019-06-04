@@ -4,6 +4,7 @@
     {
         None = -1,
         Captchasolutions,
-        RuCaptcha
+        RuCaptcha,
+        Module
     }
 }

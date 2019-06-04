@@ -18,6 +18,7 @@ namespace SteamAccCreator
         public static bool UseRuCaptchaDomain = false;
         public static readonly Web.Updater.UpdaterHandler UpdaterHandler = new Web.Updater.UpdaterHandler();
         public static bool GeckoInitialized = false;
+        public static bool EndlessTwoCaptcha = false;
 
         [STAThread]
         static void Main()
@@ -40,16 +41,12 @@ namespace SteamAccCreator
             Logger.SuppressErrorDialogs = Utility.HasStartOption("-suppressErrors");
             Logger.SuppressAllErrorDialogs = Utility.HasStartOption("-suppressAllErrors");
 
-            Logger.Warn(@"Coded by:
+            Logger.Warn($@"Coded by:
 https://github.com/Ashesh3
 https://github.com/EarsKilla
 
+Version: {Web.Updater.UpdaterHandler.CurrentVersion}
 Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generator/releases");
-#if PRE_RELEASE
-            Logger.Warn($"Version: {Web.Updater.UpdaterHandler.CurrentVersion}-pre{Web.Updater.UpdaterHandler.PreRelease}");
-#else
-            Logger.Warn($"Version: {Web.Updater.UpdaterHandler.CurrentVersion}");
-#endif
 
             Logger.Trace("Starting...");
 
@@ -81,6 +78,10 @@ Latest versions will be here: https://github.com/EarsKilla/Steam-Account-Generat
             Web.HttpHandler.TwoCaptchaDomain = Utility.GetStartOption(@"-(two|ru)captchaDomain[:=](.*)",
                 (m) => Utility.MakeUri(m.Groups[2].Value),
                 new Uri((UseRuCaptchaDomain) ? "http://rucaptcha.com" : "http://2captcha.com"));
+
+            EndlessTwoCaptcha = Utility.GetStartOption(@"-endless(two|ru)captcha",
+                (m) => true,
+                false);
 
             Web.HttpHandler.CaptchasolutionsDomain = Utility.GetStartOption(@"-captchasolutionsDomain[:=](.*)",
                 (m) => Utility.MakeUri(m.Groups[1].Value),

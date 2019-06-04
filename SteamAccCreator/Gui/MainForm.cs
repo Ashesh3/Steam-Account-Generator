@@ -18,6 +18,7 @@ namespace SteamAccCreator.Gui
 
         public Models.Configuration Configuration { get; private set; } = new Models.Configuration();
         public Web.ProxyManager ProxyManager { get; private set; }
+        public Models.ModuleManager ModuleManager { get; private set; }
 
         public MainForm()
         {
@@ -74,13 +75,9 @@ namespace SteamAccCreator.Gui
             ListGames.Items.AddRange(Configuration.Games.GamesToAdd ?? new Models.GameInfo[0]);
 
             Logger.Trace("Setting properties for captcha...");
-            RadCapCaptchasolutions.Checked = Configuration.Captcha.Service == Enums.CaptchaService.Captchasolutions;
-            RadCapRuCaptcha.Checked = Configuration.Captcha.Service == Enums.CaptchaService.RuCaptcha;
-            CbCapAuto.Checked = Configuration.Captcha.Enabled;
-            CbCapHandMode.Checked = Configuration.Captcha.HandMode;
-            TbCapSolutionsApi.Text = Configuration.Captcha.CaptchaSolutions.ApiKey;
-            TbCapSolutionsSecret.Text = Configuration.Captcha.CaptchaSolutions.ApiSecret;
-            TbCapRuCapApi.Text = Configuration.Captcha.RuCaptcha.ApiKey;
+            CbCapSolver.SelectedIndex = Configuration.Captcha.ServiceIndex;
+            BsCaptchaCapsolConfig.DataSource = Configuration.Captcha.CaptchaSolutions;
+            BsCaptchaTwoCapConfig.DataSource = Configuration.Captcha.RuCaptcha;
 
             Logger.Trace("Setting properties for file writing...");
             CbFwEnable.Checked = Configuration.Output.Enabled;
@@ -100,6 +97,9 @@ namespace SteamAccCreator.Gui
             CbUpdateChannel.SelectedIndexChanged += CbUpdateChannel_SelectedIndexChanged;
 
             ProxyManager = new Web.ProxyManager(this);
+
+            ModuleManager = new Models.ModuleManager(Configuration);
+            DgvModules.DataSource = ModuleManager.ModuleBindings;
         }
 
         private void SaveConfig()
@@ -115,6 +115,8 @@ namespace SteamAccCreator.Gui
             {
                 Logger.Error("Saving config error!", ex);
             }
+
+            ModuleManager.SaveDisabled();
         }
 
         public async void BtnCreateAccount_Click(object sender, EventArgs e)
@@ -128,46 +130,47 @@ namespace SteamAccCreator.Gui
 
             Logger.Trace($"Accounts to create: {NumAccountsCount}.");
 
-            Configuration.Captcha.Enabled = CbCapAuto.Checked && CbCapAuto.Enabled;
-            if (Configuration.Captcha.Enabled)
+            switch (Configuration.Captcha.Service)
             {
-                Logger.Trace("Auto captcha is enabled.");
-                switch (Configuration.Captcha.Service)
-                {
-                    case Enums.CaptchaService.Captchasolutions:
+                case Enums.CaptchaService.Captchasolutions:
+                    {
+                        if (string.IsNullOrEmpty(Configuration.Captcha.CaptchaSolutions.ApiKey) ||
+                            string.IsNullOrEmpty(Configuration.Captcha.CaptchaSolutions.ApiSecret))
                         {
-                            if (string.IsNullOrEmpty(TbCapSolutionsApi.Text) ||
-                                string.IsNullOrEmpty(TbCapSolutionsSecret.Text))
-                            {
-                                Logger.Trace("Captchasolutions cannot be used. API and secret keys is empty! Auto captcha was disabled.");
-                                CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
-                            }
-                            else
-                            {
-                                Logger.Trace("Using Captchasolutions...");
-                                Configuration.Captcha.CaptchaSolutions.ApiKey = TbCapSolutionsApi.Text;
-                                Configuration.Captcha.CaptchaSolutions.ApiSecret = TbCapSolutionsSecret.Text;
-                            }
+                            Logger.Trace("Captchasolutions cannot be used. API and secret keys is empty! Checking modules...");
+                            Configuration.Captcha.Service = Enums.CaptchaService.Module;
+                            goto case Enums.CaptchaService.Module;
                         }
-                        break;
-                    case Enums.CaptchaService.RuCaptcha:
+                        Logger.Trace("Using Captchasolutions...");
+                    }
+                    break;
+                case Enums.CaptchaService.RuCaptcha:
+                    {
+                        if (string.IsNullOrEmpty(Configuration.Captcha.RuCaptcha.ApiKey))
                         {
-                            if (string.IsNullOrEmpty(TbCapRuCapApi.Text))
-                            {
-                                Logger.Trace("TwoCaptcha/RuCaptcha cannot be used. API key is empty! Auto captcha was disabled.");
-                                CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
-                            }
-                            else
-                            {
-                                Logger.Trace("Using TwoCaptcha/RuCaptcha...");
-                                Configuration.Captcha.RuCaptcha.ApiKey = TbCapRuCapApi.Text;
-                            }
+                            Logger.Trace("TwoCaptcha/RuCaptcha cannot be used. API key is empty! Checking modules...");
+                            Configuration.Captcha.Service = Enums.CaptchaService.Module;
+                            goto case Enums.CaptchaService.Module;
                         }
-                        break;
-                    default:
-                        CbCapAuto.Checked = Configuration.Captcha.Enabled = false;
-                        break;
-                }
+                        Logger.Trace("Using TwoCaptcha/RuCaptcha...");
+                    }
+                    break;
+                case Enums.CaptchaService.Module:
+                    {
+                        if (ModuleManager.Modules.GetCaptchaSolvers().Count() < 1 &&
+                            ModuleManager.Modules.GetReCaptchaSolvers().Count() < 1)
+                        {
+                            Logger.Trace("No any module with captcha solving support. Swithing to manual mode...");
+                            Configuration.Captcha.Service = Enums.CaptchaService.None;
+                            goto default;
+                        }
+                        Logger.Trace("Using modules...");
+                    }
+                    break;
+                case Enums.CaptchaService.None:
+                default:
+                    Logger.Trace("Using manual mode...");
+                    break;
             }
 
             Configuration.Proxy.Enabled = CbProxyEnabled.Checked;
@@ -184,7 +187,7 @@ namespace SteamAccCreator.Gui
 
             SaveConfig();
 
-            var slowCaptchaMode = Configuration.Captcha.HandMode = CbCapHandMode.Checked;
+            var slowCaptchaMode = Configuration.Captcha.Service == Enums.CaptchaService.None;
             for (var i = 0; i < NumAccountsCount.Value; i++)
             {
                 Logger.Trace($"Account {i + 1} of {NumAccountsCount}.");
@@ -475,55 +478,6 @@ namespace SteamAccCreator.Gui
             e.Link.Visited = true;
         }
 
-        private void CbCapAuto_CheckedChanged(object sender, EventArgs e)
-        {
-            if (Configuration.Captcha.Enabled = CbCapAuto.Checked)
-            {
-                RadCapCaptchasolutions.Enabled =
-                    RadCapRuCaptcha.Enabled =
-                    CbCapRuReportBad.Enabled = true;
-
-                RadCapCaptchasolutions_CheckedChanged(this, e);
-                RadCapRuCaptcha_CheckedChanged(this, e);
-            }
-            else
-            {
-                RadCapCaptchasolutions.Enabled =
-                    RadCapRuCaptcha.Enabled =
-                    TbCapRuCapApi.Enabled =
-                    TbCapSolutionsApi.Enabled =
-                    TbCapSolutionsSecret.Enabled =
-                    CbCapRuReportBad.Enabled = false;
-            }
-        }
-
-        private void CbCapHandMode_CheckedChanged(object sender, EventArgs e)
-        {
-            CbCapAuto.Checked = CbCapAuto.Enabled = !CbCapHandMode.Checked;
-        }
-
-        private void RadCapCaptchasolutions_CheckedChanged(object sender, EventArgs e)
-        {
-            TbCapSolutionsApi.Enabled =
-                TbCapSolutionsSecret.Enabled = RadCapCaptchasolutions.Checked;
-
-            if (RadCapCaptchasolutions.Checked)
-                Configuration.Captcha.Service = Enums.CaptchaService.Captchasolutions;
-        }
-
-        private void RadCapRuCaptcha_CheckedChanged(object sender, EventArgs e)
-        {
-            CbCapRuReportBad.Enabled = TbCapRuCapApi.Enabled = RadCapRuCaptcha.Checked;
-
-            if (RadCapRuCaptcha.Checked)
-                Configuration.Captcha.Service = Enums.CaptchaService.RuCaptcha;
-        }
-
-        private void CbCapRuReportBad_CheckedChanged(object sender, EventArgs e)
-        {
-            Configuration.Captcha.RuCaptcha.ReportBad = CbCapRuReportBad.Checked;
-        }
-
         private void CbFwEnable_CheckedChanged(object sender, EventArgs e)
         {
             Configuration.Output.Enabled = CbFwEnable.Checked;
@@ -714,14 +668,9 @@ namespace SteamAccCreator.Gui
         {
             if (sender != this)
                 Program.UpdaterHandler.Refresh((Web.Updater.Enums.UpdateChannelEnum)CbUpdateChannel.SelectedIndex);
-#if PRE_RELEASE
-            LbCurrentversionStr.Text = $"{Web.Updater.UpdaterHandler.CurrentVersion.ToString(3)}-pre{Web.Updater.UpdaterHandler.PreRelease}";
-#else
+
             LbCurrentversionStr.Text = Web.Updater.UpdaterHandler.CurrentVersion.ToString(3);
-#endif
-            LbServerVersionStr.Text = (Program.UpdaterHandler.UpdateChannel == Web.Updater.Enums.UpdateChannelEnum.PreRelease) ?
-                $"{Program.UpdaterHandler.VersionInfo.Version.ToString(3)}-pre{Program.UpdaterHandler.VersionInfo.PreRelease}" :
-                $"{Program.UpdaterHandler.VersionInfo.Version.ToString(3)}";
+            LbServerVersionStr.Text = Program.UpdaterHandler.VersionInfo.ToString();
 
             if (Program.UpdaterHandler.IsCanBeUpdated && sender == this)
                 tabControl.SelectedTab = tabUpdates;
@@ -827,6 +776,20 @@ namespace SteamAccCreator.Gui
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void DgvModules_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex != 3)
+                return;
+
+            var module = ModuleManager.ModuleBindings.ElementAtOrDefault(e.RowIndex);
+            module?.OnClick?.Invoke();
+        }
+
+        private void CbCapSolver_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Configuration.Captcha.ServiceIndex = CbCapSolver.SelectedIndex;
         }
     }
 }

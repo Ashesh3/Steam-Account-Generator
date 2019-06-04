@@ -74,6 +74,7 @@
             // 
             // btnReload
             // 
+            this.btnReload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnReload.Location = new System.Drawing.Point(93, 526);
             this.btnReload.Name = "btnReload";
             this.btnReload.Size = new System.Drawing.Size(83, 23);

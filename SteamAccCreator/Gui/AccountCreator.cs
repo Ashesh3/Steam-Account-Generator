@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -292,6 +293,9 @@ namespace SteamAccCreator.Gui
         private readonly string EnteredLogin;
         private readonly int TableIndex;
 
+        private SACModuleBase.Models.Mail.MailBoxResponse MailBox;
+        private SACModuleBase.ISACHandlerMailBox MailBoxHandler;
+
         public AccountCreator(MainForm mainForm, Models.Configuration config)
         {
             Logger.Trace("Creating account: init...");
@@ -392,41 +396,55 @@ namespace SteamAccCreator.Gui
 
             if (Config.Mail.Random)
             {
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                var _cli = new RestSharp.RestClient(MailHandler.MailboxUri);
-
-                if (!MailProvider.StartsWith("@"))
+                foreach (var mailBox in _mainForm.ModuleManager.Modules.GetMailBoxes())
                 {
-                    var _reqProvider = new RestSharp.RestRequest(RestSharp.Method.GET);
-                    var providerResult = _cli.Execute(_reqProvider);
+                    var mail = mailBox.GetMailBox(new SACModuleBase.Models.Mail.MailBoxRequest(Login, _mainForm.ProxyManager.WebProxy));
+                    if (string.IsNullOrEmpty(mail?.Email) || !mail.Email.Contains("@"))
+                        continue;
 
-                    if (!CheckMailCommunication(providerResult))
-                        return;
-
-                    var _provider = providerResult.Content;
-                    if (!_provider.StartsWith("@"))
-                    {
-                        Logger.Warn($"Creating account: temp. mail service error: {_provider}");
-                        UpdateStatus("No email service... Try again (later)?...");
-                        return;
-                    }
-
-                    MailProvider = _provider;
+                    MailBoxHandler = mailBox;
+                    MailBox = mail;
+                    Mail = mail.Email;
                 }
 
-                Mail = (Login + MailProvider).ToLower();
-
-                var mailCheck = new RestSharp.RestRequest((IsCustomProvider) ? "v2" : "", RestSharp.Method.GET);
-                mailCheck.AddParameter("alias", (IsCustomProvider) ? Mail : Login);
-                var mailCheckResult = _cli.Execute(mailCheck);
-                if (!CheckMailCommunication(mailCheckResult))
-                    return;
-
-                if (mailCheckResult.Content != "ok")
+                if (MailBoxHandler == null)
                 {
-                    Logger.Warn($"Creating account: Something went wrong with temp. mail service...\nResponse: {mailCheckResult.Content}\n---------\nHTTP Status-Code: {mailCheckResult.StatusCode}\n====== END ======");
-                    UpdateStatus($"Something went wrong... {mailCheckResult.Content}");
-                    return;
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    var _cli = new RestSharp.RestClient(MailHandler.MailboxUri);
+
+                    if (!MailProvider.StartsWith("@"))
+                    {
+                        var _reqProvider = new RestSharp.RestRequest(RestSharp.Method.GET);
+                        var providerResult = _cli.Execute(_reqProvider);
+
+                        if (!CheckMailCommunication(providerResult))
+                            return;
+
+                        var _provider = providerResult.Content;
+                        if (!_provider.StartsWith("@"))
+                        {
+                            Logger.Warn($"Creating account: temp. mail service error: {_provider}");
+                            UpdateStatus("No email service... Try again (later)?...");
+                            return;
+                        }
+
+                        MailProvider = _provider;
+                    }
+
+                    Mail = (Login + MailProvider).ToLower();
+
+                    var mailCheck = new RestSharp.RestRequest((IsCustomProvider) ? "v2" : "", RestSharp.Method.GET);
+                    mailCheck.AddParameter("alias", (IsCustomProvider) ? Mail : Login);
+                    var mailCheckResult = _cli.Execute(mailCheck);
+                    if (!CheckMailCommunication(mailCheckResult))
+                        return;
+
+                    if (mailCheckResult.Content != "ok")
+                    {
+                        Logger.Warn($"Creating account: Something went wrong with temp. mail service...\nResponse: {mailCheckResult.Content}\n---------\nHTTP Status-Code: {mailCheckResult.StatusCode}\n====== END ======");
+                        UpdateStatus($"Something went wrong... {mailCheckResult.Content}");
+                        return;
+                    }
                 }
             }
 
@@ -512,7 +530,22 @@ namespace SteamAccCreator.Gui
         private void VerifyMail()
         {
             if (Config.Mail.Random)
-                _mailHandler.ConfirmMail(Mail);
+            {
+                if (MailBoxHandler == null)
+                    _mailHandler.ConfirmMail(Mail);
+                else
+                {
+                    Logger.Trace($"Confirming mail: {Mail}");
+                    System.Threading.Thread.Sleep(5000);
+
+                    var mails = MailBoxHandler.GetMails(MailBox);
+                    var url = _mailHandler.GetConfirmUrl(mails.FirstOrDefault()?.Body ?? "");
+                    if (string.IsNullOrEmpty(url))
+                        Logger.Warn($"Confirming mail [{Mail}]: no confirm url found...");
+                    else
+                        _mailHandler.ConfirmSteamAccount(url);
+                }
+            }
         }
 
         private bool CheckIfMailIsVerified(ref bool shouldRetry)

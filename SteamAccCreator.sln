@@ -5,19 +5,33 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamAccCreator", "SteamAccCreator\SteamAccCreator.csproj", "{0D27F487-C4E3-4F60-9DDE-6C0924280B79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SACModuleBase", "SACModuleBase\SACModuleBase.csproj", "{6EF56439-571F-4598-B89F-2FD4176142EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleModule", "SampleModule\SampleModule.csproj", "{9C9227D8-67C2-4226-934D-DFB5DF3F9584}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Pre-Release|Any CPU = Pre-Release|Any CPU
+		Dev|Any CPU = Dev|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0D27F487-C4E3-4F60-9DDE-6C0924280B79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D27F487-C4E3-4F60-9DDE-6C0924280B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D27F487-C4E3-4F60-9DDE-6C0924280B79}.Pre-Release|Any CPU.ActiveCfg = Pre-Release|Any CPU
-		{0D27F487-C4E3-4F60-9DDE-6C0924280B79}.Pre-Release|Any CPU.Build.0 = Pre-Release|Any CPU
+		{0D27F487-C4E3-4F60-9DDE-6C0924280B79}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{0D27F487-C4E3-4F60-9DDE-6C0924280B79}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{0D27F487-C4E3-4F60-9DDE-6C0924280B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D27F487-C4E3-4F60-9DDE-6C0924280B79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EF56439-571F-4598-B89F-2FD4176142EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EF56439-571F-4598-B89F-2FD4176142EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EF56439-571F-4598-B89F-2FD4176142EB}.Dev|Any CPU.ActiveCfg = Release|Any CPU
+		{6EF56439-571F-4598-B89F-2FD4176142EB}.Dev|Any CPU.Build.0 = Release|Any CPU
+		{6EF56439-571F-4598-B89F-2FD4176142EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EF56439-571F-4598-B89F-2FD4176142EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C9227D8-67C2-4226-934D-DFB5DF3F9584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C9227D8-67C2-4226-934D-DFB5DF3F9584}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C9227D8-67C2-4226-934D-DFB5DF3F9584}.Dev|Any CPU.ActiveCfg = Release|Any CPU
+		{9C9227D8-67C2-4226-934D-DFB5DF3F9584}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

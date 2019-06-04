@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using pYove;
 using System;
 using System.Net;
 using System.Text.RegularExpressions;
+using Yove.Proxy;
 
 namespace SteamAccCreator.Models
 {
@@ -81,9 +81,9 @@ namespace SteamAccCreator.Models
             switch (ProxyType)
             {
                 case Enums.ProxyType.Socks4:
-                    return new ProxyClient(Host, Port, pYove.ProxyType.Socks4) { Credentials = credentials };
+                    return new ProxyClient(Host, Port, Yove.Proxy.ProxyType.Socks4) { Credentials = credentials };
                 case Enums.ProxyType.Socks5:
-                    return new ProxyClient(Host, Port, pYove.ProxyType.Socks5) { Credentials = credentials };
+                    return new ProxyClient(Host, Port, Yove.Proxy.ProxyType.Socks5) { Credentials = credentials };
                 case Enums.ProxyType.Http:
                 case Enums.ProxyType.Https:
                 case Enums.ProxyType.Unknown:

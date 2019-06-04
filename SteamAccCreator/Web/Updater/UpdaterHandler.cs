@@ -8,14 +8,11 @@ namespace SteamAccCreator.Web.Updater
         private const string DEFAULT_URL_UPDATE = "https://earskilla.github.io/SteamAccountGenerator-memes/update.json";
 
         public static readonly Version CurrentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-#if PRE_RELEASE
-        public static readonly int PreRelease = 0;
-#endif
 
         public UpdateInfo UpdateInfo { get; private set; } = new UpdateInfo();
         public Enums.UpdateChannelEnum UpdateChannel { get; private set; }
-#if PRE_RELEASE
-            = Enums.UpdateChannelEnum.PreRelease;
+#if DEV_RELEASE
+            = Enums.UpdateChannelEnum.DevRelease;
 #else
             = Enums.UpdateChannelEnum.Stable;
 #endif
@@ -27,11 +24,11 @@ namespace SteamAccCreator.Web.Updater
                 {
                     case Enums.UpdateChannelEnum.Stable:
                         return UpdateInfo.Channels.Stable;
-                    case Enums.UpdateChannelEnum.PreRelease:
+                    case Enums.UpdateChannelEnum.DevRelease:
                         return UpdateInfo.Channels.PreRelese;
                     default:
-#if PRE_RELEASE
-                        goto case Enums.UpdateChannelEnum.PreRelease;
+#if DEV_RELEASE
+                        goto case Enums.UpdateChannelEnum.DevRelease;
 #else
                         goto case Enums.UpdateChannelEnum.Stable;
 #endif
@@ -39,29 +36,7 @@ namespace SteamAccCreator.Web.Updater
             }
         }
 
-        public bool IsCanBeUpdated
-        {
-            get
-            {
-                switch (UpdateChannel)
-                {
-                    case Enums.UpdateChannelEnum.Stable:
-                        return VersionInfo.Version > CurrentVersion;
-                    case Enums.UpdateChannelEnum.PreRelease:
-#if PRE_RELEASE
-                        return VersionInfo.Version >= CurrentVersion && VersionInfo.PreRelease > PreRelease;
-#else
-                        return VersionInfo.Version >= CurrentVersion && VersionInfo.PreRelease.HasValue;
-#endif
-                    default:
-#if PRE_RELEASE
-                        goto case Enums.UpdateChannelEnum.PreRelease;
-#else
-                        goto case Enums.UpdateChannelEnum.Stable;
-#endif
-                }
-            }
-        }
+        public bool IsCanBeUpdated => VersionInfo.Version > CurrentVersion;
 
         public void Refresh(Enums.UpdateChannelEnum updateChannel = Enums.UpdateChannelEnum.Stable)
         {

@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9C9227D8-67C2-4226-934D-DFB5DF3F9584}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SampleModule</RootNamespace>
+    <AssemblyName>SampleModule</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.2.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.2\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="MailKit, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4e064fe7c44a8f1b, processorArchitecture=MSIL">
+      <HintPath>..\packages\MailKit.2.1.5.1\lib\net45\MailKit.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit, Version=2.1.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
+      <HintPath>..\packages\MimeKit.2.1.5.1\lib\net45\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=106.6.9.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.6.9\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AllInOneSample\AllHere.cs" />
+    <Compile Include="Gui\Configuration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Configuration.Designer.cs">
+      <DependentUpon>Configuration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageCaptcha.cs" />
+    <Compile Include="MailBox.cs" />
+    <Compile Include="Misc.cs" />
+    <Compile Include="Models\CaptchaConfig.cs" />
+    <Compile Include="Models\MailConfig.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReCaptcha.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SACModuleBase\SACModuleBase.csproj">
+      <Project>{6ef56439-571f-4598-b89f-2fd4176142eb}</Project>
+      <Name>SACModuleBase</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\SampleModule.Models.CaptchaConfig.datasource" />
+    <None Include="Properties\DataSources\SampleModule.Models.MailConfig.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Gui\Configuration.resx">
+      <DependentUpon>Configuration.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules"
+copy /Y "$(TargetPath)" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\$(TargetFileName)"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\BouncyCastle\1.8.2" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\BouncyCastle\1.8.2"
+copy /Y "$(TargetDir)BouncyCastle.Crypto.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\BouncyCastle\1.8.2\BouncyCastle.Crypto.dll"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MailKit\2.1.5.1" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MailKit\2.1.5.1"
+copy /Y "$(TargetDir)MailKit.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MailKit\2.1.5.1\MailKit.dll"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MimeKit\2.1.5.1" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MimeKit\2.1.5.1"
+copy /Y "$(TargetDir)MimeKit.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\MimeKit\2.1.5.1\MimeKit.dll"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\Newtonsoft.Json\12.0.2" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\Newtonsoft.Json\12.0.2"
+copy /Y "$(TargetDir)Newtonsoft.Json.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\Newtonsoft.Json\12.0.2\Newtonsoft.Json.dll"
+if not exist "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\RestSharp\106.6.9" mkdir "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\RestSharp\106.6.9"
+copy /Y "$(TargetDir)RestSharp.dll" "$(SolutionDir)SteamAccCreator\$(OutDir)modules\required\RestSharp\106.6.9\RestSharp.dll"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -1,4 +1,4 @@
-version: 1.1.3.{build}
+version: 2.0.{build}
 pull_requests:
   do_not_increment_build_number: true
 skip_branch_with_pr: true
@@ -8,7 +8,7 @@ platform: Any CPU
 clone_depth: 10
 assembly_info:
   patch: true
-  file: '**\AssemblyInfo.*'
+  file: 'SteamAccCreator\Properties\AssemblyInfo.cs'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
@@ -30,5 +30,5 @@ deploy:
   auth_token:
     secure: /fvZl/QGpo3y+3d8bWELQvz3qDIFEfiYDHvZg6ds1wMJ0gx0sunCVS2WwshPfh62
   draft: true
-  prerelease: false
+  prerelease: true
   force_update: true

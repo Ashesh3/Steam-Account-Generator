@@ -61,7 +61,7 @@ namespace SteamAccCreator.Gui
             this.CbRandomLogin = new System.Windows.Forms.CheckBox();
             this.CbRandomMail = new System.Windows.Forms.CheckBox();
             this.NumAccountsCount = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
+            this.LabAccountsCount = new System.Windows.Forms.Label();
             this.tabProfile = new System.Windows.Forms.TabPage();
             this.BtnProfileRmImg = new System.Windows.Forms.Button();
             this.CbProfileEnabled = new System.Windows.Forms.CheckBox();
@@ -83,21 +83,21 @@ namespace SteamAccCreator.Gui
             this.TbProfileName = new System.Windows.Forms.TextBox();
             this.LabProfileName = new System.Windows.Forms.Label();
             this.tabCaptcha = new System.Windows.Forms.TabPage();
-            this.CbCapRuReportBad = new System.Windows.Forms.CheckBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.TbCapRuCapApi = new System.Windows.Forms.TextBox();
-            this.TbCapSolutionsSecret = new System.Windows.Forms.TextBox();
-            this.TbCapSolutionsApi = new System.Windows.Forms.TextBox();
-            this.RadCapRuCaptcha = new System.Windows.Forms.RadioButton();
-            this.RadCapCaptchasolutions = new System.Windows.Forms.RadioButton();
-            this.CbCapAuto = new System.Windows.Forms.CheckBox();
-            this.CbCapHandMode = new System.Windows.Forms.CheckBox();
+            this.GbCapTwoCaptcha = new System.Windows.Forms.GroupBox();
+            this.CbCapTwoCaptchaReportBad = new System.Windows.Forms.CheckBox();
+            this.LbCapTwoCaptchaKey = new System.Windows.Forms.Label();
+            this.TbCapTwoCaptchaKey = new System.Windows.Forms.TextBox();
+            this.GbCapCaptchasolutions = new System.Windows.Forms.GroupBox();
+            this.LbCapCaptchasolutionsSectet = new System.Windows.Forms.Label();
+            this.LbCapCaptchasolutionsKey = new System.Windows.Forms.Label();
+            this.TbCapCaptchasolutionsSectet = new System.Windows.Forms.TextBox();
+            this.TbCapCaptchasolutionsKey = new System.Windows.Forms.TextBox();
+            this.LbCapSolver = new System.Windows.Forms.Label();
+            this.CbCapSolver = new System.Windows.Forms.ComboBox();
             this.tabFileWriting = new System.Windows.Forms.TabPage();
             this.LinkFwPath = new System.Windows.Forms.LinkLabel();
             this.BtnFwChangeFolder = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
+            this.LabFwPath = new System.Windows.Forms.Label();
             this.CbFwOutType = new System.Windows.Forms.ComboBox();
             this.CbFwMail = new System.Windows.Forms.CheckBox();
             this.CbFwEnable = new System.Windows.Forms.CheckBox();
@@ -115,6 +115,9 @@ namespace SteamAccCreator.Gui
             this.DgvProxyList = new System.Windows.Forms.DataGridView();
             this.BtnProxyTest = new System.Windows.Forms.Button();
             this.CbProxyEnabled = new System.Windows.Forms.CheckBox();
+            this.tabModules = new System.Windows.Forms.TabPage();
+            this.DgvModules = new System.Windows.Forms.DataGridView();
+            this.Button = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tabUpdates = new System.Windows.Forms.TabPage();
             this.BtnUpdateNotes = new System.Windows.Forms.Button();
             this.LbCurrentversionStr = new System.Windows.Forms.Label();
@@ -125,20 +128,28 @@ namespace SteamAccCreator.Gui
             this.CbUpdateChannel = new System.Windows.Forms.ComboBox();
             this.LbUpdateChannel = new System.Windows.Forms.Label();
             this.tabAbout = new System.Windows.Forms.TabPage();
-            this.LinkSmthBy = new System.Windows.Forms.LinkLabel();
-            this.label17 = new System.Windows.Forms.Label();
-            this.LinkCodedBy = new System.Windows.Forms.LinkLabel();
-            this.label16 = new System.Windows.Forms.Label();
-            this.LinkUpdates = new System.Windows.Forms.LinkLabel();
-            this.label15 = new System.Windows.Forms.Label();
+            this.LinkAboutSmthBy = new System.Windows.Forms.LinkLabel();
+            this.LabAboutSmthBy = new System.Windows.Forms.Label();
+            this.LinkAboutCodedBy = new System.Windows.Forms.LinkLabel();
+            this.LabAboutCodedBy = new System.Windows.Forms.Label();
+            this.LinkAboutUpdates = new System.Windows.Forms.LinkLabel();
+            this.LabAboutTelegram = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.profileConfigBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.BsCaptchaTwoCapConfig = new System.Windows.Forms.BindingSource(this.components);
+            this.BsCaptchaCapsolConfig = new System.Windows.Forms.BindingSource(this.components);
             this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hostDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.portDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.proxyTypeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.proxyItemBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.enabledDataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.versionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BsModules = new System.Windows.Forms.BindingSource(this.components);
+            this.LabAboutDiscord = new System.Windows.Forms.Label();
+            this.LinkAboutDiscord = new System.Windows.Forms.LinkLabel();
             this.pnlCreation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAccounts)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -147,13 +158,20 @@ namespace SteamAccCreator.Gui
             this.tabProfile.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PbProfile)).BeginInit();
             this.tabCaptcha.SuspendLayout();
+            this.GbCapTwoCaptcha.SuspendLayout();
+            this.GbCapCaptchasolutions.SuspendLayout();
             this.tabFileWriting.SuspendLayout();
             this.tabProxy.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).BeginInit();
+            this.tabModules.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvModules)).BeginInit();
             this.tabUpdates.SuspendLayout();
             this.tabAbout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaTwoCapConfig)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaCapsolConfig)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BsModules)).BeginInit();
             this.SuspendLayout();
             // 
             // txtEmail
@@ -341,6 +359,7 @@ namespace SteamAccCreator.Gui
             this.tabControl.Controls.Add(this.tabCaptcha);
             this.tabControl.Controls.Add(this.tabFileWriting);
             this.tabControl.Controls.Add(this.tabProxy);
+            this.tabControl.Controls.Add(this.tabModules);
             this.tabControl.Controls.Add(this.tabUpdates);
             this.tabControl.Controls.Add(this.tabAbout);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
@@ -366,7 +385,7 @@ namespace SteamAccCreator.Gui
             this.tabConfig.Controls.Add(this.CbRandomLogin);
             this.tabConfig.Controls.Add(this.CbRandomMail);
             this.tabConfig.Controls.Add(this.NumAccountsCount);
-            this.tabConfig.Controls.Add(this.label7);
+            this.tabConfig.Controls.Add(this.LabAccountsCount);
             this.tabConfig.Location = new System.Drawing.Point(4, 22);
             this.tabConfig.Name = "tabConfig";
             this.tabConfig.Padding = new System.Windows.Forms.Padding(3);
@@ -546,15 +565,15 @@ namespace SteamAccCreator.Gui
             0,
             0});
             // 
-            // label7
+            // LabAccountsCount
             // 
-            this.label7.AutoSize = true;
-            this.label7.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label7.Location = new System.Drawing.Point(6, 3);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(100, 13);
-            this.label7.TabIndex = 0;
-            this.label7.Text = "Accounts to create:";
+            this.LabAccountsCount.AutoSize = true;
+            this.LabAccountsCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LabAccountsCount.Location = new System.Drawing.Point(6, 3);
+            this.LabAccountsCount.Name = "LabAccountsCount";
+            this.LabAccountsCount.Size = new System.Drawing.Size(100, 13);
+            this.LabAccountsCount.TabIndex = 0;
+            this.LabAccountsCount.Text = "Accounts to create:";
             // 
             // tabProfile
             // 
@@ -807,17 +826,10 @@ namespace SteamAccCreator.Gui
             // tabCaptcha
             // 
             this.tabCaptcha.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.tabCaptcha.Controls.Add(this.CbCapRuReportBad);
-            this.tabCaptcha.Controls.Add(this.label10);
-            this.tabCaptcha.Controls.Add(this.label9);
-            this.tabCaptcha.Controls.Add(this.label8);
-            this.tabCaptcha.Controls.Add(this.TbCapRuCapApi);
-            this.tabCaptcha.Controls.Add(this.TbCapSolutionsSecret);
-            this.tabCaptcha.Controls.Add(this.TbCapSolutionsApi);
-            this.tabCaptcha.Controls.Add(this.RadCapRuCaptcha);
-            this.tabCaptcha.Controls.Add(this.RadCapCaptchasolutions);
-            this.tabCaptcha.Controls.Add(this.CbCapAuto);
-            this.tabCaptcha.Controls.Add(this.CbCapHandMode);
+            this.tabCaptcha.Controls.Add(this.GbCapTwoCaptcha);
+            this.tabCaptcha.Controls.Add(this.GbCapCaptchasolutions);
+            this.tabCaptcha.Controls.Add(this.LbCapSolver);
+            this.tabCaptcha.Controls.Add(this.CbCapSolver);
             this.tabCaptcha.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabCaptcha.Location = new System.Drawing.Point(4, 22);
             this.tabCaptcha.Name = "tabCaptcha";
@@ -826,139 +838,139 @@ namespace SteamAccCreator.Gui
             this.tabCaptcha.TabIndex = 1;
             this.tabCaptcha.Text = "Captcha";
             // 
-            // CbCapRuReportBad
+            // GbCapTwoCaptcha
             // 
-            this.CbCapRuReportBad.AutoSize = true;
-            this.CbCapRuReportBad.ForeColor = System.Drawing.Color.White;
-            this.CbCapRuReportBad.Location = new System.Drawing.Point(170, 78);
-            this.CbCapRuReportBad.Name = "CbCapRuReportBad";
-            this.CbCapRuReportBad.Size = new System.Drawing.Size(139, 17);
-            this.CbCapRuReportBad.TabIndex = 10;
-            this.CbCapRuReportBad.Text = "Report if not recognized";
-            this.CbCapRuReportBad.UseVisualStyleBackColor = true;
-            this.CbCapRuReportBad.CheckedChanged += new System.EventHandler(this.CbCapRuReportBad_CheckedChanged);
+            this.GbCapTwoCaptcha.Controls.Add(this.CbCapTwoCaptchaReportBad);
+            this.GbCapTwoCaptcha.Controls.Add(this.LbCapTwoCaptchaKey);
+            this.GbCapTwoCaptcha.Controls.Add(this.TbCapTwoCaptchaKey);
+            this.GbCapTwoCaptcha.ForeColor = System.Drawing.Color.White;
+            this.GbCapTwoCaptcha.Location = new System.Drawing.Point(6, 111);
+            this.GbCapTwoCaptcha.Name = "GbCapTwoCaptcha";
+            this.GbCapTwoCaptcha.Size = new System.Drawing.Size(304, 68);
+            this.GbCapTwoCaptcha.TabIndex = 14;
+            this.GbCapTwoCaptcha.TabStop = false;
+            this.GbCapTwoCaptcha.Text = "2Captcha/RuCaptcha";
             // 
-            // label10
+            // CbCapTwoCaptchaReportBad
             // 
-            this.label10.AutoSize = true;
-            this.label10.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label10.Location = new System.Drawing.Point(6, 104);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(48, 13);
-            this.label10.TabIndex = 9;
-            this.label10.Text = "API Key:";
+            this.CbCapTwoCaptchaReportBad.AutoSize = true;
+            this.CbCapTwoCaptchaReportBad.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.BsCaptchaTwoCapConfig, "ReportBad", true));
+            this.CbCapTwoCaptchaReportBad.ForeColor = System.Drawing.Color.White;
+            this.CbCapTwoCaptchaReportBad.Location = new System.Drawing.Point(9, 45);
+            this.CbCapTwoCaptchaReportBad.Name = "CbCapTwoCaptchaReportBad";
+            this.CbCapTwoCaptchaReportBad.Size = new System.Drawing.Size(139, 17);
+            this.CbCapTwoCaptchaReportBad.TabIndex = 2;
+            this.CbCapTwoCaptchaReportBad.Text = "Report if not recognized";
+            this.CbCapTwoCaptchaReportBad.UseVisualStyleBackColor = true;
             // 
-            // label9
+            // LbCapTwoCaptchaKey
             // 
-            this.label9.AutoSize = true;
-            this.label9.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label9.Location = new System.Drawing.Point(206, 33);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(61, 13);
-            this.label9.TabIndex = 8;
-            this.label9.Text = "Secret key:";
+            this.LbCapTwoCaptchaKey.AutoSize = true;
+            this.LbCapTwoCaptchaKey.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LbCapTwoCaptchaKey.Location = new System.Drawing.Point(6, 21);
+            this.LbCapTwoCaptchaKey.Name = "LbCapTwoCaptchaKey";
+            this.LbCapTwoCaptchaKey.Size = new System.Drawing.Size(48, 13);
+            this.LbCapTwoCaptchaKey.TabIndex = 0;
+            this.LbCapTwoCaptchaKey.Text = "API Key:";
             // 
-            // label8
+            // TbCapTwoCaptchaKey
             // 
-            this.label8.AutoSize = true;
-            this.label8.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label8.Location = new System.Drawing.Point(3, 55);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(48, 13);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "API Key:";
+            this.TbCapTwoCaptchaKey.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbCapTwoCaptchaKey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbCapTwoCaptchaKey.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.BsCaptchaTwoCapConfig, "ApiKey", true));
+            this.TbCapTwoCaptchaKey.ForeColor = System.Drawing.Color.White;
+            this.TbCapTwoCaptchaKey.Location = new System.Drawing.Point(60, 19);
+            this.TbCapTwoCaptchaKey.Name = "TbCapTwoCaptchaKey";
+            this.TbCapTwoCaptchaKey.Size = new System.Drawing.Size(238, 20);
+            this.TbCapTwoCaptchaKey.TabIndex = 1;
             // 
-            // TbCapRuCapApi
+            // GbCapCaptchasolutions
             // 
-            this.TbCapRuCapApi.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbCapRuCapApi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbCapRuCapApi.Enabled = false;
-            this.TbCapRuCapApi.ForeColor = System.Drawing.Color.White;
-            this.TbCapRuCapApi.Location = new System.Drawing.Point(57, 101);
-            this.TbCapRuCapApi.Name = "TbCapRuCapApi";
-            this.TbCapRuCapApi.Size = new System.Drawing.Size(252, 20);
-            this.TbCapRuCapApi.TabIndex = 6;
+            this.GbCapCaptchasolutions.Controls.Add(this.LbCapCaptchasolutionsSectet);
+            this.GbCapCaptchasolutions.Controls.Add(this.LbCapCaptchasolutionsKey);
+            this.GbCapCaptchasolutions.Controls.Add(this.TbCapCaptchasolutionsSectet);
+            this.GbCapCaptchasolutions.Controls.Add(this.TbCapCaptchasolutionsKey);
+            this.GbCapCaptchasolutions.ForeColor = System.Drawing.Color.White;
+            this.GbCapCaptchasolutions.Location = new System.Drawing.Point(6, 33);
+            this.GbCapCaptchasolutions.Name = "GbCapCaptchasolutions";
+            this.GbCapCaptchasolutions.Size = new System.Drawing.Size(304, 72);
+            this.GbCapCaptchasolutions.TabIndex = 13;
+            this.GbCapCaptchasolutions.TabStop = false;
+            this.GbCapCaptchasolutions.Text = "Captchasolutions";
             // 
-            // TbCapSolutionsSecret
+            // LbCapCaptchasolutionsSectet
             // 
-            this.TbCapSolutionsSecret.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbCapSolutionsSecret.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbCapSolutionsSecret.Enabled = false;
-            this.TbCapSolutionsSecret.ForeColor = System.Drawing.Color.White;
-            this.TbCapSolutionsSecret.Location = new System.Drawing.Point(204, 52);
-            this.TbCapSolutionsSecret.Name = "TbCapSolutionsSecret";
-            this.TbCapSolutionsSecret.Size = new System.Drawing.Size(105, 20);
-            this.TbCapSolutionsSecret.TabIndex = 5;
+            this.LbCapCaptchasolutionsSectet.AutoSize = true;
+            this.LbCapCaptchasolutionsSectet.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LbCapCaptchasolutionsSectet.Location = new System.Drawing.Point(6, 47);
+            this.LbCapCaptchasolutionsSectet.Name = "LbCapCaptchasolutionsSectet";
+            this.LbCapCaptchasolutionsSectet.Size = new System.Drawing.Size(61, 13);
+            this.LbCapCaptchasolutionsSectet.TabIndex = 2;
+            this.LbCapCaptchasolutionsSectet.Text = "Secret key:";
             // 
-            // TbCapSolutionsApi
+            // LbCapCaptchasolutionsKey
             // 
-            this.TbCapSolutionsApi.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.TbCapSolutionsApi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TbCapSolutionsApi.Enabled = false;
-            this.TbCapSolutionsApi.ForeColor = System.Drawing.Color.White;
-            this.TbCapSolutionsApi.Location = new System.Drawing.Point(57, 52);
-            this.TbCapSolutionsApi.Name = "TbCapSolutionsApi";
-            this.TbCapSolutionsApi.Size = new System.Drawing.Size(141, 20);
-            this.TbCapSolutionsApi.TabIndex = 4;
+            this.LbCapCaptchasolutionsKey.AutoSize = true;
+            this.LbCapCaptchasolutionsKey.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LbCapCaptchasolutionsKey.Location = new System.Drawing.Point(19, 21);
+            this.LbCapCaptchasolutionsKey.Name = "LbCapCaptchasolutionsKey";
+            this.LbCapCaptchasolutionsKey.Size = new System.Drawing.Size(48, 13);
+            this.LbCapCaptchasolutionsKey.TabIndex = 0;
+            this.LbCapCaptchasolutionsKey.Text = "API Key:";
             // 
-            // RadCapRuCaptcha
+            // TbCapCaptchasolutionsSectet
             // 
-            this.RadCapRuCaptcha.AutoSize = true;
-            this.RadCapRuCaptcha.Enabled = false;
-            this.RadCapRuCaptcha.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.RadCapRuCaptcha.Location = new System.Drawing.Point(6, 78);
-            this.RadCapRuCaptcha.Name = "RadCapRuCaptcha";
-            this.RadCapRuCaptcha.Size = new System.Drawing.Size(130, 17);
-            this.RadCapRuCaptcha.TabIndex = 3;
-            this.RadCapRuCaptcha.Text = "2Captcha/RuCaptcha";
-            this.RadCapRuCaptcha.UseVisualStyleBackColor = true;
-            this.RadCapRuCaptcha.CheckedChanged += new System.EventHandler(this.RadCapRuCaptcha_CheckedChanged);
+            this.TbCapCaptchasolutionsSectet.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbCapCaptchasolutionsSectet.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbCapCaptchasolutionsSectet.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.BsCaptchaCapsolConfig, "ApiSecret", true));
+            this.TbCapCaptchasolutionsSectet.ForeColor = System.Drawing.Color.White;
+            this.TbCapCaptchasolutionsSectet.Location = new System.Drawing.Point(73, 45);
+            this.TbCapCaptchasolutionsSectet.Name = "TbCapCaptchasolutionsSectet";
+            this.TbCapCaptchasolutionsSectet.Size = new System.Drawing.Size(225, 20);
+            this.TbCapCaptchasolutionsSectet.TabIndex = 3;
             // 
-            // RadCapCaptchasolutions
+            // TbCapCaptchasolutionsKey
             // 
-            this.RadCapCaptchasolutions.AutoSize = true;
-            this.RadCapCaptchasolutions.Checked = true;
-            this.RadCapCaptchasolutions.Enabled = false;
-            this.RadCapCaptchasolutions.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.RadCapCaptchasolutions.Location = new System.Drawing.Point(6, 29);
-            this.RadCapCaptchasolutions.Name = "RadCapCaptchasolutions";
-            this.RadCapCaptchasolutions.Size = new System.Drawing.Size(106, 17);
-            this.RadCapCaptchasolutions.TabIndex = 2;
-            this.RadCapCaptchasolutions.TabStop = true;
-            this.RadCapCaptchasolutions.Text = "Captchasolutions";
-            this.RadCapCaptchasolutions.UseVisualStyleBackColor = true;
-            this.RadCapCaptchasolutions.CheckedChanged += new System.EventHandler(this.RadCapCaptchasolutions_CheckedChanged);
+            this.TbCapCaptchasolutionsKey.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.TbCapCaptchasolutionsKey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TbCapCaptchasolutionsKey.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.BsCaptchaCapsolConfig, "ApiKey", true));
+            this.TbCapCaptchasolutionsKey.ForeColor = System.Drawing.Color.White;
+            this.TbCapCaptchasolutionsKey.Location = new System.Drawing.Point(73, 19);
+            this.TbCapCaptchasolutionsKey.Name = "TbCapCaptchasolutionsKey";
+            this.TbCapCaptchasolutionsKey.Size = new System.Drawing.Size(225, 20);
+            this.TbCapCaptchasolutionsKey.TabIndex = 1;
             // 
-            // CbCapAuto
+            // LbCapSolver
             // 
-            this.CbCapAuto.AutoSize = true;
-            this.CbCapAuto.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.CbCapAuto.Location = new System.Drawing.Point(93, 6);
-            this.CbCapAuto.Name = "CbCapAuto";
-            this.CbCapAuto.Size = new System.Drawing.Size(90, 17);
-            this.CbCapAuto.TabIndex = 1;
-            this.CbCapAuto.Text = "Auto captcha";
-            this.CbCapAuto.UseVisualStyleBackColor = true;
-            this.CbCapAuto.CheckedChanged += new System.EventHandler(this.CbCapAuto_CheckedChanged);
+            this.LbCapSolver.AutoSize = true;
+            this.LbCapSolver.ForeColor = System.Drawing.Color.White;
+            this.LbCapSolver.Location = new System.Drawing.Point(7, 9);
+            this.LbCapSolver.Name = "LbCapSolver";
+            this.LbCapSolver.Size = new System.Drawing.Size(109, 13);
+            this.LbCapSolver.TabIndex = 12;
+            this.LbCapSolver.Text = "Captcha solving type:";
             // 
-            // CbCapHandMode
+            // CbCapSolver
             // 
-            this.CbCapHandMode.AutoSize = true;
-            this.CbCapHandMode.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.CbCapHandMode.Location = new System.Drawing.Point(6, 6);
-            this.CbCapHandMode.Name = "CbCapHandMode";
-            this.CbCapHandMode.Size = new System.Drawing.Size(81, 17);
-            this.CbCapHandMode.TabIndex = 0;
-            this.CbCapHandMode.Text = "Hand mode";
-            this.CbCapHandMode.UseVisualStyleBackColor = true;
-            this.CbCapHandMode.CheckedChanged += new System.EventHandler(this.CbCapHandMode_CheckedChanged);
+            this.CbCapSolver.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CbCapSolver.FormattingEnabled = true;
+            this.CbCapSolver.Items.AddRange(new object[] {
+            "Hand mode",
+            "Captchasolutions",
+            "2Captcha | RuCaptcha",
+            "Modules"});
+            this.CbCapSolver.Location = new System.Drawing.Point(122, 6);
+            this.CbCapSolver.Name = "CbCapSolver";
+            this.CbCapSolver.Size = new System.Drawing.Size(188, 21);
+            this.CbCapSolver.TabIndex = 11;
+            this.CbCapSolver.SelectedIndexChanged += new System.EventHandler(this.CbCapSolver_SelectedIndexChanged);
             // 
             // tabFileWriting
             // 
             this.tabFileWriting.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
             this.tabFileWriting.Controls.Add(this.LinkFwPath);
             this.tabFileWriting.Controls.Add(this.BtnFwChangeFolder);
-            this.tabFileWriting.Controls.Add(this.label11);
+            this.tabFileWriting.Controls.Add(this.LabFwPath);
             this.tabFileWriting.Controls.Add(this.CbFwOutType);
             this.tabFileWriting.Controls.Add(this.CbFwMail);
             this.tabFileWriting.Controls.Add(this.CbFwEnable);
@@ -992,15 +1004,15 @@ namespace SteamAccCreator.Gui
             this.BtnFwChangeFolder.UseVisualStyleBackColor = true;
             this.BtnFwChangeFolder.Click += new System.EventHandler(this.BtnFwChangeFolder_Click);
             // 
-            // label11
+            // LabFwPath
             // 
-            this.label11.AutoSize = true;
-            this.label11.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label11.Location = new System.Drawing.Point(6, 26);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(32, 13);
-            this.label11.TabIndex = 25;
-            this.label11.Text = "Path:";
+            this.LabFwPath.AutoSize = true;
+            this.LabFwPath.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LabFwPath.Location = new System.Drawing.Point(6, 26);
+            this.LabFwPath.Name = "LabFwPath";
+            this.LabFwPath.Size = new System.Drawing.Size(32, 13);
+            this.LabFwPath.TabIndex = 25;
+            this.LabFwPath.Text = "Path:";
             // 
             // CbFwOutType
             // 
@@ -1216,6 +1228,50 @@ namespace SteamAccCreator.Gui
             this.CbProxyEnabled.UseVisualStyleBackColor = true;
             this.CbProxyEnabled.CheckedChanged += new System.EventHandler(this.CbProxyEnabled_CheckedChanged);
             // 
+            // tabModules
+            // 
+            this.tabModules.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.tabModules.Controls.Add(this.DgvModules);
+            this.tabModules.Location = new System.Drawing.Point(4, 22);
+            this.tabModules.Name = "tabModules";
+            this.tabModules.Padding = new System.Windows.Forms.Padding(3);
+            this.tabModules.Size = new System.Drawing.Size(316, 296);
+            this.tabModules.TabIndex = 7;
+            this.tabModules.Text = "Modules";
+            // 
+            // DgvModules
+            // 
+            this.DgvModules.AllowUserToAddRows = false;
+            this.DgvModules.AllowUserToDeleteRows = false;
+            this.DgvModules.AllowUserToResizeRows = false;
+            this.DgvModules.AutoGenerateColumns = false;
+            this.DgvModules.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
+            this.DgvModules.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvModules.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.enabledDataGridViewCheckBoxColumn1,
+            this.nameDataGridViewTextBoxColumn,
+            this.versionDataGridViewTextBoxColumn,
+            this.Button});
+            this.DgvModules.DataSource = this.BsModules;
+            this.DgvModules.Location = new System.Drawing.Point(0, 0);
+            this.DgvModules.MultiSelect = false;
+            this.DgvModules.Name = "DgvModules";
+            this.DgvModules.RowHeadersVisible = false;
+            this.DgvModules.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.DgvModules.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DgvModules.Size = new System.Drawing.Size(316, 296);
+            this.DgvModules.TabIndex = 0;
+            this.DgvModules.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvModules_CellContentClick);
+            // 
+            // Button
+            // 
+            this.Button.DataPropertyName = "ButtonName";
+            this.Button.HeaderText = "Action";
+            this.Button.Name = "Button";
+            this.Button.ReadOnly = true;
+            this.Button.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Button.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
             // tabUpdates
             // 
             this.tabUpdates.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
@@ -1300,7 +1356,7 @@ namespace SteamAccCreator.Gui
             this.CbUpdateChannel.FormattingEnabled = true;
             this.CbUpdateChannel.Items.AddRange(new object[] {
             "Stable",
-            "Pre-Release"});
+            "Dev-Release"});
             this.CbUpdateChannel.Location = new System.Drawing.Point(103, 6);
             this.CbUpdateChannel.Name = "CbUpdateChannel";
             this.CbUpdateChannel.Size = new System.Drawing.Size(207, 21);
@@ -1318,12 +1374,14 @@ namespace SteamAccCreator.Gui
             // tabAbout
             // 
             this.tabAbout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(36)))));
-            this.tabAbout.Controls.Add(this.LinkSmthBy);
-            this.tabAbout.Controls.Add(this.label17);
-            this.tabAbout.Controls.Add(this.LinkCodedBy);
-            this.tabAbout.Controls.Add(this.label16);
-            this.tabAbout.Controls.Add(this.LinkUpdates);
-            this.tabAbout.Controls.Add(this.label15);
+            this.tabAbout.Controls.Add(this.LinkAboutDiscord);
+            this.tabAbout.Controls.Add(this.LabAboutDiscord);
+            this.tabAbout.Controls.Add(this.LinkAboutSmthBy);
+            this.tabAbout.Controls.Add(this.LabAboutSmthBy);
+            this.tabAbout.Controls.Add(this.LinkAboutCodedBy);
+            this.tabAbout.Controls.Add(this.LabAboutCodedBy);
+            this.tabAbout.Controls.Add(this.LinkAboutUpdates);
+            this.tabAbout.Controls.Add(this.LabAboutTelegram);
             this.tabAbout.Location = new System.Drawing.Point(4, 22);
             this.tabAbout.Name = "tabAbout";
             this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
@@ -1331,74 +1389,74 @@ namespace SteamAccCreator.Gui
             this.tabAbout.TabIndex = 4;
             this.tabAbout.Text = "About";
             // 
-            // LinkSmthBy
+            // LinkAboutSmthBy
             // 
-            this.LinkSmthBy.AutoSize = true;
-            this.LinkSmthBy.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.LinkSmthBy.Location = new System.Drawing.Point(122, 32);
-            this.LinkSmthBy.Name = "LinkSmthBy";
-            this.LinkSmthBy.Size = new System.Drawing.Size(140, 13);
-            this.LinkSmthBy.TabIndex = 5;
-            this.LinkSmthBy.TabStop = true;
-            this.LinkSmthBy.Text = "https://github.com/EarsKilla";
-            this.LinkSmthBy.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.LinkSmthBy.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
+            this.LinkAboutSmthBy.AutoSize = true;
+            this.LinkAboutSmthBy.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.LinkAboutSmthBy.Location = new System.Drawing.Point(122, 32);
+            this.LinkAboutSmthBy.Name = "LinkAboutSmthBy";
+            this.LinkAboutSmthBy.Size = new System.Drawing.Size(140, 13);
+            this.LinkAboutSmthBy.TabIndex = 5;
+            this.LinkAboutSmthBy.TabStop = true;
+            this.LinkAboutSmthBy.Text = "https://github.com/EarsKilla";
+            this.LinkAboutSmthBy.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.LinkAboutSmthBy.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
-            // label17
+            // LabAboutSmthBy
             // 
-            this.label17.AutoSize = true;
-            this.label17.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label17.Location = new System.Drawing.Point(6, 32);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(119, 13);
-            this.label17.TabIndex = 4;
-            this.label17.Text = "Redesigin and code by:";
+            this.LabAboutSmthBy.AutoSize = true;
+            this.LabAboutSmthBy.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LabAboutSmthBy.Location = new System.Drawing.Point(6, 32);
+            this.LabAboutSmthBy.Name = "LabAboutSmthBy";
+            this.LabAboutSmthBy.Size = new System.Drawing.Size(119, 13);
+            this.LabAboutSmthBy.TabIndex = 4;
+            this.LabAboutSmthBy.Text = "Redesigin and code by:";
             // 
-            // LinkCodedBy
+            // LinkAboutCodedBy
             // 
-            this.LinkCodedBy.AutoSize = true;
-            this.LinkCodedBy.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.LinkCodedBy.Location = new System.Drawing.Point(58, 19);
-            this.LinkCodedBy.Name = "LinkCodedBy";
-            this.LinkCodedBy.Size = new System.Drawing.Size(149, 13);
-            this.LinkCodedBy.TabIndex = 3;
-            this.LinkCodedBy.TabStop = true;
-            this.LinkCodedBy.Text = "https://tele.click/dedsec1337";
-            this.LinkCodedBy.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.LinkCodedBy.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
+            this.LinkAboutCodedBy.AutoSize = true;
+            this.LinkAboutCodedBy.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.LinkAboutCodedBy.Location = new System.Drawing.Point(58, 19);
+            this.LinkAboutCodedBy.Name = "LinkAboutCodedBy";
+            this.LinkAboutCodedBy.Size = new System.Drawing.Size(149, 13);
+            this.LinkAboutCodedBy.TabIndex = 3;
+            this.LinkAboutCodedBy.TabStop = true;
+            this.LinkAboutCodedBy.Text = "https://tele.click/dedsec1337";
+            this.LinkAboutCodedBy.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.LinkAboutCodedBy.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
-            // label16
+            // LabAboutCodedBy
             // 
-            this.label16.AutoSize = true;
-            this.label16.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label16.Location = new System.Drawing.Point(6, 19);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(55, 13);
-            this.label16.TabIndex = 2;
-            this.label16.Text = "Coded by:";
+            this.LabAboutCodedBy.AutoSize = true;
+            this.LabAboutCodedBy.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LabAboutCodedBy.Location = new System.Drawing.Point(6, 19);
+            this.LabAboutCodedBy.Name = "LabAboutCodedBy";
+            this.LabAboutCodedBy.Size = new System.Drawing.Size(55, 13);
+            this.LabAboutCodedBy.TabIndex = 2;
+            this.LabAboutCodedBy.Text = "Coded by:";
             // 
-            // LinkUpdates
+            // LinkAboutUpdates
             // 
-            this.LinkUpdates.AutoSize = true;
-            this.LinkUpdates.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.LinkUpdates.Location = new System.Drawing.Point(140, 6);
-            this.LinkUpdates.Name = "LinkUpdates";
-            this.LinkUpdates.Size = new System.Drawing.Size(128, 13);
-            this.LinkUpdates.TabIndex = 1;
-            this.LinkUpdates.TabStop = true;
-            this.LinkUpdates.Text = "https://tele.click/sag_bot";
-            this.LinkUpdates.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.LinkUpdates.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
+            this.LinkAboutUpdates.AutoSize = true;
+            this.LinkAboutUpdates.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.LinkAboutUpdates.Location = new System.Drawing.Point(140, 6);
+            this.LinkAboutUpdates.Name = "LinkAboutUpdates";
+            this.LinkAboutUpdates.Size = new System.Drawing.Size(128, 13);
+            this.LinkAboutUpdates.TabIndex = 1;
+            this.LinkAboutUpdates.TabStop = true;
+            this.LinkAboutUpdates.Text = "https://tele.click/sag_bot";
+            this.LinkAboutUpdates.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.LinkAboutUpdates.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
-            // label15
+            // LabAboutTelegram
             // 
-            this.label15.AutoSize = true;
-            this.label15.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label15.Location = new System.Drawing.Point(6, 6);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(140, 13);
-            this.label15.TabIndex = 0;
-            this.label15.Text = "Join Telegram For Updates: ";
+            this.LabAboutTelegram.AutoSize = true;
+            this.LabAboutTelegram.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.LabAboutTelegram.Location = new System.Drawing.Point(6, 6);
+            this.LabAboutTelegram.Name = "LabAboutTelegram";
+            this.LabAboutTelegram.Size = new System.Drawing.Size(140, 13);
+            this.LabAboutTelegram.TabIndex = 0;
+            this.LabAboutTelegram.Text = "Join Telegram For Updates: ";
             // 
             // openFileDialog1
             // 
@@ -1407,6 +1465,14 @@ namespace SteamAccCreator.Gui
             // profileConfigBindingSource
             // 
             this.profileConfigBindingSource.DataSource = typeof(SteamAccCreator.Models.ProfileConfig);
+            // 
+            // BsCaptchaTwoCapConfig
+            // 
+            this.BsCaptchaTwoCapConfig.DataSource = typeof(SteamAccCreator.Models.RuCaptchaConfig);
+            // 
+            // BsCaptchaCapsolConfig
+            // 
+            this.BsCaptchaCapsolConfig.DataSource = typeof(SteamAccCreator.Models.CaptchaSolutionsConfig);
             // 
             // enabledDataGridViewCheckBoxColumn
             // 
@@ -1454,6 +1520,60 @@ namespace SteamAccCreator.Gui
             // 
             this.proxyItemBindingSource.DataSource = typeof(SteamAccCreator.Models.ProxyItem);
             // 
+            // enabledDataGridViewCheckBoxColumn1
+            // 
+            this.enabledDataGridViewCheckBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.enabledDataGridViewCheckBoxColumn1.DataPropertyName = "Enabled";
+            this.enabledDataGridViewCheckBoxColumn1.HeaderText = "";
+            this.enabledDataGridViewCheckBoxColumn1.Name = "enabledDataGridViewCheckBoxColumn1";
+            this.enabledDataGridViewCheckBoxColumn1.ToolTipText = "Enabled";
+            this.enabledDataGridViewCheckBoxColumn1.Width = 5;
+            // 
+            // nameDataGridViewTextBoxColumn
+            // 
+            this.nameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
+            this.nameDataGridViewTextBoxColumn.HeaderText = "Name";
+            this.nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
+            this.nameDataGridViewTextBoxColumn.ReadOnly = true;
+            this.nameDataGridViewTextBoxColumn.Width = 60;
+            // 
+            // versionDataGridViewTextBoxColumn
+            // 
+            this.versionDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.versionDataGridViewTextBoxColumn.DataPropertyName = "Version";
+            this.versionDataGridViewTextBoxColumn.HeaderText = "Version";
+            this.versionDataGridViewTextBoxColumn.Name = "versionDataGridViewTextBoxColumn";
+            this.versionDataGridViewTextBoxColumn.ReadOnly = true;
+            this.versionDataGridViewTextBoxColumn.Width = 67;
+            // 
+            // BsModules
+            // 
+            this.BsModules.DataSource = typeof(SteamAccCreator.Models.ModuleBinding);
+            // 
+            // LabAboutDiscord
+            // 
+            this.LabAboutDiscord.AutoSize = true;
+            this.LabAboutDiscord.ForeColor = System.Drawing.Color.White;
+            this.LabAboutDiscord.Location = new System.Drawing.Point(6, 45);
+            this.LabAboutDiscord.Name = "LabAboutDiscord";
+            this.LabAboutDiscord.Size = new System.Drawing.Size(96, 13);
+            this.LabAboutDiscord.TabIndex = 6;
+            this.LabAboutDiscord.Text = "EarsKilla\'s Discord:";
+            // 
+            // LinkAboutDiscord
+            // 
+            this.LinkAboutDiscord.AutoSize = true;
+            this.LinkAboutDiscord.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.LinkAboutDiscord.Location = new System.Drawing.Point(99, 45);
+            this.LinkAboutDiscord.Name = "LinkAboutDiscord";
+            this.LinkAboutDiscord.Size = new System.Drawing.Size(144, 13);
+            this.LinkAboutDiscord.TabIndex = 7;
+            this.LinkAboutDiscord.TabStop = true;
+            this.LinkAboutDiscord.Text = "https://discord.gg/R96F2DA";
+            this.LinkAboutDiscord.VisitedLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.LinkAboutDiscord.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1480,17 +1600,26 @@ namespace SteamAccCreator.Gui
             ((System.ComponentModel.ISupportInitialize)(this.PbProfile)).EndInit();
             this.tabCaptcha.ResumeLayout(false);
             this.tabCaptcha.PerformLayout();
+            this.GbCapTwoCaptcha.ResumeLayout(false);
+            this.GbCapTwoCaptcha.PerformLayout();
+            this.GbCapCaptchasolutions.ResumeLayout(false);
+            this.GbCapCaptchasolutions.PerformLayout();
             this.tabFileWriting.ResumeLayout(false);
             this.tabFileWriting.PerformLayout();
             this.tabProxy.ResumeLayout(false);
             this.tabProxy.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvProxyList)).EndInit();
+            this.tabModules.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DgvModules)).EndInit();
             this.tabUpdates.ResumeLayout(false);
             this.tabUpdates.PerformLayout();
             this.tabAbout.ResumeLayout(false);
             this.tabAbout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.profileConfigBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaTwoCapConfig)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BsCaptchaCapsolConfig)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.proxyItemBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BsModules)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1521,34 +1650,24 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.CheckBox CbRandomLogin;
         private System.Windows.Forms.CheckBox CbRandomMail;
         private System.Windows.Forms.NumericUpDown NumAccountsCount;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label LabAccountsCount;
         private System.Windows.Forms.TabPage tabCaptcha;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox TbCapRuCapApi;
-        private System.Windows.Forms.TextBox TbCapSolutionsSecret;
-        private System.Windows.Forms.TextBox TbCapSolutionsApi;
-        private System.Windows.Forms.RadioButton RadCapRuCaptcha;
-        private System.Windows.Forms.RadioButton RadCapCaptchasolutions;
-        private System.Windows.Forms.CheckBox CbCapAuto;
-        private System.Windows.Forms.CheckBox CbCapHandMode;
         private System.Windows.Forms.TabPage tabFileWriting;
         private System.Windows.Forms.LinkLabel LinkFwPath;
         private System.Windows.Forms.Button BtnFwChangeFolder;
-        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label LabFwPath;
         public System.Windows.Forms.ComboBox CbFwOutType;
         private System.Windows.Forms.CheckBox CbFwMail;
         private System.Windows.Forms.CheckBox CbFwEnable;
         private System.Windows.Forms.TabPage tabProxy;
         private System.Windows.Forms.CheckBox CbProxyEnabled;
         private System.Windows.Forms.TabPage tabAbout;
-        private System.Windows.Forms.LinkLabel LinkSmthBy;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.LinkLabel LinkCodedBy;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.LinkLabel LinkUpdates;
-        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.LinkLabel LinkAboutSmthBy;
+        private System.Windows.Forms.Label LabAboutSmthBy;
+        private System.Windows.Forms.LinkLabel LinkAboutCodedBy;
+        private System.Windows.Forms.Label LabAboutCodedBy;
+        private System.Windows.Forms.LinkLabel LinkAboutUpdates;
+        private System.Windows.Forms.Label LabAboutTelegram;
         private System.Windows.Forms.Button BtnLoadIds;
         private System.Windows.Forms.Button BtnProxyTest;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
@@ -1557,7 +1676,6 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.Button BtnAddGame;
         private System.Windows.Forms.Button BtnExportGames;
         private System.Windows.Forms.LinkLabel LinkHowToFindSubId;
-        private System.Windows.Forms.CheckBox CbCapRuReportBad;
         private System.Windows.Forms.DataGridView DgvProxyList;
         private System.Windows.Forms.BindingSource proxyItemBindingSource;
         private System.Windows.Forms.Button BtnProxyLoad;
@@ -1605,6 +1723,28 @@ namespace SteamAccCreator.Gui
         private System.Windows.Forms.CheckBox CbProfileEnabled;
         private System.Windows.Forms.Button BtnProfileRmImg;
         private System.Windows.Forms.Button BtnProxyTestCancel;
+        private System.Windows.Forms.TabPage tabModules;
+        private System.Windows.Forms.DataGridView DgvModules;
+        private System.Windows.Forms.BindingSource BsModules;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn enabledDataGridViewCheckBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn versionDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewButtonColumn Button;
+        private System.Windows.Forms.Label LbCapSolver;
+        private System.Windows.Forms.ComboBox CbCapSolver;
+        private System.Windows.Forms.GroupBox GbCapTwoCaptcha;
+        private System.Windows.Forms.GroupBox GbCapCaptchasolutions;
+        private System.Windows.Forms.Label LbCapCaptchasolutionsSectet;
+        private System.Windows.Forms.Label LbCapCaptchasolutionsKey;
+        private System.Windows.Forms.TextBox TbCapCaptchasolutionsSectet;
+        private System.Windows.Forms.TextBox TbCapCaptchasolutionsKey;
+        private System.Windows.Forms.CheckBox CbCapTwoCaptchaReportBad;
+        private System.Windows.Forms.Label LbCapTwoCaptchaKey;
+        private System.Windows.Forms.TextBox TbCapTwoCaptchaKey;
+        private System.Windows.Forms.BindingSource BsCaptchaTwoCapConfig;
+        private System.Windows.Forms.BindingSource BsCaptchaCapsolConfig;
+        private System.Windows.Forms.LinkLabel LinkAboutDiscord;
+        private System.Windows.Forms.Label LabAboutDiscord;
     }
 }
 

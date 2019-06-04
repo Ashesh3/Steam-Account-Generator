@@ -261,7 +261,7 @@ namespace SteamAccCreator.Web
             {
                 case Enums.CaptchaService.Captchasolutions:
                     {
-                        if (captchaConfig.HandMode || !captchaConfig.Enabled)
+                        if (!captchaConfig.Enabled)
                             goto default;
 
                         var _params = new Dictionary<string, object>()
@@ -306,7 +306,7 @@ namespace SteamAccCreator.Web
                     }
                 case Enums.CaptchaService.RuCaptcha:
                     {
-                        if (captchaConfig.HandMode || !captchaConfig.Enabled)
+                        if (!captchaConfig.Enabled)
                             goto default;
 
                         Logger.Debug("Recognizing captcha via TwoCaptcha/RuCaptcha");
@@ -354,9 +354,9 @@ namespace SteamAccCreator.Web
                         var retryCount = (isRecaptcha.HasValue && isRecaptcha.Value)
                             ? 10
                             : 3;
-                        for (int i = 0; i < retryCount; i++)
+                        for (int i = 0; (Program.EndlessTwoCaptcha) ? true : i < retryCount; i++)
                         {
-                            Logger.Debug($"TwoCaptcha/RuCaptcha requesting solution... Try {i + 1} of {retryCount}");
+                            Logger.Debug($"TwoCaptcha/RuCaptcha requesting solution... Try {i + 1}{(Program.EndlessTwoCaptcha ? "" : $" of {retryCount}")}");
                             var _captchaResponse = TwoCaptcha("res.php",
                                 new Dictionary<string, object>()
                                 {
@@ -387,6 +387,71 @@ namespace SteamAccCreator.Web
                     }
                     Logger.Debug("TwoCaptcha/RuCaptcha somethig went wrong.");
                     return new Captcha.CaptchaSolution(true, "Something went wrong", captchaConfig);
+                case Enums.CaptchaService.Module:
+                    {
+                        try
+                        {
+                            if (isRecaptcha.HasValue && !isRecaptcha.Value)
+                            {
+                                var imageCaptchas = FormMain.ModuleManager.Modules.GetCaptchaSolvers();
+                                if (imageCaptchas.Count() < 1)
+                                    goto default;
+
+                                var anyRetryAvailable = false;
+                                for (int i = 0; i < imageCaptchas.Count(); i++)
+                                {
+                                    var ic = imageCaptchas.ElementAt(i);
+                                    var icResponse = ic.Solve(new SACModuleBase.Models.Capcha.CaptchaRequest(captchaPayload, FormMain.ProxyManager.WebProxy));
+                                    var icStatus = icResponse?.Status ?? SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve;
+                                    if (icStatus == SACModuleBase.Enums.Captcha.CaptchaStatus.Success)
+                                        return new Captcha.CaptchaSolution(icResponse.Solution, icResponse?.ToString(), captchaConfig);
+
+                                    switch (icStatus)
+                                    {
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.RetryAvailable:
+                                            anyRetryAvailable = true;
+                                            continue;
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.Failed:
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve:
+                                            continue;
+                                    }
+                                }
+                                return new Captcha.CaptchaSolution(anyRetryAvailable, "Something went wrong...", captchaConfig);
+                            }
+                            else
+                            {
+                                var reCaptchas = FormMain.ModuleManager.Modules.GetReCaptchaSolvers();
+                                if (reCaptchas.Count() < 1)
+                                    goto default;
+
+                                var anyRetryAvailable = false;
+                                for (int i = 0; i < reCaptchas.Count(); i++)
+                                {
+                                    var rc = reCaptchas.ElementAt(i);
+                                    var rcResponse = rc.Solve(new SACModuleBase.Models.Capcha.ReCaptchaRequest(_siteKey, Defaults.Web.STEAM_JOIN_ADDRESS));
+                                    var rcStatus = rcResponse?.Status ?? SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve;
+                                    if (rcStatus == SACModuleBase.Enums.Captcha.CaptchaStatus.Success)
+                                        return new Captcha.CaptchaSolution(rcResponse.Solution, rcResponse?.ToString(), captchaConfig);
+
+                                    switch (rcStatus)
+                                    {
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.RetryAvailable:
+                                            anyRetryAvailable = true;
+                                            continue;
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.Failed:
+                                        case SACModuleBase.Enums.Captcha.CaptchaStatus.CannotSolve:
+                                            continue;
+                                    }
+                                }
+                                return new Captcha.CaptchaSolution(anyRetryAvailable, "Something went wrong...", captchaConfig);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error($"Module solving error.", ex);
+                        }
+                    }
+                    return new Captcha.CaptchaSolution(true, "Something went wrong.", captchaConfig);
                 default:
                     {
                         try
@@ -429,16 +494,8 @@ namespace SteamAccCreator.Web
         {
             if (CreateFailedCount >= 3)
             {
-                if ((captcha?.Config?.Enabled ?? false))
-                {
-                    Logger.Warn("Some of proxy IP's is banned by steam for 24h. Stopped creation.");
-                    updateStatus?.Invoke("Some of proxy IP's is banned by steam for 24h. Stopped creation.");
-                }
-                else
-                {
-                    Logger.Warn("Current seems IP is banned by steam for 24h. Stopped creation.");
-                    updateStatus?.Invoke("Current seems IP is banned by steam for 24h. Stopped creation.");
-                }
+                Logger.Warn("FAILED! Current IP seems to be banned. Endless captcha detected.");
+                updateStatus?.Invoke("FAILED! Current IP seems to be banned. Endless captcha detected.");
                 stop = true;
                 return false;
             }
@@ -510,10 +567,8 @@ namespace SteamAccCreator.Web
                                 {
                                     TwoCaptchaReport(captcha, false);
                                 }
-
-                                if (!captcha.Config.HandMode)
-                                    stop = !FormMain.ProxyManager.GetNew();
                             }
+                            stop = !FormMain.ProxyManager.GetNew();
                             CreateFailedCount++;
                             return false;
                         case 84:
@@ -630,6 +685,13 @@ namespace SteamAccCreator.Web
                     }
                 }
 
+                if (string.IsNullOrEmpty(sessionId))
+                {
+                    Logger.Warn($"SessionID cookie not found for: {alias}");
+                    updateStatus?.Invoke("Account seems created but SessionID cookie not found. Cannot disable guard, add game(s), set profile.");
+                    return true;
+                }
+
                 SetConfig("https://store.steampowered.com/twofactor/manage_action", Method.POST);
                 _request.AddParameter("action", "actuallynone");
                 _request.AddParameter("sessionid", sessionId);
@@ -666,8 +728,7 @@ namespace SteamAccCreator.Web
                         var responce111 = _client.Execute(_request);
                         _client.FollowRedirects = true;
 
-                        if (!Regex.IsMatch(responce111.Content, @"problem\sadding\sthis\sproduct", RegexOptions.IgnoreCase))
-                            addSuccess = true;
+                        addSuccess = Regex.IsMatch(responce111?.Content ?? "", $"steam://subscriptioninstall/{game.SubId}", RegexOptions.IgnoreCase);
                     }
                     catch { }
 
