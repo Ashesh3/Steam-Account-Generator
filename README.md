@@ -39,6 +39,8 @@ It will work with http/https/socks4/socks5
 
 # Requirements
 [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net472)
+[Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+  This link will download x86 and x64 versions. You need to install both of them.
 
 # Communication
 [![Join to our Discord](https://discordapp.com/api/guilds/557374041409716224/widget.png?style=banner2)](https://discord.gg/R96F2DA)
