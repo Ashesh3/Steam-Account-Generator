@@ -38,8 +38,8 @@ It will work with http/https/socks4/socks5
 [Steam-Account-Generator/releases](https://github.com/EarsKilla/Steam-Account-Generator/releases)
 
 # Requirements
-[.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net472)
-[Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+- [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net472)
+- [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)  
   This link will download x86 and x64 versions. You need to install both of them.
 
 # Communication
