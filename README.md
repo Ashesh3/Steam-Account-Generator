@@ -1,9 +1,12 @@
 # Steam-Account-Creator
 Steam Account Generator
 
-Web generator: https://accgen.cathook.club/
+Web generator: https://accgen.cathook.club/ (not maintained by [EarsKilla](https://github.com/EarsKilla))
 
-[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/master?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/master)
+|Branch|CI status|
+|------|---------|
+|[MASTER](https://github.com/EarsKilla/Steam-Account-Generator/tree/master)|[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/master?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/master)|
+|[DEV](https://github.com/EarsKilla/Steam-Account-Generator/tree/dev)|[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/dev?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/dev)|
 
 ![screenshot](https://i.vgy.me/cgb0Bo.png)
 
@@ -44,8 +47,12 @@ It will work with http/https/socks4/socks5
 
 # Communication
 🇫 Discord was died.  
+- [Telegram](https://t.me/joinchat/KlzcPlIIzac3vF3ZjC2SrA)  
+  **Note:** [Secondary link](https://onem3.cf/sac/) | GitHub hosted page  
+  This is alternative for those who was born in country with "good" government (like me)
+---
 - Read [F.A.Q.](https://github.com/EarsKilla/Steam-Account-Generator/wiki/F.A.Q.)
 - Look [Issues](https://github.com/EarsKilla/Steam-Account-Generator/issues)
   - If you're still having issue that not solved or solution not found in places above. You can:
-    - Ask for it in [telegram](https://t.me/joinchat/KlzcPlIIzac3vF3ZjC2SrA) (who borned in country with "good" government (like me) can use [this](https://onem3.cf/sac/))
+    - Ask for it in telegram chat (you will see link in [communication](#communication) part)
     - Create new issue
