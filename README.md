@@ -43,4 +43,9 @@ It will work with http/https/socks4/socks5
   This link will download x86 and x64 versions. You need to install both of them.
 
 # Communication
-[![Join to our Discord](https://discordapp.com/api/guilds/557374041409716224/widget.png?style=banner2)](https://discord.gg/R96F2DA)
+🇫 Discord was died.  
+- Read [F.A.Q.](https://github.com/EarsKilla/Steam-Account-Generator/wiki/F.A.Q.)
+- Look [Issues](https://github.com/EarsKilla/Steam-Account-Generator/issues)
+  - If you're still having issue that not solved or solution not found in places above. You can:
+    - Ask for it in [telegram](https://t.me/joinchat/KlzcPlIIzac3vF3ZjC2SrA) (who borned in country with "good" government (like me) can use [this](https://onem3.cf/sac/))
+    - Create new issue
