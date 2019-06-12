@@ -4,7 +4,7 @@ pull_requests:
 skip_tags: true
 skip_branch_with_pr: true
 image: Visual Studio 2017
-configuration: Release
+configuration: Dev
 platform: Any CPU
 shallow_clone: true
 clone_depth: 10
@@ -23,8 +23,8 @@ build:
   verbosity: minimal
 test: off
 artifacts:
-- path: SteamAccCreator\bin\$(configuration)
-  name: Release-windows-$(appveyor_build_version)
+- path: SteamAccCreator\bin\Pre-Release
+  name: DEV-windows-$(appveyor_build_version)
 deploy:
 - provider: GitHub
   tag: v$(appveyor_build_version)
