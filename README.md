@@ -3,7 +3,7 @@ Steam Account Generator
 
 Web generator: https://accgen.cathook.club/
 
-[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/master?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/dev?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/dev)
 
 ![screenshot](https://i.vgy.me/cgb0Bo.png)
 
