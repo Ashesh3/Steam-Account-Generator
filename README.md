@@ -1,9 +1,12 @@
 # Steam-Account-Creator
 Steam Account Generator
 
-Web generator: https://accgen.cathook.club/
+Web generator: https://accgen.cathook.club/ (not maintained by [EarsKilla](https://github.com/EarsKilla))
 
-[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/master?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/master)
+|Branch|CI status|
+|------|---------|
+|[MASTER](https://github.com/EarsKilla/Steam-Account-Generator/tree/master)|[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/master?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/master)|
+|[DEV](https://github.com/EarsKilla/Steam-Account-Generator/tree/dev)|[![Build status](https://ci.appveyor.com/api/projects/status/b60sjwtl69ln5ir6/branch/dev?svg=true)](https://ci.appveyor.com/project/EarsKilla/steam-account-generator/branch/dev)|
 
 ![screenshot](https://i.vgy.me/cgb0Bo.png)
 
@@ -38,7 +41,18 @@ It will work with http/https/socks4/socks5
 [Steam-Account-Generator/releases](https://github.com/EarsKilla/Steam-Account-Generator/releases)
 
 # Requirements
-[.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net472)
+- [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net472)
+- [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)  
+  This link will download x86 and x64 versions. You need to install both of them.
 
 # Communication
-[![Join to our Discord](https://discordapp.com/api/guilds/557374041409716224/widget.png?style=banner2)](https://discord.gg/R96F2DA)
+🇫 Discord was died.  
+- [Telegram](https://t.me/joinchat/KlzcPlIIzac3vF3ZjC2SrA)  
+  **Note:** [Secondary link](https://onem3.cf/sac/) | GitHub hosted page  
+  This is alternative for those who was born in country with "good" government (like me)
+---
+- Read [F.A.Q.](https://github.com/EarsKilla/Steam-Account-Generator/wiki/F.A.Q.)
+- Look [Issues](https://github.com/EarsKilla/Steam-Account-Generator/issues)
+  - If you're still having issue that not solved or solution not found in places above. You can:
+    - Ask for it in telegram chat (you will see link in [communication](#communication) part)
+    - Create new issue
